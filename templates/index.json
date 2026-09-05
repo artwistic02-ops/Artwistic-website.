@@ -244,16 +244,16 @@
           "type": "column",
           "settings": { "title": "Made to last", "text": "<p>Materials chosen for everyday wear, not just the photo.</p>" }
         },
-        "returns": {
+        "dispatch": {
           "type": "column",
-          "settings": { "title": "Easy returns", "text": "<p>Changed your mind? Exchanges are simple, no fine print.</p>" }
+          "settings": { "title": "Fast dispatch", "text": "<p>Every order leaves us within 24–48 working hours — free standard shipping above ₹1,499.</p>" }
         },
         "checkout": {
           "type": "column",
           "settings": { "title": "Secure checkout", "text": "<p>Pay the way you already trust.</p>" }
         }
       },
-      "block_order": ["craftsmanship", "materials", "returns", "checkout"],
+      "block_order": ["craftsmanship", "materials", "dispatch", "checkout"],
       "settings": {
         "title": "Why Artwistic",
         "heading_size": "h2",
