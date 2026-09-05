@@ -289,8 +289,11 @@
       {{ 'component-totals.css' | asset_url | stylesheet_tag }}
       {{ 'component-price.css' | asset_url | stylesheet_tag }}
       {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
-      {%- comment -%} ARTWISTIC: cart drawer restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+    {%- endif -%}
+    {%- if settings.cart_type == 'drawer' or request.page_type == 'cart' -%}
+      {%- comment -%} ARTWISTIC: cart restyle (drawer + full cart page), see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
       {{ 'artwistic-cart.css' | asset_url | stylesheet_tag }}
+      {{ 'artwistic-shipping-progress.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
 
     {%- unless settings.type_body_font.system? -%}

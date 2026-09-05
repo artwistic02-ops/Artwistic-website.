@@ -1,0 +1,41 @@
+{% comment %}
+  ARTWISTIC: free-shipping progress — shows real progress toward Artwistic's
+  actual free standard shipping threshold (orders above ₹1,499), computed
+  entirely from cart.total_price. No fabricated math: this is Artwistic's
+  real, confirmed shipping policy (see docs/SHOPIFY_ADMIN_SETUP.md), and the
+  number below must be kept in sync with that policy if it ever changes.
+
+  Because Dawn's cart drawer/cart page re-fetch and re-render this section's
+  markup from the server on every cart change (see cart.js/cart-drawer.js),
+  this progress bar updates automatically with zero custom JS math.
+
+  Usage:
+    {% render 'artwistic-shipping-progress' %}
+{% endcomment %}
+
+{%- liquid
+  # Artwistic's real free standard shipping threshold: ₹1,499, expressed in
+  # the shop's smallest currency unit to compare directly against cart.total_price.
+  assign aw_shipping_threshold = 149900
+  assign aw_remaining = aw_shipping_threshold | minus: cart.total_price
+  assign aw_percent = cart.total_price | times: 100 | divided_by: aw_shipping_threshold
+  if aw_percent > 100
+    assign aw_percent = 100
+  endif
+-%}
+
+<div class="aw-shipping-progress" role="status" aria-live="polite" data-aw-motion>
+  {%- if aw_remaining <= 0 -%}
+    <p class="aw-shipping-progress__message aw-shipping-progress__message--unlocked">
+      <span class="aw-icon-sm aw-shipping-progress__icon">{{- 'icon-checkmark.svg' | inline_asset_content -}}</span>
+      Free standard shipping unlocked
+    </p>
+  {%- else -%}
+    <p class="aw-shipping-progress__message">
+      <strong>{{ aw_remaining | money }}</strong> away from free standard shipping
+    </p>
+  {%- endif -%}
+  <div class="aw-shipping-progress__track">
+    <div class="aw-shipping-progress__fill" style="width: {{ aw_percent }}%;"></div>
+  </div>
+</div>

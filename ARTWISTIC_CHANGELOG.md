@@ -430,6 +430,24 @@ Every meaningful ARTWISTIC change to this theme is recorded here. See [DAWN_UPDA
 
 ---
 
+## 2026-09-05 — Artwistic redesign: design system + cart free-shipping progress
+
+**Feature/change:** First two slices of the full storefront redesign (visual rebuild while preserving Shopify functionality, per the approved plan). (1) Replaced Dawn's generic default color palette (white/black/navy/blue across all 5 color schemes), radius scale, and missing typography/button/icon roles with a considered Artwistic system — see the tokens and rationale comments in `assets/artwistic-global.css` and `config/settings_data.json`. (2) Removed a fabricated "Easy returns" claim from the homepage's "Why Artwistic" section (`templates/index.json`) — Artwistic's real policy is final sale, no COD, no returns. (3) Added a real-cart-data free-shipping progress bar (Artwistic's actual ₹1,499 threshold, no fabricated math) to both the cart drawer and the full cart page, and switched `cart_type` from `notification` to `drawer` so the theme's existing (and expanded) cart-drawer restyle work is actually the live experience rather than dormant code.
+
+**Files added:** `snippets/artwistic-shipping-progress.liquid`, `assets/artwistic-shipping-progress.css`.
+
+**Files modified:** `assets/artwistic-global.css` (design tokens), `config/settings_data.json` (color schemes, `buttons_radius`/`inputs_radius`/`popup_corner_radius`, `cart_type`), `assets/artwistic-social-proof.css`/`artwistic-wishlist.css` (literal `999px` radii replaced with the `--aw-radius-full` token), `templates/index.json` (returns→dispatch copy fix), `snippets/cart-drawer.liquid` and `sections/main-cart-footer.liquid` (shipping-progress render call), `layout/theme.liquid` (loads `artwistic-cart.css`/`artwistic-shipping-progress.css` on the full cart page too, not only when `cart_type` was `drawer`).
+
+**Reason:** direct user request to rebuild the visual identity while keeping the underlying Shopify functionality, plus a specific request for functional cart/shipping features that reuse the same design language.
+
+**Shopify dependencies:** none new — `cart.total_price` is native.
+
+**Admin setup requirements:** none for this slice; if the real free-shipping threshold ever changes from ₹1,499, update `aw_shipping_threshold` in `snippets/artwistic-shipping-progress.liquid` (documented inline).
+
+**Migration notes:** switching `cart_type` to `drawer` changes what shoppers see on Add to Cart (a full drawer instead of a small notification popup) — call this out to the merchant before launch in case they prefer the notification style.
+
+---
+
 ## Backlog (not yet implemented)
 
 What remains is content, not code: writing the actual buying-guide/care articles (spec section 46), real brand-story and product photography, and a reviews data source if the merchant wants `AggregateRating`/`Review` structured data (no app was added for this — see [docs/APP_REGISTER.md](docs/APP_REGISTER.md)). See [docs/FEATURE_REGISTER.md](docs/FEATURE_REGISTER.md) for details.
