@@ -1,0 +1,38 @@
+{% comment %}
+  ARTWISTIC: purchase confidence strip — a compact, glanceable line of
+  reassurance placed directly under Add to Cart, where hesitation
+  actually happens. Every claim here is merchant-written block text
+  (never a hardcoded assumption about the merchant's real policies) plus
+  the same per-product trust badges used elsewhere, so nothing shown is
+  unverifiable or copy-pasted from a template that doesn't match this
+  store's real policy.
+
+  Usage:
+    {% render 'artwistic-purchase-confidence', product: product, block: block %}
+{% endcomment %}
+
+<div class="aw-purchase-confidence" {{ block.shopify_attributes }}>
+  {%- if block.settings.show_trust_badges -%}
+    {%- render 'artwistic-trust-signals', product: product -%}
+  {%- endif -%}
+  <ul class="aw-purchase-confidence__list">
+    {%- if block.settings.dispatch_text != blank -%}
+      <li>
+        {{- 'icon-truck.svg' | inline_asset_content -}}
+        <span>{{ block.settings.dispatch_text }}</span>
+      </li>
+    {%- endif -%}
+    {%- if block.settings.exchange_text != blank -%}
+      <li>
+        {{- 'icon-return.svg' | inline_asset_content -}}
+        <span>{{ block.settings.exchange_text }}</span>
+      </li>
+    {%- endif -%}
+    {%- if block.settings.secure_text != blank -%}
+      <li>
+        {{- 'icon-lock.svg' | inline_asset_content -}}
+        <span>{{ block.settings.secure_text }}</span>
+      </li>
+    {%- endif -%}
+  </ul>
+</div>

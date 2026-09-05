@@ -1,0 +1,28 @@
+{% comment %}
+  Renders an editorial promo tile inside a mega menu column, from an
+  already-resolved `artwistic_menu_promo` metaobject entry.
+
+  Usage:
+    {% render 'artwistic-mega-menu-promo', promo: aw_promo %}
+
+  The caller (snippets/header-mega-menu.liquid) is responsible for finding
+  the matching entry by `menu_handle` — see docs/METAOBJECTS.md.
+{% endcomment %}
+
+{%- if promo -%}
+  <a href="{{ promo.link.value }}" class="aw-mega-menu-promo aw-focusable">
+    <span class="aw-mega-menu-promo__media">
+      {%- if promo.image.value != blank -%}
+        {{
+          promo.image.value
+          | image_url: width: 480
+          | image_tag: loading: 'lazy', sizes: '(min-width: 1280px) 20rem, 18rem', widths: '240, 480, 720'
+        }}
+      {%- endif -%}
+    </span>
+    <span class="aw-mega-menu-promo__title">{{ promo.title.value | escape }}</span>
+    {%- if promo.subtitle.value != blank -%}
+      <span class="aw-mega-menu-promo__subtitle">{{ promo.subtitle.value | escape }}</span>
+    {%- endif -%}
+  </a>
+{%- endif -%}

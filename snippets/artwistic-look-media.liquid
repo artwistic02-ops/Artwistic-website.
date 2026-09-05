@@ -1,0 +1,55 @@
+{% comment %}
+  ARTWISTIC: renders one Shop the Look scene's image + hotspots. Shared
+  by sections/artwistic-shop-the-look.liquid (homepage rail) and
+  sections/metaobject-artwistic-look.liquid (the look's own standalone
+  storefront page, linked to from "Featured in" on a product page) so
+  the hotspot markup/behavior isn't duplicated between the two.
+
+  Usage:
+    {% render 'artwistic-look-media', look: look %}
+{% endcomment %}
+
+<div class="aw-look__media">
+  {%- if look.image.value != blank -%}
+    {{
+      look.image.value
+      | image_url: width: 1200
+      | image_tag:
+        loading: 'lazy',
+        sizes: '(min-width: 990px) 60vw, 90vw',
+        widths: '480, 720, 960, 1200',
+        class: 'aw-look__image'
+    }}
+  {%- else -%}
+    <span class="aw-placeholder aw-look__image"></span>
+  {%- endif -%}
+
+  {%- for hotspot in look.hotspots.value -%}
+    {%- assign hotspot_product = hotspot.product.value -%}
+    {%- if hotspot_product != blank and hotspot_product.available -%}
+      <details
+        class="aw-hotspot"
+        style="left: {{ hotspot.x_position.value }}%; top: {{ hotspot.y_position.value }}%;"
+      >
+        <summary class="aw-hotspot__dot aw-focusable" aria-label="Shop {{ hotspot_product.title | escape }}">
+          <span aria-hidden="true">+</span>
+        </summary>
+        <div class="aw-hotspot__card">
+          {%- if hotspot_product.featured_media -%}
+            <a href="{{ hotspot_product.url }}" class="aw-hotspot__card-media">
+              {{ hotspot_product.featured_media | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100, 150, 200' }}
+            </a>
+          {%- endif -%}
+          <div class="aw-hotspot__card-info">
+            <a href="{{ hotspot_product.url }}" class="aw-hotspot__card-title full-unstyled-link">
+              {{- hotspot_product.title | escape -}}
+            </a>
+            <span class="aw-hotspot__card-price price">
+              {{- hotspot_product.price | money -}}
+            </span>
+          </div>
+        </div>
+      </details>
+    {%- endif -%}
+  {%- endfor -%}
+</div>

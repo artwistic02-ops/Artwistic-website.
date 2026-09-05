@@ -1,0 +1,32 @@
+/**
+ * ARTWISTIC PREDICTIVE SEARCH — editorial restyle layered over Dawn's
+ * existing, fully-functional predictive search (sections/predictive-search.liquid,
+ * assets/predictive-search.js, component-search.css). CSS only — no
+ * markup, JS, or data-flow changes, so Dawn's search request/render
+ * pipeline is untouched.
+ */
+
+.predictive-search__heading {
+  font-size: var(--aw-text-xs);
+  letter-spacing: var(--aw-tracking-wide);
+}
+
+.predictive-search__item {
+  border-radius: var(--aw-radius-sm);
+  transition: background var(--aw-duration-fast) var(--aw-ease);
+}
+
+.predictive-search__item:hover,
+.predictive-search__item:focus {
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .predictive-search__item {
+    transition: none;
+  }
+}
+
+.predictive-search__image {
+  border-radius: var(--aw-radius-sm);
+}

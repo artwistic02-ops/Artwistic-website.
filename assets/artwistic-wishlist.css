@@ -1,0 +1,143 @@
+/**
+ * ARTWISTIC WISHLIST — heart toggle button (on product cards, the product
+ * page, and the header entry point) plus the wishlist page grid.
+ * See assets/artwistic-wishlist.js, assets/artwistic-wishlist-page.js,
+ * snippets/artwistic-wishlist-button.liquid, sections/artwistic-wishlist.liquid.
+ */
+
+.aw-wishlist-button {
+  position: absolute;
+  top: var(--aw-space-2);
+  right: var(--aw-space-2);
+  z-index: 2;
+  width: 3.2rem;
+  height: 3.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(var(--color-background), 0.85);
+  color: var(--aw-color-ink);
+  cursor: pointer;
+  transition: transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-wishlist-button svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transition: fill var(--aw-duration-fast) var(--aw-ease), stroke var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-wishlist-button:hover {
+  transform: scale(1.06);
+}
+
+.aw-wishlist-button[aria-pressed='true'] {
+  color: var(--aw-color-sale);
+}
+
+.aw-wishlist-button[aria-pressed='true'] svg {
+  fill: currentColor;
+}
+
+.aw-wishlist-button--large {
+  width: 4.4rem;
+  height: 4.4rem;
+  top: var(--aw-space-3);
+  right: var(--aw-space-3);
+}
+
+.aw-wishlist-button--large svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.aw-product-media-wrapper {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-wishlist-button,
+  .aw-wishlist-button svg {
+    transition: none;
+  }
+}
+
+/* --- Header entry point --- */
+
+.aw-wishlist-link {
+  position: relative;
+}
+
+.aw-wishlist-count-bubble {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--aw-color-accent);
+  color: var(--aw-color-accent-text);
+  font-size: 1rem;
+  line-height: 1.6rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Wishlist page --- */
+
+.aw-wishlist-page__heading {
+  margin: 0 0 var(--aw-space-5);
+}
+
+.aw-wishlist-page__empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-space-2);
+  align-items: flex-start;
+  color: var(--aw-color-muted);
+}
+
+.aw-wishlist-card__media-link {
+  display: block;
+}
+
+.aw-wishlist-card__media {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--aw-radius-sm);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.aw-wishlist-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aw-wishlist-card__content {
+  margin-top: var(--aw-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.aw-wishlist-card__title {
+  font-size: var(--aw-text-sm);
+}
+
+.aw-wishlist-card__remove {
+  align-self: flex-start;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}

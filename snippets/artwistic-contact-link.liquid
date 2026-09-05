@@ -1,0 +1,15 @@
+{% comment %}
+  ARTWISTIC: direct contact link (e.g. WhatsApp) near the buy button — a
+  live human contact point reduces purchase anxiety on an unfamiliar
+  small brand. Renders nothing if no link is set.
+
+  Usage:
+    {% render 'artwistic-contact-link', block: block %}
+{% endcomment %}
+
+{%- if block.settings.link != blank -%}
+  <a href="{{ block.settings.link }}" class="aw-contact-link aw-focusable" {{ block.shopify_attributes }} target="_blank" rel="noopener">
+    {{- 'icon-chat-bubble.svg' | inline_asset_content -}}
+    <span>{{ block.settings.label | default: 'Questions? Message us' }}</span>
+  </a>
+{%- endif -%}

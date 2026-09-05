@@ -1,0 +1,69 @@
+/**
+ * ARTWISTIC STICKY ADD TO CART — mobile-only bar (spec section 36).
+ * See snippets/artwistic-sticky-add-to-cart.liquid and
+ * assets/artwistic-sticky-cart.js.
+ */
+
+.aw-sticky-atc {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--aw-z-sticky);
+  background: var(--aw-color-paper);
+  border-top: 1px solid var(--aw-color-border);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  transform: translateY(100%);
+  transition: transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-sticky-atc.aw-sticky-atc--visible {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-sticky-atc {
+    transition: none;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .aw-sticky-atc {
+    display: none;
+  }
+}
+
+.aw-sticky-atc__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-3);
+  padding-block: var(--aw-space-2);
+}
+
+.aw-sticky-atc__info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.aw-sticky-atc__title {
+  margin: 0;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aw-sticky-atc__price {
+  font-size: var(--aw-text-sm);
+  font-weight: 600;
+}
+
+.aw-sticky-atc__button {
+  flex: 0 0 auto;
+  min-height: 44px;
+}
+
+.aw-sticky-atc__button[disabled] {
+  opacity: 0.5;
+}

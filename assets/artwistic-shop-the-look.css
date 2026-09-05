@@ -1,0 +1,153 @@
+/**
+ * ARTWISTIC SHOP THE LOOK — hotspot hero + popover cards.
+ * See sections/artwistic-shop-the-look.liquid. Hotspots are native
+ * <details>/<summary> elements positioned with inline left/top percentages
+ * set from metaobject data; no JavaScript required.
+ */
+
+.aw-shop-the-look__header {
+  margin-bottom: var(--aw-space-5);
+  max-width: 56rem;
+}
+
+.aw-shop-the-look__heading {
+  margin: 0;
+}
+
+.aw-shop-the-look__subheading {
+  margin: var(--aw-space-2) 0 0;
+  color: var(--aw-color-muted);
+}
+
+.aw-shop-the-look__rail {
+  display: flex;
+  gap: var(--aw-space-5);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--aw-space-2);
+}
+
+.aw-look {
+  flex: 0 0 min(42rem, 85vw);
+  scroll-snap-align: start;
+}
+
+/* Standalone look page (sections/metaobject-artwistic-look.liquid): one
+   scene only, so it doesn't need to be a scrollable rail. */
+.aw-shop-the-look__rail--single {
+  overflow-x: visible;
+}
+
+.aw-shop-the-look__rail--single .aw-look {
+  flex: 0 0 min(48rem, 100%);
+  margin-inline: auto;
+}
+
+.aw-look__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--aw-radius-md);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.aw-look__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aw-look__caption {
+  margin-top: var(--aw-space-3);
+}
+
+.aw-look__title {
+  margin: 0;
+  font-size: var(--aw-text-md);
+}
+
+.aw-look__subtitle {
+  margin: 0.2rem 0 0;
+  color: var(--aw-color-muted);
+  font-size: var(--aw-text-sm);
+}
+
+/* --- Hotspot --- */
+
+.aw-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.aw-hotspot__dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: rgba(var(--color-background), 0.92);
+  color: var(--aw-color-ink);
+  font-size: 1.6rem;
+  line-height: 1;
+  list-style: none;
+  cursor: pointer;
+  box-shadow: var(--aw-shadow-sm);
+  transition: transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-hotspot__dot::-webkit-details-marker {
+  display: none;
+}
+
+.aw-hotspot[open] .aw-hotspot__dot {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-hotspot__dot {
+    transition: none;
+  }
+}
+
+.aw-hotspot__card {
+  position: absolute;
+  top: calc(100% + 0.8rem);
+  /* Clamp keeps the popover from overflowing the image near its left/right edges. */
+  left: clamp(11rem, 50%, calc(100% - 11rem));
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--aw-space-2);
+  align-items: center;
+  width: max-content;
+  max-width: 22rem;
+  padding: var(--aw-space-2);
+  background: var(--aw-color-paper, rgb(var(--color-background)));
+  border: 1px solid var(--aw-color-border);
+  border-radius: var(--aw-radius-sm);
+  box-shadow: var(--aw-shadow-md);
+  z-index: var(--aw-z-sticky);
+}
+
+.aw-hotspot__card-media img {
+  display: block;
+  width: 5.2rem;
+  height: 5.2rem;
+  object-fit: cover;
+  border-radius: var(--aw-radius-sm);
+}
+
+.aw-hotspot__card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.aw-hotspot__card-title {
+  font-size: var(--aw-text-sm);
+}
+
+.aw-hotspot__card-price {
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}

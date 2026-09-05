@@ -1,0 +1,78 @@
+/**
+ * ARTWISTIC COLLECTION — breadcrumbs (genuinely new, Dawn ships none) and
+ * an editorial restyle layered over Dawn's existing, fully-functional
+ * facets/filter system (snippets/facets.liquid, component-facets.css).
+ * No Dawn filter logic, JS, URL/canonical handling is touched — this is
+ * CSS only, so Dawn's crawlable pagination and query-param behavior
+ * (spec section 48) is entirely preserved.
+ */
+
+/* --- Breadcrumbs (used on collection, product, and article pages) --- */
+
+.aw-breadcrumbs {
+  margin-bottom: var(--aw-space-3);
+}
+
+.aw-breadcrumbs__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}
+
+.aw-breadcrumbs__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aw-breadcrumbs__item:not(:last-child)::after {
+  content: '/';
+  color: var(--aw-color-border-strong);
+}
+
+.aw-breadcrumbs__item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.aw-breadcrumbs__item a:hover {
+  text-decoration: underline;
+}
+
+.aw-breadcrumbs__item--current {
+  color: var(--aw-color-ink);
+}
+
+/* --- Facets / filters restyle --- */
+
+.facets__summary {
+  font-size: var(--aw-text-sm);
+  letter-spacing: 0.01em;
+}
+
+.facets__label,
+.facet-checkbox {
+  font-size: var(--aw-text-sm);
+}
+
+.active-facets__button-inner.button--tertiary {
+  border-radius: var(--aw-radius-sm);
+  font-size: var(--aw-text-2xs);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+}
+
+.facets__reset {
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}
+
+.facets-container-drawer .facets__wrapper {
+  background: var(--aw-color-paper);
+}

@@ -1,0 +1,85 @@
+{% comment %}
+  Full review list for the current product — reviewer name, star rating,
+  verified-purchase badge, date, text, and any photos/video. Sourced
+  entirely from artwistic_review metaobject entries whose Product field
+  matches this product. Renders nothing if there are none yet (spec
+  section 57: no fabricated/placeholder reviews).
+
+  Usage:
+    {% render 'artwistic-product-reviews', product: product %}
+{% endcomment %}
+
+{{ 'artwistic-reviews.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-reviews.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign aw_review_count = 0
+  assign aw_rating_total = 0
+-%}
+
+{%- capture aw_reviews_html -%}
+  {%- for aw_review in shop.metaobjects.artwistic_review.values -%}
+    {%- if aw_review.product.value.id == product.id -%}
+      {%- liquid
+        assign aw_review_count = aw_review_count | plus: 1
+        assign aw_rating_total = aw_rating_total | plus: aw_review.rating.value
+      -%}
+      <li class="aw-review">
+        <div class="aw-review__header">
+          {%- render 'artwistic-star-rating', rating: aw_review.rating.value -%}
+          {%- if aw_review.verified_purchase.value -%}
+            <span class="aw-review__verified">
+              {{- 'icon-checkmark.svg' | inline_asset_content -}}
+              Verified purchase
+            </span>
+          {%- endif -%}
+        </div>
+        <p class="aw-review__text">{{ aw_review.review_text.value }}</p>
+        {%- if aw_review.photos.value.size > 0 -%}
+          <div class="aw-review__photos">
+            {%- for aw_photo in aw_review.photos.value -%}
+              <button type="button" class="aw-review__photo" data-aw-review-photo>
+                {{ aw_photo | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 300' }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+        {%- if aw_review.video.value != blank -%}
+          <video
+            class="aw-review__video"
+            controls
+            preload="none"
+            playsinline
+            {% if aw_review.photos.value.size > 0 %}
+              poster="{{ aw_review.photos.value.first | image_url: width: 600 }}"
+            {% endif %}
+          >
+            <source src="{{ aw_review.video.value.url }}" type="{{ aw_review.video.value.mime_type }}">
+          </video>
+        {%- endif -%}
+        <div class="aw-review__meta">
+          <span class="aw-review__name">{{ aw_review.reviewer_name.value | escape }}</span>
+          {%- if aw_review.reviewed_date.value != blank -%}
+            <span class="aw-review__date">{{ aw_review.reviewed_date.value | date: '%B %Y' }}</span>
+          {%- endif -%}
+        </div>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if aw_review_count > 0 -%}
+  {%- assign aw_average_rating = aw_rating_total | times: 10 | divided_by: aw_review_count | round | times: 1.0 | divided_by: 10 -%}
+  <div id="artwistic-reviews" class="aw-reviews-section">
+    <div class="aw-reviews-section__header">
+      <h2 class="aw-reviews-section__heading">Reviews</h2>
+      <div class="aw-reviews-section__summary">
+        {%- render 'artwistic-star-rating', rating: aw_average_rating, size: 'large' -%}
+        <span>{{ aw_average_rating }} out of 5 · {{ aw_review_count }} review{% if aw_review_count != 1 %}s{% endif %}</span>
+      </div>
+    </div>
+    <ul class="aw-reviews-list" role="list">
+      {{ aw_reviews_html }}
+    </ul>
+  </div>
+{%- endif -%}

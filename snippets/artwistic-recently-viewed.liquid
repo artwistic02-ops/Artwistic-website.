@@ -1,0 +1,44 @@
+{% comment %}
+  Renders a "Recently viewed" rail from localStorage, excluding the
+  current product. Purely client-side; each saved handle is fetched live
+  from /products/{handle}.js so price/availability stay current. See
+  assets/artwistic-recently-viewed.js.
+
+  Usage:
+    {% render 'artwistic-recently-viewed', current_product: product, heading: 'Recently viewed' %}
+
+  Renders an (initially hidden) container — artwistic-recently-viewed.js
+  shows it only if there is at least one other product to display, so no
+  empty rail ever appears.
+{% endcomment %}
+
+{{ 'artwistic-recently-viewed.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-recently-viewed.js' | asset_url }}" defer="defer"></script>
+
+<div
+  class="aw-container aw-recently-viewed"
+  data-aw-recently-viewed
+  data-aw-current-handle="{{ current_product.handle }}"
+  hidden
+>
+  <h2 class="aw-recently-viewed__heading">{{ heading | default: 'Recently viewed' }}</h2>
+  <ul data-aw-recently-viewed-grid class="aw-recently-viewed__grid grid grid--2-col-tablet-down grid--4-col-desktop" role="list"></ul>
+</div>
+
+<template id="aw-recently-viewed-card-template">
+  <li class="grid__item">
+    <div class="card-wrapper product-card-wrapper">
+      <a class="aw-recently-viewed-card__media-link" href="">
+        <div class="aw-recently-viewed-card__media">
+          <img src="" alt="" loading="lazy" width="360" height="450">
+        </div>
+      </a>
+      <div class="aw-recently-viewed-card__content">
+        <a class="aw-recently-viewed-card__title full-unstyled-link" href=""></a>
+        <span class="aw-recently-viewed-card__price price"></span>
+      </div>
+    </div>
+  </li>
+</template>

@@ -1,0 +1,85 @@
+/**
+ * ARTWISTIC TRUST — styling for trust badges and the material-transparency
+ * accordion (snippets/artwistic-trust-signals.liquid,
+ * snippets/artwistic-product-information.liquid). The accordion itself
+ * reuses Dawn's .product__accordion/.accordion classes and native
+ * <details> markup — only the badge row and the definition-list layout
+ * are ARTWISTIC-specific.
+ */
+
+.aw-trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--aw-space-2) var(--aw-space-4);
+  margin: var(--aw-space-3) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aw-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--aw-space-1);
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}
+
+.aw-trust-badge svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+  color: var(--aw-color-success);
+}
+
+.aw-product-information__list {
+  display: grid;
+  gap: var(--aw-space-2);
+  margin: 0 0 var(--aw-space-3);
+}
+
+.aw-product-information__row {
+  display: grid;
+  grid-template-columns: minmax(11rem, 32%) 1fr;
+  gap: var(--aw-space-3);
+  font-size: var(--aw-text-sm);
+}
+
+.aw-product-information__row dt {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--aw-color-muted);
+}
+
+.aw-product-information__row dt svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  color: var(--aw-color-accent);
+}
+
+/* Secondary fields (finish, plating, weight) skip the icon — indent to
+   the same text start as the iconed rows above so the column still lines up. */
+.aw-product-information__row--plain dt {
+  padding-left: calc(1.5rem + 0.6rem);
+}
+
+.aw-product-information__row dd {
+  margin: 0;
+}
+
+.aw-product-information__care {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-muted);
+}
+
+.aw-product-information__care svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: var(--aw-color-accent);
+}

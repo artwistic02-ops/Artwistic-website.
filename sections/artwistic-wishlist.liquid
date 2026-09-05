@@ -1,0 +1,106 @@
+{% comment %}
+  ARTWISTIC: Wishlist page. Renders an empty state server-side (so the
+  page is never blank if JS fails) and a container that
+  artwistic-wishlist.js populates client-side by fetching each saved
+  product handle from Shopify's Storefront AJAX API
+  (/products/{handle}.js) — no app, no server-side account storage.
+  See ARTWISTIC_CHANGELOG.md and docs/FEATURE_REGISTER.md.
+{% endcomment %}
+
+{{ 'artwistic-wishlist.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-wishlist-page.js' | asset_url }}" defer="defer"></script>
+
+<div class="aw-container aw-wishlist-page color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+  <h1 class="aw-wishlist-page__heading">{{ section.settings.heading | default: 'Your wishlist' }}</h1>
+
+  <div data-aw-wishlist-empty class="aw-wishlist-page__empty">
+    <p>Nothing saved yet. Tap the heart on any product to add it here.</p>
+    <a href="{{ section.settings.empty_state_link | default: routes.all_products_collection_url }}" class="link">
+      {{ section.settings.empty_state_link_label | default: 'Continue shopping' }}
+    </a>
+  </div>
+
+  <ul data-aw-wishlist-grid class="aw-wishlist-page__grid grid grid--2-col-tablet-down grid--4-col-desktop" hidden role="list"></ul>
+</div>
+
+<template id="aw-wishlist-card-template">
+  <li class="grid__item">
+    <div class="card-wrapper product-card-wrapper">
+      <a class="aw-wishlist-card__media-link" href="">
+        <div class="aw-wishlist-card__media">
+          <img src="" alt="" loading="lazy" width="360" height="450">
+        </div>
+      </a>
+      <div class="aw-wishlist-card__content">
+        <a class="aw-wishlist-card__title full-unstyled-link" href=""></a>
+        <span class="aw-wishlist-card__price price"></span>
+        <button type="button" class="link aw-wishlist-card__remove" data-aw-wishlist-remove>Remove</button>
+      </div>
+    </div>
+  </li>
+</template>
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Wishlist",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Your wishlist"
+    },
+    {
+      "type": "url",
+      "id": "empty_state_link",
+      "label": "Empty state link",
+      "info": "Where \"Continue shopping\" points when the wishlist is empty. Defaults to the all-products collection."
+    },
+    {
+      "type": "text",
+      "id": "empty_state_link_label",
+      "label": "Empty state link label",
+      "default": "Continue shopping"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Wishlist"
+    }
+  ]
+}
+{% endschema %}

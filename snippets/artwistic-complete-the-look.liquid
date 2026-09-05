@@ -1,0 +1,36 @@
+{% comment %}
+  ARTWISTIC: "Featured in: [Look name]" cross-link. Checks whether this
+  product appears as a hotspot in any Shop the Look scene
+  (artwistic_look / artwistic_look_hotspot metaobjects) and, if so,
+  links to that look's own storefront page. Renders nothing otherwise.
+
+  Requires the artwistic_look metaobject definition to have Storefront
+  pages enabled (Settings → Custom data → Metaobjects → Shop the Look →
+  Storefront pages), and templates/metaobject.artwistic_look.json to
+  exist — see docs/METAOBJECTS.md and docs/SHOPIFY_ADMIN_SETUP.md.
+
+  Usage:
+    {% render 'artwistic-complete-the-look', product: product %}
+{% endcomment %}
+
+{%- liquid
+  assign aw_featured_look = null
+  for aw_look in shop.metaobjects.artwistic_look.values
+    for aw_hotspot in aw_look.hotspots.value
+      if aw_hotspot.product.value.id == product.id
+        assign aw_featured_look = aw_look
+        break
+      endif
+    endfor
+    if aw_featured_look != null
+      break
+    endif
+  endfor
+-%}
+
+{%- if aw_featured_look != null -%}
+  <a href="{{ aw_featured_look.system.url }}" class="aw-complete-the-look aw-focusable">
+    {{- 'icon-eye.svg' | inline_asset_content -}}
+    <span>Featured in: {{ aw_featured_look.title.value | escape }}</span>
+  </a>
+{%- endif -%}

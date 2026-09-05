@@ -1,0 +1,39 @@
+{% comment %}
+  Renders a 5-star rating display, supporting partial (e.g. 4.5) stars via
+  a clipped overlay — two layers of the same row of star outlines, the
+  top layer filled and width-clipped to the rating's percentage.
+
+  Usage:
+    {% render 'artwistic-star-rating', rating: 4.5 %}
+    {% render 'artwistic-star-rating', rating: 4.5, size: 'large' %}
+
+  Params:
+    rating: {Number} 0–5
+    size: {String} 'small' (default) or 'large'
+{% endcomment %}
+
+{%- liquid
+  assign aw_rating_value = rating | at_least: 0 | at_most: 5
+  assign aw_rating_percent = aw_rating_value | times: 20
+-%}
+
+<span
+  class="aw-star-rating{% if size == 'large' %} aw-star-rating--large{% endif %}"
+  role="img"
+  aria-label="{{ aw_rating_value }} out of 5 stars"
+>
+  <span class="aw-star-rating__track" aria-hidden="true">
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+  </span>
+  <span class="aw-star-rating__fill" aria-hidden="true" style="width: {{ aw_rating_percent }}%;">
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+    {{- 'icon-star.svg' | inline_asset_content -}}
+  </span>
+</span>

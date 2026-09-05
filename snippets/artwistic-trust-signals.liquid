@@ -1,0 +1,39 @@
+{% comment %}
+  Renders trust badges (water resistant / anti-tarnish / warranty) from
+  product metafields. Each badge only renders if the corresponding
+  metafield has a truthy/non-blank value — no fabricated claims.
+
+  Usage:
+    {% render 'artwistic-trust-signals', product: product %}
+
+  See docs/METAFIELDS.md for the metafield definitions this reads.
+{% endcomment %}
+
+{%- liquid
+  assign aw_water_resistant = product.metafields.artwistic.water_resistant.value
+  assign aw_anti_tarnish = product.metafields.artwistic.anti_tarnish.value
+  assign aw_warranty = product.metafields.artwistic.warranty.value
+-%}
+
+{%- if aw_water_resistant or aw_anti_tarnish or aw_warranty -%}
+  <ul class="aw-trust-badges" role="list">
+    {%- if aw_water_resistant -%}
+      <li class="aw-trust-badge">
+        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+        <span>Water resistant</span>
+      </li>
+    {%- endif -%}
+    {%- if aw_anti_tarnish -%}
+      <li class="aw-trust-badge">
+        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+        <span>Anti-tarnish</span>
+      </li>
+    {%- endif -%}
+    {%- if aw_warranty -%}
+      <li class="aw-trust-badge">
+        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+        <span>{{ aw_warranty }}</span>
+      </li>
+    {%- endif -%}
+  </ul>
+{%- endif -%}

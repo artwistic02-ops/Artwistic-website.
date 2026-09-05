@@ -1,0 +1,142 @@
+{% comment %}
+  ARTWISTIC: Reviews (homepage) — a merchant-curated carousel of verified
+  reviews. Each block picks one artwistic_review metaobject entry, so the
+  merchant controls exactly which reviews (and in what order) appear —
+  the same block-per-metaobject pattern as Shop the Look. No aggregate
+  "overall rating" is shown here, since a curated homepage selection
+  isn't the full picture of a product's reviews (see the real
+  average/count on each product's own page instead).
+  See ARTWISTIC_CHANGELOG.md and docs/METAOBJECTS.md.
+{% endcomment %}
+
+{{ 'artwistic-reviews.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-reviews.js' | asset_url }}" defer="defer"></script>
+
+{%- assign aw_review_blocks = section.blocks | where: 'type', 'review' -%}
+{%- if aw_review_blocks.size > 0 -%}
+  <div class="aw-container aw-reviews color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank -%}
+      <div class="aw-reviews__header">
+        <h2 class="aw-reviews__heading">{{ section.settings.heading }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <p class="aw-reviews__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="aw-reviews__rail-wrapper">
+      <ul class="aw-reviews__rail" role="list" data-aw-reviews-rail>
+        {%- for block in aw_review_blocks -%}
+          {%- assign aw_review = block.settings.review -%}
+          {%- if aw_review != blank -%}
+            <li class="aw-review-card" {{ block.shopify_attributes }}>
+              {%- render 'artwistic-star-rating', rating: aw_review.rating.value -%}
+              {%- if aw_review.verified_purchase.value -%}
+                <span class="aw-review-card__verified">
+                  {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                  Verified purchase
+                </span>
+              {%- endif -%}
+              <p class="aw-review-card__text">{{ aw_review.review_text.value }}</p>
+              {%- if aw_review.photos.value.size > 0 -%}
+                <div class="aw-review-card__photos">
+                  {%- for aw_photo in aw_review.photos.value limit: 3 -%}
+                    <button type="button" class="aw-review-card__photo" data-aw-review-photo>
+                      {{ aw_photo | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100, 200' }}
+                    </button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+              <div class="aw-review-card__meta">
+                <span class="aw-review-card__name">{{ aw_review.reviewer_name.value | escape }}</span>
+                {%- if aw_review.product.value != blank -%}
+                  <a href="{{ aw_review.product.value.url }}" class="aw-review-card__product">{{ aw_review.product.value.title | escape }}</a>
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+      <div class="aw-reviews__nav">
+        <button type="button" class="aw-reviews__nav-btn" data-aw-reviews-prev aria-label="Previous reviews">
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </button>
+        <button type="button" class="aw-reviews__nav-btn aw-reviews__nav-btn--next" data-aw-reviews-next aria-label="Next reviews">
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </button>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Reviews",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Loved by our customers"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real, verified reviews — curated by us."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "metaobject",
+          "id": "review",
+          "label": "Review",
+          "metaobject_type": "artwistic_review"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Reviews",
+      "blocks": [{ "type": "review" }, { "type": "review" }, { "type": "review" }]
+    }
+  ]
+}
+{% endschema %}

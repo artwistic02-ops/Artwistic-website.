@@ -1,0 +1,121 @@
+/**
+ * ARTWISTIC SHOP BY CATEGORY — homepage category discovery grid.
+ * See sections/artwistic-shop-by-category.liquid.
+ */
+
+.aw-shop-by-category__header {
+  margin-bottom: var(--aw-space-5);
+  max-width: 56rem;
+}
+
+.aw-shop-by-category__heading {
+  margin: 0;
+}
+
+.aw-shop-by-category__subheading {
+  margin: var(--aw-space-2) 0 0;
+  color: var(--aw-color-muted);
+}
+
+.aw-shop-by-category__grid {
+  display: grid;
+  gap: var(--aw-space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.aw-shop-by-category__grid--2-col-mobile {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.aw-shop-by-category__grid--1-col-mobile {
+  grid-template-columns: 1fr;
+}
+
+@media screen and (min-width: 750px) {
+  .aw-shop-by-category__grid--3-col-desktop {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aw-shop-by-category__grid--4-col-desktop {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .aw-shop-by-category__grid--5-col-desktop {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.aw-category-tile {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.aw-category-tile__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--aw-radius-md);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.aw-category-tile__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aw-category-tile__image--primary {
+  transition: opacity var(--aw-duration-slow) var(--aw-ease);
+}
+
+.aw-category-tile__image--hover {
+  opacity: 0;
+  transition: opacity var(--aw-duration-slow) var(--aw-ease);
+}
+
+.aw-category-tile:hover .aw-category-tile__image--hover {
+  opacity: 1;
+}
+
+.aw-category-tile:hover .aw-category-tile__image--primary {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-category-tile__image--primary,
+  .aw-category-tile__image--hover {
+    transition: none;
+  }
+}
+
+.aw-category-tile__caption {
+  display: block;
+  margin-top: var(--aw-space-3);
+}
+
+.aw-category-tile__title {
+  display: block;
+  font-size: var(--aw-text-md);
+  font-family: var(--aw-font-heading);
+}
+
+.aw-category-tile__subtitle {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}
+
+.aw-category-tile__count {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: var(--aw-text-2xs);
+  color: var(--aw-color-muted);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+}

@@ -1,0 +1,36 @@
+{% comment %}
+  Mobile sticky Add to Cart bar (spec section 36). Mirrors the real price
+  and button state from Dawn's stock buy-buttons/price blocks via
+  artwistic-sticky-cart.js's MutationObserver — it does not duplicate Dawn's
+  cart logic. Clicking the sticky button simply clicks the real,
+  already-rendered submit button, so all of Dawn's variant/AJAX-cart/error
+  handling is reused unmodified.
+
+  Usage:
+    {% render 'artwistic-sticky-add-to-cart', product: product, section_id: section.id %}
+
+  Renders nothing if the product has no purchasable variant.
+{% endcomment %}
+
+{%- if product != blank and product.selected_or_first_available_variant != blank -%}
+  <div
+    class="aw-sticky-atc"
+    data-aw-sticky-add-to-cart
+    data-aw-price-source="price-{{ section_id }}"
+    data-aw-button-source="ProductSubmitButton-{{ section_id }}"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="aw-container aw-sticky-atc__inner">
+      <div class="aw-sticky-atc__info">
+        <p class="aw-sticky-atc__title">{{ product.title | escape }}</p>
+        <div class="aw-sticky-atc__price" data-aw-sticky-price></div>
+      </div>
+      <button type="button" class="button button--primary aw-sticky-atc__button" data-aw-sticky-button>
+        {{ 'products.product.add_to_cart' | t }}
+      </button>
+    </div>
+  </div>
+  <link rel="stylesheet" href="{{ 'artwistic-sticky-cart.css' | asset_url }}" media="print" onload="this.media='all'">
+  <script src="{{ 'artwistic-sticky-cart.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}

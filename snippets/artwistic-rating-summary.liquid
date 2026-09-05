@@ -1,0 +1,35 @@
+{% comment %}
+  Compact, glanceable rating chip for the top of a product page: stars +
+  "4.8 · 32 reviews", linking down to the full review list. Computed live
+  from this product's artwistic_review entries — never a separate,
+  potentially-inconsistent number. Renders nothing if the product has no
+  reviews yet (no "0 reviews" placeholder — that reads as a red flag on a
+  new store, not as honesty).
+
+  Usage:
+    {% render 'artwistic-rating-summary', product: product %}
+{% endcomment %}
+
+{{ 'artwistic-reviews.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign aw_review_count = 0
+  assign aw_rating_total = 0
+  for aw_review in shop.metaobjects.artwistic_review.values
+    if aw_review.product.value.id == product.id
+      assign aw_review_count = aw_review_count | plus: 1
+      assign aw_rating_total = aw_rating_total | plus: aw_review.rating.value
+    endif
+  endfor
+-%}
+
+{%- if aw_review_count > 0 -%}
+  {%- comment -%} Round to one decimal place: (total * 10 / count) rounded, then / 10. {%- endcomment -%}
+  {%- assign aw_average_rating = aw_rating_total | times: 10 | divided_by: aw_review_count | round | times: 1.0 | divided_by: 10 -%}
+  <a href="#artwistic-reviews" class="aw-rating-summary aw-focusable">
+    {%- render 'artwistic-star-rating', rating: aw_average_rating -%}
+    <span class="aw-rating-summary__text">
+      {{ aw_average_rating }} · {{ aw_review_count }} review{% if aw_review_count != 1 %}s{% endif %}
+    </span>
+  </a>
+{%- endif -%}

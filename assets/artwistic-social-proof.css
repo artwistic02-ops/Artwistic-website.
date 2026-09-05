@@ -1,0 +1,83 @@
+/**
+ * ARTWISTIC SOCIAL PROOF — Instagram/UGC photo grid.
+ * See sections/artwistic-social-proof.liquid.
+ */
+
+.aw-social-proof__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--aw-space-3);
+  margin-bottom: var(--aw-space-5);
+}
+
+.aw-social-proof__heading {
+  margin: 0;
+}
+
+.aw-social-proof__handle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-muted);
+  text-decoration: none;
+}
+
+.aw-social-proof__handle svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.aw-social-proof__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--aw-space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media screen and (max-width: 749px) {
+  .aw-social-proof__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.aw-social-proof__item {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--aw-radius-sm);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.aw-social-proof__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--aw-duration-slow) var(--aw-ease);
+}
+
+a.aw-social-proof__item:hover img {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-social-proof__item img {
+    transition: none;
+  }
+}
+
+.aw-social-proof__tag {
+  position: absolute;
+  left: var(--aw-space-2);
+  bottom: var(--aw-space-2);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: var(--aw-text-2xs);
+}

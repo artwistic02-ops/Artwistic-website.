@@ -1,0 +1,78 @@
+/**
+ * ARTWISTIC SHOP BY MOOD — large-format alternating editorial cards.
+ * See sections/artwistic-shop-by-mood.liquid.
+ */
+
+.aw-shop-by-mood__header {
+  margin-bottom: var(--aw-space-6);
+  max-width: 56rem;
+}
+
+.aw-shop-by-mood__heading {
+  margin: 0;
+}
+
+.aw-shop-by-mood__subheading {
+  margin: var(--aw-space-2) 0 0;
+  color: var(--aw-color-muted);
+}
+
+.aw-shop-by-mood__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-space-7);
+}
+
+.aw-mood-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--aw-space-5);
+  align-items: center;
+}
+
+@media screen and (min-width: 750px) {
+  .aw-mood-card {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--aw-space-7);
+  }
+
+  .aw-mood-card--left .aw-mood-card__media {
+    order: 2;
+  }
+}
+
+.aw-mood-card__media {
+  display: block;
+}
+
+.aw-mood-card__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--aw-radius-md);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.aw-mood-card__content {
+  max-width: 42rem;
+}
+
+.aw-mood-card__title {
+  margin: 0.4rem 0 0;
+  font-size: var(--aw-text-xl);
+}
+
+.aw-mood-card__description {
+  margin: var(--aw-space-3) 0 0;
+  color: var(--aw-color-muted);
+  max-width: 42ch;
+  line-height: 1.6;
+}
+
+.aw-mood-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: var(--aw-space-4);
+}

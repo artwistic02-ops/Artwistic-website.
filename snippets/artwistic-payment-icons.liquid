@@ -1,0 +1,26 @@
+{% comment %}
+  ARTWISTIC: payment method icons, reusing Shopify's native
+  `shop.enabled_payment_types` + `payment_type_svg_tag` mechanism —
+  the exact same approach Dawn's own footer already uses
+  (sections/footer.liquid), so this always reflects whatever payment
+  methods are actually enabled in Settings → Payments. No fabricated or
+  generic icon set.
+
+  Usage:
+    {% render 'artwistic-payment-icons' %}
+{% endcomment %}
+
+{{ 'component-list-payment.css' | asset_url | stylesheet_tag }}
+
+{%- if shop.enabled_payment_types.size > 0 -%}
+  <div class="aw-payment-icons">
+    <span class="aw-visually-hidden">{{ 'sections.footer.payment' | t }}</span>
+    <ul class="list list-payment" role="list">
+      {%- for type in shop.enabled_payment_types -%}
+        <li class="list-payment__item">
+          {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}

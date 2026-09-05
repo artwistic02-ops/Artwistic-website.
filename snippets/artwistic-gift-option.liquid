@@ -1,0 +1,24 @@
+{% comment %}
+  ARTWISTIC: gift wrap checkbox + optional gift note. Submits as Shopify
+  cart line-item properties. Uses the `form="{{ product_form_id }}"`
+  attribute — the same pattern Dawn's own `quantity_selector` block uses
+  — so these inputs attach to the existing product form by ID without
+  needing to be nested inside it, meaning snippets/buy-buttons.liquid
+  never has to be touched.
+
+  Usage:
+    {% render 'artwistic-gift-option', block: block, product_form_id: product_form_id %}
+{% endcomment %}
+
+{%- if block.settings.enable -%}
+  <div class="aw-gift-option quick-add-hidden" {{ block.shopify_attributes }}>
+    <label class="aw-gift-option__checkbox">
+      <input type="checkbox" name="properties[Gift Wrap]" value="Yes" form="{{ product_form_id }}">
+      <span>{{ block.settings.wrap_label | default: 'Add gift wrapping' }}</span>
+    </label>
+    <label class="aw-gift-option__note">
+      <span>{{ block.settings.note_label | default: 'Add a gift note (optional)' }}</span>
+      <textarea name="properties[Gift Note]" form="{{ product_form_id }}" rows="2" maxlength="200"></textarea>
+    </label>
+  </div>
+{%- endif -%}

@@ -1,0 +1,155 @@
+/**
+ * ARTWISTIC BUILD YOUR STACK. See sections/artwistic-build-your-stack.liquid
+ * and assets/artwistic-stack-builder.js.
+ */
+
+.aw-stack__header {
+  margin-bottom: var(--aw-space-5);
+  max-width: 56rem;
+}
+
+.aw-stack__heading {
+  margin: 0;
+}
+
+.aw-stack__subheading {
+  margin: var(--aw-space-2) 0 0;
+  color: var(--aw-color-muted);
+}
+
+.aw-stack__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--aw-space-4);
+  list-style: none;
+  margin: 0 0 var(--aw-space-5);
+  padding: 0;
+}
+
+.aw-stack-item__label {
+  display: block;
+  cursor: pointer;
+}
+
+.aw-stack-item__checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.aw-stack-item__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--aw-radius-md);
+  overflow: hidden;
+  background: rgba(var(--color-foreground), 0.04);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-stack-item__media img,
+.aw-stack-item__image-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aw-stack-item__checkbox:checked ~ .aw-stack-item__media {
+  outline-color: var(--aw-color-accent);
+}
+
+.aw-stack-item__checkbox:focus-visible ~ .aw-stack-item__media {
+  outline-color: var(--aw-color-accent);
+  outline-style: dashed;
+}
+
+.aw-stack-item__checkbox:disabled ~ .aw-stack-item__media {
+  opacity: 0.5;
+}
+
+.aw-stack-item__check {
+  position: absolute;
+  top: var(--aw-space-2);
+  right: var(--aw-space-2);
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: rgba(var(--color-background), 0.92);
+  color: var(--aw-color-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity var(--aw-duration-fast) var(--aw-ease), transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-stack-item__check svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.aw-stack-item__checkbox:checked ~ .aw-stack-item__media .aw-stack-item__check {
+  opacity: 1;
+  transform: scale(1);
+  color: var(--aw-color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-stack-item__media,
+  .aw-stack-item__check {
+    transition: none;
+  }
+}
+
+.aw-stack-item__title {
+  display: block;
+  margin-top: var(--aw-space-2);
+  font-size: var(--aw-text-sm);
+}
+
+.aw-stack-item__price {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}
+
+.aw-stack__summary {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--aw-space-3) var(--aw-space-4);
+  padding: var(--aw-space-4);
+  border: 1px solid var(--aw-color-border);
+  border-radius: var(--aw-radius-md);
+  background: var(--aw-color-paper);
+}
+
+.aw-stack__summary-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-right: auto;
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-muted);
+}
+
+.aw-stack__summary-total {
+  font-size: var(--aw-text-md);
+  color: var(--aw-color-ink);
+  font-weight: 600;
+}
+
+.aw-stack__note {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+  min-height: 1.6rem;
+}

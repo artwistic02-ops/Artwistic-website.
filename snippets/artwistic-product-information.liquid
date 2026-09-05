@@ -1,0 +1,106 @@
+{% comment %}
+  Renders a material-transparency accordion from product metafields,
+  reusing Dawn's stock accordion markup/classes (.product__accordion
+  .accordion, native <details>/<summary>) so it inherits Dawn's existing
+  styling and accessibility without new JavaScript. Key rows carry a
+  small icon so the block reads as a glanceable spec sheet rather than
+  dense fine print; secondary rows (finish, plating, weight) stay plain
+  text to avoid icon repetition looking noisy.
+
+  Usage:
+    {% render 'artwistic-product-information', product: product, heading: 'Details & care' %}
+
+  Renders nothing if no relevant metafield has a value — no empty
+  accordion is shown. See docs/METAFIELDS.md for field definitions.
+
+  Uses truthy string checks (`!= blank`) rather than a size/length check,
+  since metafield values are scalars, not collections.
+{% endcomment %}
+
+{%- liquid
+  assign aw_material = product.metafields.artwistic.material.value
+  assign aw_finish = product.metafields.artwistic.finish.value
+  assign aw_plating = product.metafields.artwistic.plating.value
+  assign aw_dimensions = product.metafields.artwistic.dimensions.value
+  assign aw_weight = product.metafields.artwistic.weight_grams.value
+  assign aw_stones = product.metafields.artwistic.stones.value
+  assign aw_closure = product.metafields.artwistic.closure.value
+  assign aw_care = product.metafields.artwistic.care_instructions.value
+  assign aw_package = product.metafields.artwistic.package_contents.value
+
+  assign aw_has_content = false
+  if aw_material != blank or aw_finish != blank or aw_plating != blank or aw_dimensions != blank or aw_weight != blank or aw_stones != blank or aw_closure != blank or aw_care != blank or aw_package != blank
+    assign aw_has_content = true
+  endif
+-%}
+
+{%- if aw_has_content -%}
+  <div class="product__accordion accordion quick-add-hidden aw-product-information">
+    <details id="ARTWISTIC-ProductInformation-{{ product.id }}" open>
+      <summary>
+        <div class="summary__title">
+          <h2 class="h4 accordion__title">{{ heading | default: 'Details & care' }}</h2>
+        </div>
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </summary>
+      <div class="accordion__content rte">
+        <dl class="aw-product-information__list">
+          {%- if aw_material != blank -%}
+            <div class="aw-product-information__row">
+              <dt>{{ 'icon-price-tag.svg' | inline_asset_content }}Material</dt>
+              <dd>{{ aw_material }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if aw_stones != blank -%}
+            <div class="aw-product-information__row">
+              <dt>{{ 'icon-star.svg' | inline_asset_content }}Stones</dt>
+              <dd>{{ aw_stones }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if aw_dimensions != blank -%}
+            <div class="aw-product-information__row">
+              <dt>{{ 'icon-ruler.svg' | inline_asset_content }}Dimensions</dt>
+              <dd>{{ aw_dimensions }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if aw_closure != blank -%}
+            <div class="aw-product-information__row">
+              <dt>{{ 'icon-lock.svg' | inline_asset_content }}Closure</dt>
+              <dd>{{ aw_closure }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if aw_package != blank -%}
+            <div class="aw-product-information__row">
+              <dt>{{ 'icon-box.svg' | inline_asset_content }}In the box</dt>
+              <dd>{{ aw_package }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if aw_finish != blank -%}
+            <div class="aw-product-information__row aw-product-information__row--plain">
+              <dt>Finish</dt>
+              <dd>{{ aw_finish }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if aw_plating != blank -%}
+            <div class="aw-product-information__row aw-product-information__row--plain">
+              <dt>Plating</dt>
+              <dd>{{ aw_plating }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if aw_weight != blank -%}
+            <div class="aw-product-information__row aw-product-information__row--plain">
+              <dt>Weight</dt>
+              <dd>{{ aw_weight }}g</dd>
+            </div>
+          {%- endif -%}
+        </dl>
+        {%- if aw_care != blank -%}
+          <p class="aw-product-information__care">
+            {{- 'icon-washing.svg' | inline_asset_content -}}
+            <span><strong>Care:</strong> {{ aw_care }}</span>
+          </p>
+        {%- endif -%}
+      </div>
+    </details>
+  </div>
+{%- endif -%}

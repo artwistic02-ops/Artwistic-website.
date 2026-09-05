@@ -1,0 +1,44 @@
+/**
+ * ARTWISTIC PRODUCT GALLERY — visual refinement only, layered on top of
+ * Dawn's stock media gallery (snippets/product-media-gallery.liquid,
+ * assets/media-gallery.js). Dawn's gallery already provides swipe,
+ * keyboard navigation, zoom, and a thumbnail rail — this file does not
+ * reimplement any of that, it only restyles it to the ARTWISTIC editorial
+ * aesthetic.
+ */
+
+.product__media-item img,
+.product__media-item model-viewer,
+.product__media-item video {
+  border-radius: var(--aw-radius-sm);
+}
+
+/* Dawn scrolls the main slider to the clicked thumbnail via a plain
+   scrollTo() with no smooth behavior specified — without this it jumps
+   instantly instead of gliding. */
+.product__media-list {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product__media-list {
+    scroll-behavior: auto;
+  }
+}
+
+/* Slightly more generous, consistent gutter between thumbnails than
+   Dawn's default, and a refined active-state ring instead of a heavy border. */
+.thumbnail-list__item .thumbnail {
+  border-radius: var(--aw-radius-sm);
+  transition: box-shadow var(--aw-duration-fast) var(--aw-ease);
+}
+
+.thumbnail-list__item .thumbnail[aria-current='true'] {
+  box-shadow: 0 0 0 2px var(--aw-color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumbnail-list__item .thumbnail {
+    transition: none;
+  }
+}

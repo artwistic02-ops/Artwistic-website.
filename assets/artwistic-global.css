@@ -1,0 +1,174 @@
+/**
+ * ARTWISTIC GLOBAL — design tokens + shared utilities.
+ * Isolated from Dawn core. Do not add page/feature-specific rules here —
+ * create a dedicated artwistic-<feature>.css file instead.
+ * See ARTWISTIC_CHANGELOG.md and docs/FEATURE_REGISTER.md.
+ */
+
+:root {
+  /* --- Color: reuse Dawn's theme-editor-driven color variables so ARTWISTIC
+     components stay in sync with the merchant's color scheme settings. --- */
+  --aw-color-ink: rgb(var(--color-foreground));
+  --aw-color-paper: rgb(var(--color-background));
+  --aw-color-accent: rgb(var(--color-button));
+  --aw-color-accent-text: rgb(var(--color-button-text));
+  --aw-color-border: rgba(var(--color-foreground), 0.12);
+  --aw-color-border-strong: rgba(var(--color-foreground), 0.28);
+  --aw-color-muted: rgba(var(--color-foreground), 0.62);
+
+  /* Editorial accent + status colors — not theme-editor controlled because
+     they carry semantic meaning (sale, sold out, success) rather than brand identity. */
+  --aw-color-sale: #b3441e;
+  --aw-color-success: #2f6f4e;
+  --aw-color-warning: #a5730f;
+
+  /* --- Typography: inherit Dawn's font families; add an editorial type scale --- */
+  --aw-font-body: var(--font-body-family);
+  --aw-font-heading: var(--font-heading-family);
+  --aw-text-2xs: 1.1rem;
+  --aw-text-xs: 1.2rem;
+  --aw-text-sm: 1.4rem;
+  --aw-text-base: 1.6rem;
+  --aw-text-md: 1.8rem;
+  --aw-text-lg: 2.2rem;
+  --aw-text-xl: 2.8rem;
+  --aw-text-2xl: 3.6rem;
+  --aw-text-3xl: 4.8rem;
+  --aw-tracking-wide: 0.08em;
+  --aw-tracking-wider: 0.16em;
+
+  /* --- Spacing scale (rem-based, 8px baseline) --- */
+  --aw-space-1: 0.4rem;
+  --aw-space-2: 0.8rem;
+  --aw-space-3: 1.2rem;
+  --aw-space-4: 1.6rem;
+  --aw-space-5: 2.4rem;
+  --aw-space-6: 3.2rem;
+  --aw-space-7: 4.8rem;
+  --aw-space-8: 6.4rem;
+  --aw-space-9: 9.6rem;
+
+  /* --- Containers --- */
+  --aw-container-max: 144rem;
+  --aw-container-pad: var(--aw-space-4);
+
+  /* --- Radius / borders --- */
+  --aw-radius-sm: 2px;
+  --aw-radius-md: 4px;
+  --aw-radius-lg: 8px;
+
+  /* --- Motion: short, purposeful, and fully disabled under reduced motion.
+     One curve family, used everywhere, modeled on Apple's product-page
+     deceleration feel — glides to a stop, never overshoots, never bounces.
+     Never introduce a spring/bounce/elastic easing anywhere in ARTWISTIC
+     code; if something feels like it needs one, slow the duration down
+     instead. --- */
+  --aw-duration-fast: 150ms;
+  --aw-duration-base: 300ms;
+  --aw-duration-slow: 500ms;
+  --aw-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --aw-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --aw-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* --- Elevation (used sparingly — see spec section 52) --- */
+  --aw-shadow-sm: 0 1px 2px rgba(var(--color-shadow), 0.08);
+  --aw-shadow-md: 0 4px 16px rgba(var(--color-shadow), 0.12);
+
+  /* --- z-index registry: keep every feature's stacking context declared here
+     to prevent collisions between header, drawers, modals, and sticky ATC. --- */
+  --aw-z-sticky: 10;
+  --aw-z-header: 30;
+  --aw-z-overlay: 40;
+  --aw-z-drawer: 50;
+  --aw-z-modal: 60;
+  --aw-z-toast: 70;
+}
+
+@media (min-width: 750px) {
+  :root {
+    --aw-container-pad: var(--aw-space-6);
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+.aw-container {
+  width: 100%;
+  max-width: var(--aw-container-max);
+  margin-inline: auto;
+  padding-inline: var(--aw-container-pad);
+}
+
+.aw-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.aw-visually-hidden.aw-focusable:focus,
+.aw-visually-hidden.aw-focusable:active {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+/* Consistent, visible focus ring across all ARTWISTIC components.
+   Dawn already zeroes out default outlines in places, so components
+   built on top must opt back in explicitly. */
+.aw-focusable:focus-visible,
+[data-aw-focusable]:focus-visible {
+  outline: 2px solid var(--aw-color-accent);
+  outline-offset: 2px;
+}
+
+.aw-eyebrow {
+  font-size: var(--aw-text-xs);
+  letter-spacing: var(--aw-tracking-wider);
+  text-transform: uppercase;
+  color: var(--aw-color-muted);
+}
+
+.aw-tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Skeleton/placeholder blocks used wherever real photography/copy is pending. */
+.aw-placeholder {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(var(--color-foreground), 0.06),
+    rgba(var(--color-foreground), 0.06) 10px,
+    rgba(var(--color-foreground), 0.1) 10px,
+    rgba(var(--color-foreground), 0.1) 20px
+  );
+}
+
+/* ==========================================================================
+   Motion safety — every ARTWISTIC animation/transition must be listed here
+   or scoped so this query can neutralize it.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  [data-aw-motion],
+  [data-aw-motion] * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

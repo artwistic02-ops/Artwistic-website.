@@ -1,0 +1,126 @@
+{% comment %}
+  ARTWISTIC: Instagram/UGC photo strip. Manually curated, same
+  architecture reasoning as Reviews (see ARTWISTIC_CHANGELOG.md) — the
+  merchant uploads real photos from their real Instagram account rather
+  than a live third-party embed, so nothing is fabricated and no
+  third-party widget/script ever loads on the storefront. Each block
+  picks one artwistic_social_post metaobject entry.
+  See docs/METAOBJECTS.md.
+{% endcomment %}
+
+{{ 'artwistic-social-proof.css' | asset_url | stylesheet_tag }}
+
+{%- assign aw_post_blocks = section.blocks | where: 'type', 'post' -%}
+{%- if aw_post_blocks.size > 0 -%}
+  <div class="aw-container aw-social-proof color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank -%}
+      <div class="aw-social-proof__header">
+        <h2 class="aw-social-proof__heading">{{ section.settings.heading }}</h2>
+        {%- if section.settings.handle != blank -%}
+          <a href="https://instagram.com/{{ section.settings.handle | remove: '@' }}" class="aw-social-proof__handle" target="_blank" rel="noopener">
+            {{- 'icon-instagram.svg' | inline_asset_content -}}
+            @{{ section.settings.handle | remove: '@' }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <ul class="aw-social-proof__grid" role="list">
+      {%- for block in aw_post_blocks -%}
+        {%- assign aw_post = block.settings.post -%}
+        {%- if aw_post != blank and aw_post.image.value != blank -%}
+          <li {{ block.shopify_attributes }}>
+            {%- if aw_post.instagram_url.value != blank -%}
+              <a href="{{ aw_post.instagram_url.value }}" class="aw-social-proof__item aw-focusable" target="_blank" rel="noopener">
+            {%- else -%}
+              <span class="aw-social-proof__item">
+            {%- endif -%}
+              {{
+                aw_post.image.value
+                | image_url: width: 500
+                | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 20vw, 45vw', widths: '250, 375, 500'
+              }}
+              {%- if aw_post.featured_product.value != blank -%}
+                <span class="aw-social-proof__tag">{{ aw_post.featured_product.value.title | escape }}</span>
+              {%- endif -%}
+            {%- if aw_post.instagram_url.value != blank -%}
+              </a>
+            {%- else -%}
+              </span>
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Social proof",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Follow along"
+    },
+    {
+      "type": "text",
+      "id": "handle",
+      "label": "Instagram handle (optional)"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "post",
+      "name": "Post",
+      "settings": [
+        {
+          "type": "metaobject",
+          "id": "post",
+          "label": "Post",
+          "metaobject_type": "artwistic_social_post"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Social proof"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,114 @@
+{% comment %}
+  ARTWISTIC: Shop the Look (spec section 35). Each block picks an
+  `artwistic_look` metaobject entry — a styled photo with one or more
+  hotspots, each linking a product. Hotspots use native <details>/
+  <summary> positioned absolutely over the image, so the popover is
+  keyboard-operable and screen-reader friendly with zero JavaScript,
+  consistent with how Dawn implements its own accordions.
+  See ARTWISTIC_CHANGELOG.md and docs/METAOBJECTS.md.
+{% endcomment %}
+
+{{ 'artwistic-shop-the-look.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+<div class="aw-container aw-shop-the-look color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+  {%- if section.settings.heading != blank -%}
+    <div class="aw-shop-the-look__header">
+      <h2 class="aw-shop-the-look__heading">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subheading != blank -%}
+        <p class="aw-shop-the-look__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="aw-shop-the-look__rail">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'look' and block.settings.look != blank -%}
+        {%- assign look = block.settings.look -%}
+        <article class="aw-look" {{ block.shopify_attributes }}>
+          {%- render 'artwistic-look-media', look: look -%}
+
+          {%- if look.title.value != blank -%}
+            <div class="aw-look__caption">
+              <h3 class="aw-look__title">{{ look.title.value | escape }}</h3>
+              {%- if look.subtitle.value != blank -%}
+                <p class="aw-look__subtitle">{{ look.subtitle.value | escape }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </article>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Shop the Look",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop the look"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "look",
+      "name": "Look",
+      "settings": [
+        {
+          "type": "metaobject",
+          "id": "look",
+          "label": "Look",
+          "metaobject_type": "artwistic_look"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Shop the Look",
+      "blocks": [{ "type": "look" }]
+    }
+  ]
+}
+{% endschema %}

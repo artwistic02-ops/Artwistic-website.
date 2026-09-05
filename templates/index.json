@@ -1,0 +1,335 @@
+{
+  "sections": {
+    "image_banner": {
+      "type": "image-banner",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Browse our latest products",
+            "heading_size": "h0"
+          }
+        },
+        "button": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Shop all",
+            "button_link_1": "shopify://collections/all",
+            "button_style_secondary_1": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "button"
+      ],
+      "settings": {
+        "image_overlay_opacity": 40,
+        "image_height": "large",
+        "desktop_content_position": "bottom-center",
+        "show_text_box": false,
+        "image_behavior": "none",
+        "desktop_content_alignment": "center",
+        "color_scheme": "scheme-3",
+        "mobile_content_alignment": "center",
+        "stack_images_on_mobile": false,
+        "show_text_below": false
+      }
+    },
+    "artwistic_shop_by_category": {
+      "type": "artwistic-shop-by-category",
+      "blocks": {
+        "earrings": {
+          "type": "category",
+          "settings": { "title": "Earrings", "link": "shopify://collections/all" }
+        },
+        "necklaces": {
+          "type": "category",
+          "settings": { "title": "Necklaces", "link": "shopify://collections/all" }
+        },
+        "rings": {
+          "type": "category",
+          "settings": { "title": "Rings", "link": "shopify://collections/all" }
+        },
+        "bracelets": {
+          "type": "category",
+          "settings": { "title": "Bracelets", "link": "shopify://collections/all" }
+        }
+      },
+      "block_order": ["earrings", "necklaces", "rings", "bracelets"],
+      "settings": {
+        "heading": "Shop by category",
+        "columns_desktop": "4",
+        "columns_mobile": "2",
+        "aspect_ratio": "4x5",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "artwistic_shop_by_intent": {
+      "type": "artwistic-shop-by-intent",
+      "blocks": {
+        "everyday": {
+          "type": "intent",
+          "settings": { "title": "Everyday", "link": "shopify://collections/all" }
+        },
+        "gifting": {
+          "type": "intent",
+          "settings": { "title": "Gifting", "link": "shopify://collections/all" }
+        },
+        "under-1499": {
+          "type": "intent",
+          "settings": { "title": "Under ₹1,499", "link": "shopify://collections/all" }
+        },
+        "stackable": {
+          "type": "intent",
+          "settings": { "title": "Stackable", "link": "shopify://collections/all" }
+        }
+      },
+      "block_order": ["everyday", "gifting", "under-1499", "stackable"],
+      "settings": {
+        "heading": "Shop by intent",
+        "columns_desktop": "4",
+        "columns_mobile": "2",
+        "aspect_ratio": "1x1",
+        "color_scheme": "scheme-1",
+        "padding_top": 44,
+        "padding_bottom": 56
+      }
+    },
+    "artwistic_shop_by_mood": {
+      "type": "artwistic-shop-by-mood",
+      "blocks": {
+        "everyday-edit": {
+          "type": "edit",
+          "settings": {
+            "eyebrow": "New edit",
+            "title": "The Everyday Edit",
+            "description": "<p>Pieces light enough to wear every day and never take off.</p>",
+            "link": "shopify://collections/all",
+            "link_label": "Shop the edit"
+          }
+        },
+        "golden-hour": {
+          "type": "edit",
+          "settings": {
+            "eyebrow": "Curated",
+            "title": "Golden Hour",
+            "description": "<p>Warm tones for evenings that run late.</p>",
+            "link": "shopify://collections/all",
+            "link_label": "Shop the edit"
+          }
+        }
+      },
+      "block_order": ["everyday-edit", "golden-hour"],
+      "settings": {
+        "heading": "Shop by mood",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "best_sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Best sellers",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "collection": "all",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1",
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "enable_desktop_slider": false,
+        "swipe_on_mobile": false,
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "padding_top": 44,
+        "padding_bottom": 20
+      }
+    },
+    "new_arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "New arrivals",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "collection": "all",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1",
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "enable_desktop_slider": false,
+        "swipe_on_mobile": false,
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "padding_top": 20,
+        "padding_bottom": 36
+      }
+    },
+    "artwistic_reviews": {
+      "type": "artwistic-reviews",
+      "blocks": {},
+      "block_order": [],
+      "settings": {
+        "heading": "Loved by our customers",
+        "subheading": "Real, verified reviews — curated by us.",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "editorial_story": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": { "heading": "Made to be worn, not just owned", "heading_size": "h1" }
+        },
+        "text": {
+          "type": "text",
+          "settings": { "text": "<p>Every piece starts as a sketch before it becomes something you reach for without thinking. That's the part we care about most.</p>" }
+        },
+        "button": {
+          "type": "button",
+          "settings": { "button_label": "Our story", "button_link": "" }
+        }
+      },
+      "block_order": ["heading", "text", "button"],
+      "settings": {
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "image_first",
+        "image_behavior": "none",
+        "content_layout": "no-overlap",
+        "desktop_content_position": "middle",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "scheme-1",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "artwistic_why": {
+      "type": "multicolumn",
+      "blocks": {
+        "craftsmanship": {
+          "type": "column",
+          "settings": { "title": "Thoughtful craftsmanship", "text": "<p>Designed and finished with care, not mass-stamped.</p>" }
+        },
+        "materials": {
+          "type": "column",
+          "settings": { "title": "Made to last", "text": "<p>Materials chosen for everyday wear, not just the photo.</p>" }
+        },
+        "returns": {
+          "type": "column",
+          "settings": { "title": "Easy returns", "text": "<p>Changed your mind? Exchanges are simple, no fine print.</p>" }
+        },
+        "checkout": {
+          "type": "column",
+          "settings": { "title": "Secure checkout", "text": "<p>Pay the way you already trust.</p>" }
+        }
+      },
+      "block_order": ["craftsmanship", "materials", "returns", "checkout"],
+      "settings": {
+        "title": "Why Artwistic",
+        "heading_size": "h2",
+        "image_width": "third",
+        "image_ratio": "square",
+        "columns_desktop": 4,
+        "column_alignment": "left",
+        "background_style": "none",
+        "color_scheme": "scheme-1",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "artwistic_jewellery_education": {
+      "type": "artwistic-jewellery-education",
+      "blocks": {
+        "sizing": {
+          "type": "guide",
+          "settings": { "title": "Ring sizing, explained", "icon": "icon-ruler.svg", "link": "" }
+        },
+        "care": {
+          "type": "guide",
+          "settings": { "title": "Caring for your jewellery", "icon": "icon-heart.svg", "link": "" }
+        },
+        "layering": {
+          "type": "guide",
+          "settings": { "title": "How to layer necklaces", "icon": "icon-checkmark.svg", "link": "" }
+        }
+      },
+      "block_order": ["sizing", "care", "layering"],
+      "settings": {
+        "heading": "Jewellery, decoded",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "newsletter": {
+      "type": "email-signup-banner",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": { "heading": "Be first to know", "heading_size": "h2" }
+        },
+        "paragraph": {
+          "type": "paragraph",
+          "settings": { "text": "New edits, restocks, and the occasional surprise.", "text_style": "body" }
+        }
+      },
+      "block_order": ["heading", "paragraph"],
+      "settings": {
+        "show_background_image": false,
+        "image_overlay_opacity": 0,
+        "image_height": "medium",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": false,
+        "color_scheme": "scheme-2",
+        "mobile_content_alignment": "center",
+        "show_text_below": true
+      }
+    }
+  },
+  "order": [
+    "image_banner",
+    "artwistic_shop_by_category",
+    "artwistic_shop_by_intent",
+    "artwistic_shop_by_mood",
+    "best_sellers",
+    "new_arrivals",
+    "artwistic_reviews",
+    "editorial_story",
+    "artwistic_why",
+    "artwistic_jewellery_education",
+    "newsletter"
+  ]
+}

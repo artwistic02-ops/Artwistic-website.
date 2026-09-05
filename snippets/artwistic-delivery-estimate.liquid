@@ -1,0 +1,78 @@
+{% comment %}
+  ARTWISTIC: manual, no-API delivery estimate calculator. The shopper
+  picks their state; JS computes an estimated delivery date range
+  client-side using merchant-configured business-day rules — no courier
+  API, no live data. See ARTWISTIC_CHANGELOG.md and
+  docs/SHOPIFY_ADMIN_SETUP.md for the exact rules and how to keep the
+  holiday list current.
+
+  Usage:
+    {% render 'artwistic-delivery-estimate', block: block %}
+{% endcomment %}
+
+{{ 'artwistic-delivery-estimate.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-delivery-estimate.js' | asset_url }}" defer="defer"></script>
+
+<div
+  class="aw-delivery-estimate"
+  data-aw-delivery-estimate
+  data-dispatch-min="{{ block.settings.dispatch_days_min | default: 1 }}"
+  data-dispatch-max="{{ block.settings.dispatch_days_max | default: 2 }}"
+  data-transit-fast-min="{{ block.settings.transit_fast_min | default: 2 }}"
+  data-transit-fast-max="{{ block.settings.transit_fast_max | default: 3 }}"
+  data-transit-other-min="{{ block.settings.transit_other_min | default: 3 }}"
+  data-transit-other-max="{{ block.settings.transit_other_max | default: 5 }}"
+  data-holidays="{{ block.settings.holiday_dates | strip_newlines | escape }}"
+  {{ block.shopify_attributes }}
+>
+  <label class="aw-delivery-estimate__label" for="AwDeliveryState-{{ block.id }}">
+    {{- 'icon-map-pin.svg' | inline_asset_content -}}
+    <span>Check estimated delivery</span>
+  </label>
+  <div class="aw-delivery-estimate__row">
+    <select id="AwDeliveryState-{{ block.id }}" class="aw-delivery-estimate__select" data-aw-delivery-state>
+      <option value="">Select your state</option>
+      <optgroup label="Faster transit">
+        <option value="fast">Gujarat</option>
+        <option value="fast">Maharashtra</option>
+      </optgroup>
+      <optgroup label="All other states &amp; union territories">
+        <option value="other">Andhra Pradesh</option>
+        <option value="other">Arunachal Pradesh</option>
+        <option value="other">Assam</option>
+        <option value="other">Bihar</option>
+        <option value="other">Chhattisgarh</option>
+        <option value="other">Goa</option>
+        <option value="other">Haryana</option>
+        <option value="other">Himachal Pradesh</option>
+        <option value="other">Jharkhand</option>
+        <option value="other">Karnataka</option>
+        <option value="other">Kerala</option>
+        <option value="other">Madhya Pradesh</option>
+        <option value="other">Manipur</option>
+        <option value="other">Meghalaya</option>
+        <option value="other">Mizoram</option>
+        <option value="other">Nagaland</option>
+        <option value="other">Odisha</option>
+        <option value="other">Punjab</option>
+        <option value="other">Rajasthan</option>
+        <option value="other">Sikkim</option>
+        <option value="other">Tamil Nadu</option>
+        <option value="other">Telangana</option>
+        <option value="other">Tripura</option>
+        <option value="other">Uttar Pradesh</option>
+        <option value="other">Uttarakhand</option>
+        <option value="other">West Bengal</option>
+        <option value="other">Andaman and Nicobar Islands</option>
+        <option value="other">Chandigarh</option>
+        <option value="other">Dadra and Nagar Haveli and Daman and Diu</option>
+        <option value="other">Delhi</option>
+        <option value="other">Jammu and Kashmir</option>
+        <option value="other">Ladakh</option>
+        <option value="other">Lakshadweep</option>
+        <option value="other">Puducherry</option>
+      </optgroup>
+    </select>
+  </div>
+  <p class="aw-delivery-estimate__result" data-aw-delivery-result role="status"></p>
+</div>

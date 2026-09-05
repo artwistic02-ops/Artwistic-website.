@@ -1,0 +1,30 @@
+/**
+ * ARTWISTIC HEADER — premium chrome layered on top of Dawn's stock .header
+ * markup (sections/header.liquid). Do not restyle Dawn's structural classes
+ * wholesale here — only add ARTWISTIC-specific refinements scoped to .aw-*
+ * classes or explicitly-scoped additions to Dawn classes.
+ */
+
+/* Thin, editorial rule under the header instead of Dawn's default border
+   treatment, only when the merchant has the border enabled. */
+.header-wrapper--border-bottom {
+  border-bottom-color: var(--aw-color-border);
+}
+
+/* Give the logo a touch more breathing room at the premium type scale. */
+.header__heading-logo-wrapper {
+  padding-block: var(--aw-space-1);
+}
+
+/* Subtle elevation once the page has scrolled past the sticky header,
+   reinforcing hierarchy without a hard drop shadow. */
+.shopify-section-header-sticky.scrolled-past-header .header-wrapper {
+  box-shadow: var(--aw-shadow-sm);
+  transition: box-shadow var(--aw-duration-base) var(--aw-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shopify-section-header-sticky.scrolled-past-header .header-wrapper {
+    transition: none;
+  }
+}

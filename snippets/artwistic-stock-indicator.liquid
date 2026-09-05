@@ -1,0 +1,23 @@
+{% comment %}
+  ARTWISTIC: genuine low-stock indicator. Only shows for a variant with
+  real Shopify inventory tracking enabled and a quantity at or below the
+  merchant's threshold — never an invented number, and never shown for
+  untracked/on-demand variants where the number would be meaningless.
+
+  Usage:
+    {% render 'artwistic-stock-indicator', product: product, block: block %}
+{% endcomment %}
+
+{%- liquid
+  assign aw_variant = product.selected_or_first_available_variant
+  assign aw_threshold = block.settings.threshold | default: 5
+-%}
+
+{%- if aw_variant.inventory_management == 'shopify' and aw_variant.inventory_policy != 'continue' and aw_variant.inventory_quantity > 0 and aw_variant.inventory_quantity <= aw_threshold -%}
+  <p class="aw-stock-indicator" {{ block.shopify_attributes }}>
+    {{- 'icon-inventory-status.svg' | inline_asset_content -}}
+    <span>
+      Only {{ aw_variant.inventory_quantity }} left{% if product.has_only_default_variant == false %} in this size{% endif %}
+    </span>
+  </p>
+{%- endif -%}

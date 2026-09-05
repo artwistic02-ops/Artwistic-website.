@@ -1,0 +1,23 @@
+{% comment %}
+  Renders a wishlist toggle (heart) button for a product. Purely
+  client-side — see assets/artwistic-wishlist.js. Guests get
+  localStorage persistence; no account or app is required.
+
+  Usage:
+    {% render 'artwistic-wishlist-button', product: card_product %}
+    {% render 'artwistic-wishlist-button', product: product, size: 'large' %}
+{% endcomment %}
+
+{%- if product != blank -%}
+  <button
+    type="button"
+    class="aw-wishlist-button{% if size == 'large' %} aw-wishlist-button--large{% endif %}"
+    data-aw-wishlist-toggle
+    data-aw-product-id="{{ product.id }}"
+    data-aw-product-handle="{{ product.handle }}"
+    aria-pressed="false"
+    aria-label="Add {{ product.title | escape }} to wishlist"
+  >
+    {{- 'icon-heart.svg' | inline_asset_content -}}
+  </button>
+{%- endif -%}
