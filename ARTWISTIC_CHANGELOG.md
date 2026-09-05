@@ -448,6 +448,22 @@ Every meaningful ARTWISTIC change to this theme is recorded here. See [DAWN_UPDA
 
 ---
 
+## 2026-09-05 — Quick view / quick add enabled on product grids
+
+**Feature/change:** Enabled Dawn's existing "standard" quick-add (`quick_add: "standard"`) on the collection product grid and both homepage product rails (Best Sellers, New Arrivals), previously set to `none`. This is Dawn's built-in mini product page in a modal — real gallery, variant picker, add-to-cart form — not a custom-built quick view, matching the "don't rebuild what Dawn already solved" principle. Restyled the trigger button and modal panel (radius, shadow, open/close motion using the Artwistic ease curve) to match the design system.
+
+**Files added:** `assets/artwistic-quick-add.css`.
+
+**Files modified:** `templates/collection.json`, `templates/index.json` (`quick_add: "none"` → `"standard"`), `sections/main-collection-product-grid.liquid`, `sections/featured-collection.liquid` (load the new stylesheet whenever quick add is enabled).
+
+**Reason:** recommended enhancement — faster product discovery from the grid without a full page navigation, reusing functionality Dawn already had.
+
+**Shopify dependencies:** none.
+
+**Admin setup requirements:** none — works with existing product/variant data.
+
+---
+
 ## Backlog (not yet implemented)
 
 What remains is content, not code: writing the actual buying-guide/care articles (spec section 46), real brand-story and product photography, and a reviews data source if the merchant wants `AggregateRating`/`Review` structured data (no app was added for this — see [docs/APP_REGISTER.md](docs/APP_REGISTER.md)). See [docs/FEATURE_REGISTER.md](docs/FEATURE_REGISTER.md) for details.

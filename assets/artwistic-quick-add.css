@@ -1,0 +1,54 @@
+/**
+ * ARTWISTIC QUICK ADD — editorial restyle of Dawn's existing quick-add
+ * modal (a real mini product page with gallery + variant picker, not a
+ * custom rebuild). Isolated from Dawn core; only visual treatment changes.
+ */
+
+.quick-add-modal {
+  background: rgba(var(--color-foreground), 0.32);
+  transition: opacity var(--aw-duration-base) var(--aw-ease);
+}
+
+.quick-add-modal__content {
+  border-radius: var(--aw-radius-md);
+  box-shadow: var(--aw-shadow-md);
+  border: 1px solid var(--aw-color-border);
+  opacity: 0;
+  transform: translateY(1.2rem);
+  transition: opacity var(--aw-duration-base) var(--aw-ease), transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.quick-add-modal[open] .quick-add-modal__content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quick-add-modal__toggle {
+  border-radius: var(--aw-radius-full);
+  transition: color var(--aw-duration-fast) var(--aw-ease), border-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.quick-add-modal__toggle:hover {
+  border-color: var(--aw-color-border-strong);
+}
+
+/* "Choose options" / add-to-cart trigger on the card — same shape language
+   as .aw-btn (structured, non-pill) without renaming Dawn's button classes
+   sitewide, which is a larger migration tracked separately. */
+.quick-add__submit.button {
+  border-radius: var(--aw-radius-sm);
+  font-size: var(--aw-text-sm);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+  transition: background-color var(--aw-duration-base) var(--aw-ease), border-color var(--aw-duration-base) var(--aw-ease),
+    color var(--aw-duration-base) var(--aw-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-add-modal,
+  .quick-add-modal__content,
+  .quick-add-modal__toggle,
+  .quick-add__submit.button {
+    transition: none;
+  }
+}

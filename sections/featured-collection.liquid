@@ -10,6 +10,8 @@
 
 {%- unless section.settings.quick_add == 'none' -%}
   {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  {%- comment -%} ARTWISTIC: quick-add restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+  {{ 'artwistic-quick-add.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 {%- endunless -%}
 
