@@ -4,32 +4,31 @@ Step-by-step instructions for everything a merchant must configure in Shopify Ad
 
 ---
 
-## Feature: Premium Header & Mega Menu
+## Feature: Header navigation — "Shop by Collection" dropdown
 
 ### What
-A multi-column navigation menu grouped by Shop / Style / Occasion / Price, with an optional editorial promo tile per column.
+The header uses Dawn's **dropdown** menu type (`menu_type_desktop: dropdown`), not the grid-based mega menu. Most top-level items (Home, All Jewellery, Earrings, Necklaces, Bracelets, Rings, Gifting, Need Help) are flat links with no dropdown. Exactly one top-level item, **"Shop by Collection"**, opens a vertical dropdown listing its child links — restyled with Artwistic's own panel (background, border, radius, shadow, spacing, typography — see `assets/artwistic-header.css`). The same parent/child structure renders as an accordion in the mobile drawer automatically; no separate mobile configuration is needed.
+
+This entirely reuses Dawn's stock navigation menu — no custom code drives the menu structure, so the exact subsections shown are whatever the merchant builds below.
 
 ### Where
-**Online Store → Navigation**, plus **Content → Metaobjects** for promo tiles.
+**Online Store → Navigation**.
 
 ### Steps
 
-1. Open **Shopify Admin → Online Store → Navigation**.
-2. Open (or create) the menu used as the main navigation (default: "Main menu").
-3. Create top-level items for each primary category you sell (e.g. "Earrings", "Necklaces", "Rings", "Bracelets") — link each to its collection.
-4. Under each top-level item, add nested menu items for sub-groupings (e.g. under "Earrings": "Studs", "Hoops", "Danglers") — link each to the relevant collection or a collection with a matching filter applied.
-5. Optionally create additional top-level items for "Shop by Style", "Shop by Occasion", "Shop by Price" groupings, each with nested links to the relevant collections.
-6. **Name:** matters — the mega menu section reads each top-level item's **handle** (the URL-safe slug Shopify derives from the title) to match it against optional promo tiles. Note the handle of each top-level item (visible in the item's link URL or by hovering).
-7. Save the menu.
-8. In **Online Store → Themes → Customize**, select the header section, and confirm the correct menu is selected in the section's **Menu** setting.
-9. (Optional) Add a promo tile to any column — see [METAOBJECTS.md](METAOBJECTS.md#artwistic_menu_promo) for the full steps.
-10. Preview on both desktop and mobile (375px) before publishing.
+1. Open **Shopify Admin → Online Store → Navigation**, and open the menu assigned to the header (default: "Main menu").
+2. Add top-level items for every flat nav link you want (e.g. "Home", "All Jewellery", "Earrings", "Necklaces", "Bracelets", "Rings", "Gifting", "Need Help") — link each directly to its page/collection. Leave these with **no nested items** so they render as plain links, matching the flat items in the reference layout.
+3. Add one top-level item titled exactly **"Shop by Collection"**.
+4. Under "Shop by Collection", add nested menu items — one per subsection you want to feature (e.g. by style, material, occasion, or price band), each linking to the relevant real collection. **Placeholder subsection names have not been chosen yet** — until you decide on them, add nested items with working titles (e.g. "Subsection 1", "Subsection 2") pointed at real collections, then rename the menu item titles later; renaming a navigation item never requires a theme code change.
+5. Save the menu.
+6. In **Online Store → Themes → Customize**, select the header section, confirm the correct menu is selected in the section's **Menu** setting, and confirm **Menu type on desktop** is set to **Dropdown**.
+7. Preview the "Shop by Collection" dropdown on desktop (hover) and on mobile (tap, in the drawer menu) before publishing.
 
 ### Required?
-Yes — without a configured menu, the mega menu renders empty (no error, but no navigation value).
+Yes for "Shop by Collection" to show subsections — without nested items under it, it renders as a flat link like the others (no error, just no dropdown).
 
 ### Example value
-Menu: "Main menu" with top-level items "New Arrivals", "Earrings", "Necklaces", "Rings", "Bracelets", "Shop by Occasion".
+Menu: "Main menu" with flat top-level items "Home", "All Jewellery", "Earrings", "Necklaces", "Bracelets", "Rings", "Gifting", "Need Help", plus "Shop by Collection" containing nested links to real collections.
 
 ---
 

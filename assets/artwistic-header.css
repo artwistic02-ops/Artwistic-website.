@@ -28,3 +28,77 @@
     transition: none;
   }
 }
+
+/* ==========================================================================
+   Desktop dropdown submenu (e.g. "Shop by Collection") — Artwistic panel.
+   Scoped to .header__submenu so it only affects the primary nav dropdown,
+   not Dawn's global popup style used elsewhere (quick-view modals, etc.).
+   ========================================================================== */
+
+.header__inline-menu .header__submenu.global-settings-popup {
+  background-color: var(--aw-color-paper);
+  border: 1px solid var(--aw-color-border);
+  border-radius: var(--aw-radius-md);
+  box-shadow: var(--aw-shadow-md);
+}
+
+.header__inline-menu .header__submenu.list-menu {
+  min-width: 24rem;
+  padding: var(--aw-space-3) 0;
+}
+
+.header__inline-menu details[open] > .header__submenu {
+  animation-timing-function: var(--aw-ease);
+  animation-duration: var(--aw-duration-base);
+}
+
+.header__inline-menu .header__submenu .header__menu-item {
+  padding: var(--aw-space-2) var(--aw-space-4);
+  min-height: var(--aw-space-6);
+  font-family: var(--aw-font-body);
+  font-size: var(--aw-text-base);
+  color: var(--aw-color-ink);
+}
+
+.header__inline-menu .header__submenu .header__menu-item:hover {
+  color: var(--aw-color-ink);
+  text-decoration: none;
+  background-color: rgba(var(--color-foreground), 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__inline-menu details[open] > .header__submenu {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Mobile drawer submenu — same visual language as the desktop dropdown
+   above (typography, spacing, hover, motion curve), different composition
+   (Dawn's native push-panel pattern, left untouched structurally).
+   ========================================================================== */
+
+.menu-drawer__menu-item {
+  font-family: var(--aw-font-body);
+  font-size: var(--aw-text-md);
+  padding-block: var(--aw-space-3);
+}
+
+.menu-drawer__menu-item--active,
+.menu-drawer__menu-item:focus,
+.menu-drawer__menu-item:hover {
+  background-color: rgba(var(--color-foreground), 0.04);
+}
+
+.js details[open] > .menu-drawer,
+.js details[open] > .menu-drawer__submenu {
+  transition-timing-function: var(--aw-ease);
+  transition-duration: var(--aw-duration-base);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js details[open] > .menu-drawer,
+  .js details[open] > .menu-drawer__submenu {
+    transition: none;
+  }
+}
