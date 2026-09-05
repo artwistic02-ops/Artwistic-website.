@@ -76,7 +76,7 @@ a.aw-social-proof__item:hover img {
   left: var(--aw-space-2);
   bottom: var(--aw-space-2);
   padding: 0.3rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--aw-radius-full);
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
   font-size: var(--aw-text-2xs);

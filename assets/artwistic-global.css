@@ -19,8 +19,15 @@
   /* Editorial accent + status colors — not theme-editor controlled because
      they carry semantic meaning (sale, sold out, success) rather than brand identity. */
   --aw-color-sale: #b3441e;
-  --aw-color-success: #2f6f4e;
+  --aw-color-success: #4b6a4f;
   --aw-color-warning: #a5730f;
+
+  /* Brand accent — the one warm, non-neutral color in the whole system.
+     Reserved for small, deliberate moments (an active state, a single
+     highlighted badge, a hairline rule) — never a whole section background;
+     scheme-5 in the theme editor uses the same value for the rare full-scheme
+     use case (a promo tile, a single CTA banner). */
+  --aw-color-brand-accent: #a97c4f;
 
   /* --- Typography: inherit Dawn's font families; add an editorial type scale --- */
   --aw-font-body: var(--font-body-family);
@@ -52,10 +59,20 @@
   --aw-container-max: 144rem;
   --aw-container-pad: var(--aw-space-4);
 
-  /* --- Radius / borders --- */
-  --aw-radius-sm: 2px;
-  --aw-radius-md: 4px;
-  --aw-radius-lg: 8px;
+  /* --- Radius: exactly three values, each with one job. Never introduce a
+     fourth without removing one — see docs/FEATURE_REGISTER.md. ---
+     xs   — hairline controls: checkboxes, tags, small swatches.
+     sm   — structured, non-pill controls: buttons, inputs, quantity steppers.
+            Soft enough to feel considered, not so round it reads as playful.
+     md   — panels and photography: cards, drawers, modals, dropdown panels,
+            the UGC masonry tiles. This is the signature Artwistic curve.
+     full — reserved exclusively for genuinely circular/pill controls: icon
+            buttons, avatars, the wishlist heart target. Never applied to a
+            rectangular card or section — that reads as generic AI-template. */
+  --aw-radius-xs: 2px;
+  --aw-radius-sm: 6px;
+  --aw-radius-md: 14px;
+  --aw-radius-full: 999px;
 
   /* --- Motion: short, purposeful, and fully disabled under reduced motion.
      One curve family, used everywhere, modeled on Apple's product-page
@@ -146,6 +163,164 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ==========================================================================
+   Typography roles — every ARTWISTIC heading/label/price must use one of
+   these, not a one-off font-size. Built on Dawn's theme-editor font families
+   (--aw-font-heading/--aw-font-body) so a merchant's font choice in Theme
+   Editor always propagates — the scale, tracking and case are what makes
+   this editorial, not a hardcoded webfont.
+   ========================================================================== */
+
+.aw-display {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-3xl);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.aw-heading-lg {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-2xl);
+  line-height: 1.1;
+}
+
+.aw-heading {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-xl);
+  line-height: 1.15;
+}
+
+.aw-heading-sm {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-lg);
+  line-height: 1.2;
+}
+
+@media (min-width: 750px) {
+  .aw-display {
+    font-size: var(--aw-text-3xl);
+    line-height: 1;
+  }
+}
+
+/* Nav/label typography: uppercase, wide tracking, small — used for nav
+   items, filter labels, tabs. Distinct from .aw-eyebrow (which sits above a
+   heading) even though both are uppercase, because this one is interactive. */
+.aw-nav-label {
+  font-size: var(--aw-text-xs);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+}
+
+/* Price typography: tabular figures so prices in a list/grid align, and a
+   weight that gives price the same visual confidence as the product name. */
+.aw-price {
+  font-family: var(--aw-font-body);
+  font-size: var(--aw-text-base);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--aw-color-ink);
+}
+
+.aw-price--lg {
+  font-size: var(--aw-text-md);
+}
+
+/* Metadata typography: material, size, SKU-adjacent detail text — always
+   muted, never competing with the product name or price for attention. */
+.aw-meta {
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-muted);
+}
+
+/* ==========================================================================
+   Button system — three variants, one shape language. No pill buttons here:
+   --aw-radius-sm is reserved for structured, non-circular controls (see the
+   radius rationale in :root above), so every ARTWISTIC button reads as
+   considered rather than a generic rounded-pill CTA.
+   ========================================================================== */
+
+.aw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--aw-space-2);
+  min-height: 4.8rem;
+  padding: 0 var(--aw-space-5);
+  border-radius: var(--aw-radius-sm);
+  font-size: var(--aw-text-sm);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-base) var(--aw-ease),
+    border-color var(--aw-duration-base) var(--aw-ease), color var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-btn--primary {
+  background-color: var(--aw-color-ink);
+  border-color: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+}
+
+.aw-btn--primary:hover {
+  background-color: var(--aw-color-muted);
+  border-color: var(--aw-color-muted);
+}
+
+.aw-btn--secondary {
+  background-color: transparent;
+  border-color: var(--aw-color-ink);
+  color: var(--aw-color-ink);
+}
+
+.aw-btn--secondary:hover {
+  background-color: rgba(var(--color-foreground), 0.06);
+}
+
+.aw-btn--text {
+  min-height: auto;
+  padding: 0;
+  border: none;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--aw-color-ink);
+  text-underline-offset: 0.3rem;
+  text-decoration: underline;
+  text-decoration-color: var(--aw-color-border-strong);
+}
+
+.aw-btn--text:hover {
+  text-decoration-color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-btn {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Icon sizing — one scale, so an icon never looks arbitrarily larger/smaller
+   than its neighbors across different ARTWISTIC components.
+   ========================================================================== */
+
+.aw-icon-sm {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.aw-icon-md {
+  width: 2rem;
+  height: 2rem;
+}
+
+.aw-icon-lg {
+  width: 2.4rem;
+  height: 2.4rem;
 }
 
 /* Skeleton/placeholder blocks used wherever real photography/copy is pending. */
