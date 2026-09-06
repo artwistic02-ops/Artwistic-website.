@@ -522,6 +522,20 @@ Also fixed product cards sitewide (collection grid, search results, and everywhe
 
 ---
 
+## 2026-09-06 — Full cart page restyle
+
+**Feature/change:** The cart drawer was restyled earlier this session; the full `/cart` **page** was confirmed 100% stock Dawn — same underlying classes, zero Artwistic CSS applied. Added a `.aw-cart-page` marker class to `sections/main-cart-items.liquid` and `sections/main-cart-footer.liquid`, and generalized `assets/artwistic-cart.css`'s rules to target both `.cart-drawer` and `.aw-cart-page` wherever Dawn reuses the same class names (item name/price typography, checkout button, totals). Added page-specific rules for table/row spacing and a real editorial empty-cart state (centered, generous spacing, a properly-styled CTA button) replacing Dawn's bare heading + button.
+
+**Files modified:** `assets/artwistic-cart.css`, `sections/main-cart-items.liquid`, `sections/main-cart-footer.liquid`.
+
+**Reason:** direct user request for "a robust cart page" — this was the confirmed gap between the drawer and the page.
+
+**Shopify dependencies:** none — no changes to Dawn's cart AJAX/JS.
+
+**Not done this pass:** a "you might also like" cross-sell rail on the cart page (mentioned in the plan) — no existing Dawn section covers cart-page recommendations, so this would be a genuinely new build rather than a restyle, and was deferred to keep this pass CSS-only and low-risk. Worth a follow-up.
+
+---
+
 ## Backlog (not yet implemented)
 
 What remains is content, not code: writing the actual buying-guide/care articles (spec section 46), real brand-story and product photography, and a reviews data source if the merchant wants `AggregateRating`/`Review` structured data (no app was added for this — see [docs/APP_REGISTER.md](docs/APP_REGISTER.md)). See [docs/FEATURE_REGISTER.md](docs/FEATURE_REGISTER.md) for details.
