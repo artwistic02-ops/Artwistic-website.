@@ -295,6 +295,10 @@
       {{ 'artwistic-cart.css' | asset_url | stylesheet_tag }}
       {{ 'artwistic-shipping-progress.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
+    {%- if request.page_type == 'index' -%}
+      {%- comment -%} ARTWISTIC: homepage hero slideshow restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+      {{ 'artwistic-hero-slideshow.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
 
     {%- unless settings.type_body_font.system? -%}
       {% comment %}theme-check-disable AssetPreload{% endcomment %}

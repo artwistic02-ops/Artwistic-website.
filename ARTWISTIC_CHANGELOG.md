@@ -464,6 +464,30 @@ Every meaningful ARTWISTIC change to this theme is recorded here. See [DAWN_UPDA
 
 ---
 
+## 2026-09-06 — Homepage rebuilt to the approved narrative + a real padding bug fixed sitewide
+
+**Feature/change:** Ported the approved homepage-narrative mockup into real Liquid. New order: hero slideshow → Shop by Category → Shop by Intent → UGC marquee → Shop by Mood (now 3 edits) → Best Sellers → New Arrivals → Shop the Look → Reviews → Why Artwistic → Jewellery Education → Newsletter. Removed "Made to be worn, not just owned" as a standalone `image-with-text` section since that message now opens the hero slideshow instead — kept in one place instead of repeated twice.
+
+(1) **Hero slideshow**: uses Dawn's own native `slideshow` section (real autoplay, loop, keyboard/touch nav, reduced-motion handling — unmodified JS) rather than a new custom section, restyled via `assets/artwistic-hero-slideshow.css`: a bottom gradient scrim, progress-bar-shaped slider dots, and a restrained scale-only Ken Burns override replacing Dawn's default orbital "ambient" pan.
+
+(2) **UGC marquee**: `sections/artwistic-social-proof.liquid` converted from a static 5-column grid into the infinite masonry marquee designed in the mockup — see the entry above this one for the mechanics. Still 100% merchant-curated `artwistic_social_post` metaobject data, no third-party embed.
+
+(3) **Real bug fixed while touching every homepage section**: none of the 10 `artwistic-*.liquid` sections (`shop-by-category`, `shop-by-intent`, `shop-by-mood`, `reviews`, `jewellery-education`, `social-proof`, `wishlist`, `build-your-stack`, `shop-this-guide`, `shop-the-look`) ever defined the `{% style %}` block that turns their `padding_top`/`padding_bottom` theme-editor settings into actual CSS — unlike every stock Dawn section, which does. The padding sliders in the theme editor have been silently doing nothing on all of them since they were built. Added `snippets/artwistic-section-padding.liquid` (Dawn's exact mobile/desktop formula) and rendered it from all 10 files.
+
+**Files added:** `assets/artwistic-hero-slideshow.css`, `snippets/artwistic-section-padding.liquid`.
+
+**Files modified:** `templates/index.json` (full reorder + new `hero_slideshow`/`artwistic_shop_the_look`/`artwistic_social_proof` instances), `layout/theme.liquid` (conditional hero-slideshow CSS load on `request.page_type == 'index'`), `assets/artwistic-social-proof.css` + `sections/artwistic-social-proof.liquid` (marquee conversion), the 9 other `artwistic-*.liquid` sections listed above (padding fix only).
+
+**Reason:** direct user request to fully revamp the homepage; the padding fix was discovered as a byproduct of reviewing every section this pass touched.
+
+**Shopify dependencies:** none new.
+
+**Admin setup requirements:** `artwistic_social_post` metaobject entries for the marquee to render anything (same requirement as before, just more visually prominent now); `artwistic_look` metaobject for the newly re-added Shop the Look section. Both already documented in `docs/SHOPIFY_ADMIN_SETUP.md`.
+
+**Migration notes:** the removed `editorial_story` section's copy ("Made to be worn, not just owned") now lives in the hero slideshow's first slide — if a merchant had customized that section's text in the theme editor, it won't carry over automatically since the section instance was removed from `index.json`.
+
+---
+
 ## Backlog (not yet implemented)
 
 What remains is content, not code: writing the actual buying-guide/care articles (spec section 46), real brand-story and product photography, and a reviews data source if the merchant wants `AggregateRating`/`Review` structured data (no app was added for this — see [docs/APP_REGISTER.md](docs/APP_REGISTER.md)). See [docs/FEATURE_REGISTER.md](docs/FEATURE_REGISTER.md) for details.

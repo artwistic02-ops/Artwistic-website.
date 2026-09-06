@@ -1,0 +1,124 @@
+/**
+ * ARTWISTIC HERO SLIDESHOW — editorial restyle of Dawn's native slideshow
+ * section (sections/slideshow.liquid), used as the homepage's first
+ * section. Zero markup/JS changes: Dawn's slideshow-component already
+ * handles autoplay, looping, keyboard nav, touch swipe and reduced-motion
+ * — this file only restyles it. Scoped to the exact static section id
+ * this theme uses for the homepage hero (see templates/index.json) so it
+ * never affects a slideshow a merchant adds elsewhere.
+ */
+
+.shopify-section-hero_slideshow .banner--large {
+  min-height: 56rem;
+}
+
+@media screen and (max-width: 749px) {
+  .shopify-section-hero_slideshow .banner--large {
+    min-height: 64rem;
+  }
+}
+
+/* Bottom scrim for legible light text over any photo, layered on top of
+   Dawn's own flat overlay-opacity setting rather than replacing it. */
+.shopify-section-hero_slideshow .banner__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(23, 19, 15, 0.7) 0%, rgba(23, 19, 15, 0.25) 45%, transparent 70%);
+  pointer-events: none;
+}
+
+.shopify-section-hero_slideshow .banner__box {
+  background: none;
+  box-shadow: none;
+  color: #f5efe6;
+}
+
+.shopify-section-hero_slideshow .banner__heading {
+  letter-spacing: -0.01em;
+}
+
+.shopify-section-hero_slideshow .banner__buttons .button--secondary {
+  border-color: rgba(245, 239, 230, 0.6);
+  color: #f5efe6;
+  background: rgba(23, 19, 15, 0.25);
+}
+
+.shopify-section-hero_slideshow .banner__buttons .button--secondary:hover {
+  border-color: #f5efe6;
+  background: rgba(23, 19, 15, 0.4);
+}
+
+/* Ken Burns: a slow, restrained zoom instead of Dawn's default orbital
+   "ambient" pan+rotate — set image_behavior: ambient in section settings
+   to enable Dawn's motion hook, then override its keyframes here. */
+.shopify-section-hero_slideshow .animate--ambient > img {
+  animation: aw-hero-kenburns 9s var(--aw-ease, ease-out) infinite alternate;
+}
+
+@keyframes aw-hero-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+/* Slider progress bars instead of Dawn's default dots — same underlying
+   .slider-counter__link markup/JS, purely a shape change. */
+.shopify-section-hero_slideshow .slider-counter--dots {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 32rem;
+}
+
+.shopify-section-hero_slideshow .slider-counter__link--dots {
+  flex: 1;
+  padding: 0.6rem 0;
+}
+
+.shopify-section-hero_slideshow .slider-counter__link--dots .dot {
+  width: 100%;
+  height: 3px;
+  border-radius: var(--aw-radius-full, 999px);
+  border: none;
+  background: rgba(245, 239, 230, 0.32);
+  transition: background-color var(--aw-duration-base, 0.3s) var(--aw-ease, ease);
+}
+
+.shopify-section-hero_slideshow .slider-counter__link--active.slider-counter__link--dots .dot,
+.shopify-section-hero_slideshow .slider-counter__link--dots:not(.slider-counter__link--active):hover .dot {
+  background: #f5efe6;
+  transform: none;
+}
+
+.shopify-section-hero_slideshow .slideshow__controls--top {
+  justify-content: flex-start;
+  padding-inline: 3rem;
+}
+
+@media screen and (max-width: 749px) {
+  .shopify-section-hero_slideshow .slideshow__controls--top {
+    padding-inline: 1.8rem;
+  }
+}
+
+.shopify-section-hero_slideshow .slider-button {
+  color: #f5efe6;
+  border-radius: var(--aw-radius-full, 999px);
+  transition: background-color var(--aw-duration-fast, 0.15s) var(--aw-ease, ease);
+}
+
+.shopify-section-hero_slideshow .slider-button:not([disabled]):hover {
+  color: #f5efe6;
+  background: rgba(23, 19, 15, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shopify-section-hero_slideshow .animate--ambient > img {
+    animation: none;
+  }
+}

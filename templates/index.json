@@ -1,42 +1,67 @@
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
+    "hero_slideshow": {
+      "type": "slideshow",
       "blocks": {
-        "heading": {
-          "type": "heading",
+        "slide-1": {
+          "type": "slide",
           "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
+            "image_overlay_opacity": 10,
+            "heading": "Made to be worn, not just owned.",
+            "heading_size": "hxl",
+            "subheading": "Everyday jewellery with real weight and finish.",
+            "button_label": "Shop new arrivals",
+            "button_style_secondary": true,
+            "show_text_box": false,
+            "box_align": "bottom-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-3"
           }
         },
-        "button": {
-          "type": "buttons",
+        "slide-2": {
+          "type": "slide",
           "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
+            "image_overlay_opacity": 10,
+            "heading": "The Everyday Edit",
+            "heading_size": "hxl",
+            "subheading": "Pieces light enough to wear every day and never take off.",
+            "button_label": "Shop the edit",
+            "button_style_secondary": true,
+            "show_text_box": false,
+            "box_align": "bottom-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-3"
+          }
+        },
+        "slide-3": {
+          "type": "slide",
+          "settings": {
+            "image_overlay_opacity": 10,
+            "heading": "Fast dispatch. No fine print.",
+            "heading_size": "hxl",
+            "subheading": "Every order leaves within 24–48 working hours, and standard shipping is free above ₹1,499.",
+            "button_label": "Shop all",
+            "button_style_secondary": true,
+            "show_text_box": false,
+            "box_align": "bottom-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-3"
           }
         }
       },
-      "block_order": [
-        "heading",
-        "button"
-      ],
+      "block_order": ["slide-1", "slide-2", "slide-3"],
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
-        "image_behavior": "none",
-        "desktop_content_alignment": "center",
-        "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "layout": "full_bleed",
+        "slide_height": "large",
+        "slider_visual": "dots",
+        "auto_rotate": true,
+        "change_slides_speed": 7,
+        "image_behavior": "ambient",
+        "show_text_below": false,
+        "accessibility_info": "Artwistic highlights"
       }
     },
     "artwistic_shop_by_category": {
@@ -67,7 +92,7 @@
         "aspect_ratio": "4x5",
         "color_scheme": "scheme-1",
         "padding_top": 56,
-        "padding_bottom": 56
+        "padding_bottom": 40
       }
     },
     "artwistic_shop_by_intent": {
@@ -92,12 +117,24 @@
       },
       "block_order": ["everyday", "gifting", "under-1499", "stackable"],
       "settings": {
-        "heading": "Shop by intent",
+        "heading": "Or shop by intent",
         "columns_desktop": "4",
         "columns_mobile": "2",
         "aspect_ratio": "1x1",
         "color_scheme": "scheme-1",
-        "padding_top": 44,
+        "padding_top": 40,
+        "padding_bottom": 56
+      }
+    },
+    "artwistic_social_proof": {
+      "type": "artwistic-social-proof",
+      "blocks": {},
+      "block_order": [],
+      "settings": {
+        "heading": "The Artwistic edit, on real people",
+        "handle": "",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
         "padding_bottom": 56
       }
     },
@@ -123,9 +160,19 @@
             "link": "shopify://collections/all",
             "link_label": "Shop the edit"
           }
+        },
+        "bridal": {
+          "type": "edit",
+          "settings": {
+            "eyebrow": "For the occasion",
+            "title": "Bridal & Occasion",
+            "description": "<p>Statement pieces for the day you actually plan an outfit around.</p>",
+            "link": "shopify://collections/all",
+            "link_label": "Shop the edit"
+          }
         }
       },
-      "block_order": ["everyday-edit", "golden-hour"],
+      "block_order": ["everyday-edit", "golden-hour", "bridal"],
       "settings": {
         "heading": "Shop by mood",
         "color_scheme": "scheme-1",
@@ -148,8 +195,8 @@
         "full_width": false,
         "show_view_all": true,
         "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
+        "enable_desktop_slider": true,
+        "swipe_on_mobile": true,
         "image_ratio": "adapt",
         "image_shape": "default",
         "show_secondary_image": true,
@@ -176,8 +223,8 @@
         "full_width": false,
         "show_view_all": true,
         "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
+        "enable_desktop_slider": true,
+        "swipe_on_mobile": true,
         "image_ratio": "adapt",
         "image_shape": "default",
         "show_secondary_image": true,
@@ -189,6 +236,18 @@
         "padding_bottom": 36
       }
     },
+    "artwistic_shop_the_look": {
+      "type": "artwistic-shop-the-look",
+      "blocks": {},
+      "block_order": [],
+      "settings": {
+        "heading": "Shop the look",
+        "subheading": "One styled scene — tap a dot to see what's worn.",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
     "artwistic_reviews": {
       "type": "artwistic-reviews",
       "blocks": {},
@@ -196,38 +255,6 @@
       "settings": {
         "heading": "Loved by our customers",
         "subheading": "Real, verified reviews — curated by us.",
-        "color_scheme": "scheme-1",
-        "padding_top": 56,
-        "padding_bottom": 56
-      }
-    },
-    "editorial_story": {
-      "type": "image-with-text",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": { "heading": "Made to be worn, not just owned", "heading_size": "h1" }
-        },
-        "text": {
-          "type": "text",
-          "settings": { "text": "<p>Every piece starts as a sketch before it becomes something you reach for without thinking. That's the part we care about most.</p>" }
-        },
-        "button": {
-          "type": "button",
-          "settings": { "button_label": "Our story", "button_link": "" }
-        }
-      },
-      "block_order": ["heading", "text", "button"],
-      "settings": {
-        "height": "adapt",
-        "desktop_image_width": "medium",
-        "layout": "image_first",
-        "image_behavior": "none",
-        "content_layout": "no-overlap",
-        "desktop_content_position": "middle",
-        "desktop_content_alignment": "left",
-        "mobile_content_alignment": "left",
-        "section_color_scheme": "scheme-1",
         "color_scheme": "scheme-1",
         "padding_top": 56,
         "padding_bottom": 56
@@ -262,7 +289,7 @@
         "columns_desktop": 4,
         "column_alignment": "left",
         "background_style": "none",
-        "color_scheme": "scheme-1",
+        "color_scheme": "scheme-3",
         "columns_mobile": "2",
         "swipe_on_mobile": false,
         "padding_top": 56,
@@ -320,14 +347,15 @@
     }
   },
   "order": [
-    "image_banner",
+    "hero_slideshow",
     "artwistic_shop_by_category",
     "artwistic_shop_by_intent",
+    "artwistic_social_proof",
     "artwistic_shop_by_mood",
     "best_sellers",
     "new_arrivals",
+    "artwistic_shop_the_look",
     "artwistic_reviews",
-    "editorial_story",
     "artwistic_why",
     "artwistic_jewellery_education",
     "newsletter"
