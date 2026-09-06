@@ -8,6 +8,7 @@
 {% endcomment %}
 
 {{ 'artwistic-jewellery-education.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 
 {%- assign aw_guide_products = section.blocks | where: 'type', 'product' -%}
 {%- if aw_guide_products.size > 0 -%}

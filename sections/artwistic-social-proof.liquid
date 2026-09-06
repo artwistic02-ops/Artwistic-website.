@@ -1,20 +1,57 @@
 {% comment %}
-  ARTWISTIC: Instagram/UGC photo strip. Manually curated, same
+  ARTWISTIC: Instagram/UGC infinite marquee. Manually curated, same
   architecture reasoning as Reviews (see ARTWISTIC_CHANGELOG.md) — the
   merchant uploads real photos from their real Instagram account rather
   than a live third-party embed, so nothing is fabricated and no
   third-party widget/script ever loads on the storefront. Each block
   picks one artwistic_social_post metaobject entry.
   See docs/METAOBJECTS.md.
+
+  The whole curated set is rendered twice back-to-back (the second copy
+  marked aria-hidden) and slid left by exactly one set-width on a linear
+  CSS loop — see .aw-social-proof__track in artwistic-social-proof.css.
+  Because the two copies are pixel-identical, the loop has no visible
+  seam. Under prefers-reduced-motion the CSS disables the animation and
+  the duplicate copy is hidden, leaving a static, natively scrollable strip.
 {% endcomment %}
 
 {{ 'artwistic-social-proof.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 
 {%- assign aw_post_blocks = section.blocks | where: 'type', 'post' -%}
+{%- capture aw_social_proof_tiles -%}
+  {%- for block in aw_post_blocks -%}
+    {%- assign aw_post = block.settings.post -%}
+    {%- if aw_post != blank and aw_post.image.value != blank -%}
+      {%- assign aw_tile_size = forloop.index0 | modulo: 3 -%}
+      <li class="aw-social-proof__tile aw-social-proof__tile--{{ aw_tile_size }}" {{ block.shopify_attributes }}>
+        {%- if aw_post.instagram_url.value != blank -%}
+          <a href="{{ aw_post.instagram_url.value }}" class="aw-social-proof__item aw-focusable" target="_blank" rel="noopener">
+        {%- else -%}
+          <span class="aw-social-proof__item">
+        {%- endif -%}
+          {{
+            aw_post.image.value
+            | image_url: width: 500
+            | image_tag: loading: 'lazy', sizes: '260px', widths: '220, 330, 440'
+          }}
+          {%- if aw_post.featured_product.value != blank -%}
+            <span class="aw-social-proof__tag">{{ aw_post.featured_product.value.title | escape }}</span>
+          {%- endif -%}
+        {%- if aw_post.instagram_url.value != blank -%}
+          </a>
+        {%- else -%}
+          </span>
+        {%- endif -%}
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
 {%- if aw_post_blocks.size > 0 -%}
-  <div class="aw-container aw-social-proof color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+  <div class="aw-social-proof color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
     {%- if section.settings.heading != blank -%}
-      <div class="aw-social-proof__header">
+      <div class="aw-container aw-social-proof__header">
         <h2 class="aw-social-proof__heading">{{ section.settings.heading }}</h2>
         {%- if section.settings.handle != blank -%}
           <a href="https://instagram.com/{{ section.settings.handle | remove: '@' }}" class="aw-social-proof__handle" target="_blank" rel="noopener">
@@ -25,33 +62,16 @@
       </div>
     {%- endif -%}
 
-    <ul class="aw-social-proof__grid" role="list">
-      {%- for block in aw_post_blocks -%}
-        {%- assign aw_post = block.settings.post -%}
-        {%- if aw_post != blank and aw_post.image.value != blank -%}
-          <li {{ block.shopify_attributes }}>
-            {%- if aw_post.instagram_url.value != blank -%}
-              <a href="{{ aw_post.instagram_url.value }}" class="aw-social-proof__item aw-focusable" target="_blank" rel="noopener">
-            {%- else -%}
-              <span class="aw-social-proof__item">
-            {%- endif -%}
-              {{
-                aw_post.image.value
-                | image_url: width: 500
-                | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 20vw, 45vw', widths: '250, 375, 500'
-              }}
-              {%- if aw_post.featured_product.value != blank -%}
-                <span class="aw-social-proof__tag">{{ aw_post.featured_product.value.title | escape }}</span>
-              {%- endif -%}
-            {%- if aw_post.instagram_url.value != blank -%}
-              </a>
-            {%- else -%}
-              </span>
-            {%- endif -%}
-          </li>
-        {%- endif -%}
-      {%- endfor -%}
-    </ul>
+    <div class="aw-social-proof__marquee">
+      <div class="aw-social-proof__track">
+        <ul class="aw-social-proof__set" role="list">
+          {{ aw_social_proof_tiles }}
+        </ul>
+        <ul class="aw-social-proof__set" role="list" aria-hidden="true">
+          {{ aw_social_proof_tiles }}
+        </ul>
+      </div>
+    </div>
   </div>
 {%- endif -%}
 

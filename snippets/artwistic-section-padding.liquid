@@ -1,0 +1,26 @@
+{% comment %}
+  ARTWISTIC: shared section-padding style block. Every ARTWISTIC section
+  uses a `section-{{ section.id }}-padding` class on its outer wrapper
+  fed by `padding_top`/`padding_bottom` range settings — this renders the
+  actual CSS for that class, matching Dawn's own convention exactly
+  (mobile at 75% of the configured value, full value from 750px up) so
+  ARTWISTIC sections behave identically to stock Dawn ones in the
+  theme editor's padding controls.
+
+  Usage:
+    {% render 'artwistic-section-padding' %}
+{% endcomment %}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}

@@ -10,6 +10,7 @@
 {% endcomment %}
 
 {{ 'artwistic-reviews.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 <script src="{{ 'artwistic-reviews.js' | asset_url }}" defer="defer"></script>
 
 {%- assign aw_review_blocks = section.blocks | where: 'type', 'review' -%}

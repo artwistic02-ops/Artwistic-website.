@@ -10,6 +10,7 @@
 {% endcomment %}
 
 {{ 'artwistic-shop-by-category.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 
 <div class="aw-container aw-shop-by-category color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
   {%- if section.settings.heading != blank -%}

@@ -9,6 +9,7 @@
 {% endcomment %}
 
 {{ 'artwistic-shop-the-look.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 
 <div class="aw-container aw-shop-the-look color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">

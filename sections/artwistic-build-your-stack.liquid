@@ -17,6 +17,7 @@
 {% endcomment %}
 
 {{ 'artwistic-stack-builder.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'artwistic-stack-builder.js' | asset_url }}" defer="defer"></script>
 

@@ -9,6 +9,7 @@
 {% endcomment %}
 
 {{ 'artwistic-jewellery-education.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 
 <div class="aw-container aw-education color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
   {%- if section.settings.heading != blank -%}

@@ -8,6 +8,7 @@
 {% endcomment %}
 
 {{ 'artwistic-wishlist.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'artwistic-wishlist-page.js' | asset_url }}" defer="defer"></script>
