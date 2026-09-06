@@ -488,6 +488,22 @@ Every meaningful ARTWISTIC change to this theme is recorded here. See [DAWN_UPDA
 
 ---
 
+## 2026-09-06 — 404 page rebuilt
+
+**Feature/change:** `sections/main-404.liquid` was 100% untouched stock Dawn (a title, a subtext, one "Continue shopping" button — no search, no recovery path). Rebuilt with real Artwistic styling: an inline predictive-search box reusing the exact same `<main-search>`/`<predictive-search>` mechanism `sections/main-search.liquid` already uses (no new JS), and up to 3 merchant-picked "suggested collection" blocks rendered via the existing `card-collection` snippet. Zero blocks configured by default — no fabricated collection suggestions.
+
+**Files added:** `assets/artwistic-404.css`.
+
+**Files modified:** `sections/main-404.liquid` (full rewrite, same section name/tag).
+
+**Reason:** direct user request; this was the one page in the theme genuinely untouched all session.
+
+**Shopify dependencies:** `settings.predictive_search_enabled` (native).
+
+**Admin setup requirements:** optionally add up to 3 "Suggested collection" blocks in Theme Editor → 404 page.
+
+---
+
 ## Backlog (not yet implemented)
 
 What remains is content, not code: writing the actual buying-guide/care articles (spec section 46), real brand-story and product photography, and a reviews data source if the merchant wants `AggregateRating`/`Review` structured data (no app was added for this — see [docs/APP_REGISTER.md](docs/APP_REGISTER.md)). See [docs/FEATURE_REGISTER.md](docs/FEATURE_REGISTER.md) for details.

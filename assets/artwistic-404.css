@@ -1,0 +1,69 @@
+/**
+ * ARTWISTIC 404 — a real recovery path instead of Dawn's bare text.
+ * See sections/main-404.liquid.
+ */
+
+.aw-404__intro {
+  max-width: 56rem;
+  text-align: center;
+  margin-inline: auto;
+}
+
+.aw-404__heading {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-2xl);
+  font-weight: 500;
+  margin: 0 0 var(--aw-space-3);
+}
+
+@media (min-width: 750px) {
+  .aw-404__heading {
+    font-size: var(--aw-text-3xl);
+  }
+}
+
+.aw-404__subtext {
+  font-size: var(--aw-text-base);
+  color: var(--aw-color-muted);
+  line-height: 1.6;
+  margin: 0 0 var(--aw-space-6);
+}
+
+.aw-404__search {
+  max-width: 48rem;
+  margin: 0 auto var(--aw-space-5);
+}
+
+.aw-404__search .search__input {
+  border-radius: var(--aw-radius-sm);
+}
+
+.aw-404__collections {
+  margin-top: var(--aw-space-8);
+  padding-top: var(--aw-space-7);
+  border-top: 1px solid var(--aw-color-border);
+  text-align: center;
+}
+
+.aw-404__collections .aw-eyebrow {
+  margin-bottom: var(--aw-space-5);
+}
+
+.aw-404__collection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 24rem));
+  justify-content: center;
+  gap: var(--aw-space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+@media (max-width: 749px) {
+  .aw-404__collection-grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 32rem;
+    margin-inline: auto;
+  }
+}
