@@ -76,3 +76,84 @@
 .facets-container-drawer .facets__wrapper {
   background: var(--aw-color-paper);
 }
+
+/* --- Filter & Sort drawer (Dawn's native filter_type: "drawer" —
+   the same <menu-drawer> component used for mobile filters on every
+   filter_type, just no longer hidden above mobile widths when this
+   mode is selected). Restyled panel/typography/motion only; the
+   underlying facet logic, URL params and pagination are untouched. --- */
+
+.mobile-facets__inner {
+  max-width: 42rem;
+  border-radius: var(--aw-radius-md) 0 0 var(--aw-radius-md);
+  border-width: 0;
+  box-shadow: var(--aw-shadow-md);
+  transition-timing-function: var(--aw-ease);
+  transition-duration: var(--aw-duration-base);
+}
+
+.mobile-facets__header {
+  padding: var(--aw-space-4) var(--aw-space-5);
+  border-bottom-color: var(--aw-color-border);
+}
+
+.mobile-facets__heading {
+  font-family: var(--aw-font-heading);
+  font-weight: 500;
+}
+
+.mobile-facets__count {
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}
+
+.mobile-facets__open {
+  gap: var(--aw-space-2);
+  border-radius: var(--aw-radius-sm);
+  transition: border-color var(--aw-duration-base) var(--aw-ease);
+}
+
+.mobile-facets__details summary,
+.mobile-facets__disclosure > summary {
+  font-size: var(--aw-text-sm);
+}
+
+.mobile-facets__footer {
+  border-top-color: var(--aw-color-border);
+  padding: var(--aw-space-4) var(--aw-space-5);
+}
+
+.mobile-facets__footer .button--primary {
+  border-radius: var(--aw-radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-facets__inner {
+    transition: none;
+  }
+}
+
+/* --- Uniform product cards: fixed-height name/price rows so a short
+   title and a long title produce identically sized cards, and prices
+   line up across a row regardless of how many lines the name wraps to. --- */
+
+.card__heading {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.3;
+  min-height: calc(1.3em * 2);
+}
+
+.card-information {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.card-information .price {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

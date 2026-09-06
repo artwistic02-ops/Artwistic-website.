@@ -504,6 +504,24 @@ Every meaningful ARTWISTIC change to this theme is recorded here. See [DAWN_UPDA
 
 ---
 
+## 2026-09-06 — Collection/search filter & sort drawer + uniform product cards
+
+**Feature/change:** Implements the approved "Filter & Sort Drawer" mockup by switching Dawn's native `filter_type` setting from `horizontal` to `drawer` on both the collection and search templates. Dawn already builds this exact mode using the same `<menu-drawer>` component that handles mobile filters on every filter_type — selecting `drawer` simply stops hiding it above mobile widths, so it becomes the filter/sort experience on all screen sizes. Restyled the resulting panel with Artwistic tokens (radius, shadow, motion curve, typography) — no changes to Dawn's actual filter logic, URL query params, or pagination.
+
+Also fixed product cards sitewide (collection grid, search results, and everywhere else `card-product`/`component-card.css` is used): `.card__heading` now clamps to 2 lines with a fixed minimum height, so a short product name and a long one produce identically sized cards, with prices lining up across a row — the same fix already applied in the homepage mockup work, now on the real card component.
+
+**Files modified:** `templates/collection.json`, `templates/search.json` (`filter_type`), `assets/artwistic-collection.css` (drawer + card rules), `sections/main-search.liquid` (added the stylesheet load it was missing).
+
+**Reason:** direct user request to implement the approved collection-page mockup.
+
+**Shopify dependencies:** none — Dawn's own `filter_type` setting and facet logic.
+
+**Admin setup requirements:** none.
+
+**Migration notes:** the filter/sort drawer now opens from the right edge (Dawn's native drawer direction) rather than the mockup's left-panel-desktop/bottom-sheet-mobile split — reusing Dawn's real, tested component was judged safer than rebuilding the positioning logic to match the mockup exactly.
+
+---
+
 ## Backlog (not yet implemented)
 
 What remains is content, not code: writing the actual buying-guide/care articles (spec section 46), real brand-story and product photography, and a reviews data source if the merchant wants `AggregateRating`/`Review` structured data (no app was added for this — see [docs/APP_REGISTER.md](docs/APP_REGISTER.md)). See [docs/FEATURE_REGISTER.md](docs/FEATURE_REGISTER.md) for details.
