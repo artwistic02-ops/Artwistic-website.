@@ -288,7 +288,7 @@ The three reassurance lines (dispatch, exchange policy, checkout security) shown
 
 1. Open **Online Store → Themes → Customize**, preview any product.
 2. Select the **"ARTWISTIC: Purchase confidence"** block (under Add to Cart in the block list).
-3. Edit the three text fields — **Dispatch/delivery line**, **Exchange/return line**, **Checkout reassurance line** — to say exactly what's true for this store. The shipped defaults ("Usually dispatched in 1–2 business days", "7-day exchange", "Secure checkout") are placeholders, not verified claims — replace them before launch.
+3. Edit the three text fields — **Dispatch/delivery line**, **Policy line**, **Checkout reassurance line** — to say exactly what's true for this store. The Policy line defaults to "Final sale — no returns or exchanges" to match Artwistic's real, confirmed policy — never change it to imply returns/exchanges are accepted. The dispatch/checkout lines ("Usually dispatched in 1–2 business days", "Secure checkout") are placeholders — replace them with your verified numbers before launch.
 4. Leave **"Show trust badges"** on if you've filled in the water-resistant/anti-tarnish/warranty metafields (see [docs/METAFIELDS.md](METAFIELDS.md)); otherwise no badges show regardless of this toggle, since each badge only renders when its metafield has a value.
 5. Save.
 

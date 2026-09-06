@@ -22,10 +22,10 @@
         <span>{{ block.settings.dispatch_text }}</span>
       </li>
     {%- endif -%}
-    {%- if block.settings.exchange_text != blank -%}
+    {%- if block.settings.policy_text != blank -%}
       <li>
-        {{- 'icon-return.svg' | inline_asset_content -}}
-        <span>{{ block.settings.exchange_text }}</span>
+        {{- 'icon-price-tag.svg' | inline_asset_content -}}
+        <span>{{ block.settings.policy_text }}</span>
       </li>
     {%- endif -%}
     {%- if block.settings.secure_text != blank -%}
