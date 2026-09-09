@@ -38,7 +38,7 @@
                   Verified purchase
                 </span>
               {%- endif -%}
-              <p class="aw-review-card__text">{{ aw_review.review_text.value }}</p>
+              <p class="aw-review-card__text">{{ aw_review.review_text.value | escape }}</p>
               {%- if aw_review.photos.value.size > 0 -%}
                 <div class="aw-review-card__photos">
                   {%- for aw_photo in aw_review.photos.value limit: 3 -%}
