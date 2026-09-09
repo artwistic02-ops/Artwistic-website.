@@ -1,0 +1,26 @@
+# Shopify Theme Check configuration.
+# Run with: shopify theme check   (requires Shopify CLI, not available in this
+# build environment — see docs/FEATURE_REGISTER.md). This file just pins the
+# ruleset so the first real run is deterministic instead of using whatever
+# CLI-bundled default happens to be installed.
+extends: theme-check:recommended
+
+ignore:
+  - node_modules/**
+  - .git/**
+
+# Dawn's own liquid occasionally trips ParserBlockingJavaScript /
+# RemoteAsset on intentional patterns (e.g. deferred vendor script tags);
+# keep these at their recommended severity for now and revisit only if a
+# real CI run surfaces false positives specific to this theme.
+UnusedAssign:
+  enabled: true
+
+MissingTemplate:
+  enabled: true
+
+TranslationKeyExists:
+  enabled: true
+
+RemoteAsset:
+  enabled: true
