@@ -1,0 +1,39 @@
+{% comment %}
+  ARTWISTIC: italic annotation line under the variant picker, tied to
+  the currently selected option value — matching the finalized design.
+  Sourced from a real merchant-configured JSON metafield
+  (product.metafields.custom.option_notes, e.g.
+  {"Sterling Silver": "silver's the one that never leaves rotation"}),
+  never a fabricated per-product sentence. Renders nothing if the
+  metafield doesn't exist or has no entry for the current value.
+
+  Requires: a "Option notes" metafield definition on Products
+  (namespace: custom, key: option_notes, type: JSON) — see
+  docs/SHOPIFY_ADMIN_SETUP.md. Updates live on variant change via
+  assets/artwistic-finish-annotation.js.
+
+  Usage:
+    {% render 'artwistic-finish-annotation', product: product %}
+{% endcomment %}
+
+{%- liquid
+  assign aw_notes = product.metafields.custom.option_notes.value
+  assign aw_variant = product.selected_or_first_available_variant
+  assign aw_note = aw_notes[aw_variant.option1]
+  if aw_note == blank
+    assign aw_note = aw_notes[aw_variant.option2]
+  endif
+  if aw_note == blank
+    assign aw_note = aw_notes[aw_variant.option3]
+  endif
+-%}
+
+{%- if aw_notes != blank -%}
+  {{ 'artwistic-finish-annotation.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'artwistic-finish-annotation.js' | asset_url }}" defer="defer"></script>
+  <script type="application/json" data-aw-option-notes>{{ aw_notes | json }}</script>
+  <p class="aw-annotation" data-aw-annotation {% if aw_note == blank %}hidden{% endif %}>
+    {{- 'icon-arrow.svg' | inline_asset_content -}}
+    <span data-aw-annotation-text>{{ aw_note }}</span>
+  </p>
+{%- endif -%}

@@ -1,0 +1,26 @@
+/**
+ * ARTWISTIC FINISH ANNOTATION — italic note under the variant picker,
+ * tied to the currently selected option value. See
+ * snippets/artwistic-finish-annotation.liquid, assets/artwistic-finish-annotation.js.
+ */
+
+.aw-annotation {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-2);
+  font-family: var(--aw-font-heading);
+  font-style: italic;
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-brand-accent);
+  margin: calc(var(--aw-space-2) * -1) 0 var(--aw-space-4);
+}
+
+.aw-annotation svg {
+  width: 1.8rem;
+  height: 1.3rem;
+  flex-shrink: 0;
+}
+
+.aw-annotation[hidden] {
+  display: none;
+}

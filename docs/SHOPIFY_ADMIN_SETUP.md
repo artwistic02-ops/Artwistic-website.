@@ -384,6 +384,30 @@ Purely client-side JavaScript (`assets/artwistic-delivery-estimate.js`) — no s
 
 ---
 
+## Feature: Finish annotation (italic note under the variant picker)
+
+### What
+A small italic note under the variant picker that changes with the selected option value (e.g. picking "Sterling Silver" shows "silver's the one that never leaves rotation"). Purely optional — the theme renders nothing if it isn't configured.
+
+### Where
+**Settings → Custom data → Products → Add definition**, then set values per product.
+
+### Steps
+1. Create a metafield definition: namespace/key `custom.option_notes`, type **JSON**.
+2. On any product where you want this, set the value to a JSON object mapping each option value to its note, e.g.:
+   ```json
+   { "Sterling Silver": "silver's the one that never leaves rotation", "Gold Vermeil": "warmer tone, same everyday wear" }
+   ```
+3. The key must exactly match a real option value on that product (any of option1/2/3) — a value with no matching key is skipped, not shown blank.
+
+### Required?
+No — entirely optional polish. Leave the metafield undefined and this feature renders nothing, with zero effect on the rest of the page.
+
+### How it works (for reference)
+`snippets/artwistic-finish-annotation.liquid` renders the note matching the initially-selected variant server-side; `assets/artwistic-finish-annotation.js` updates it live when the shopper picks a different swatch value, using the same JSON already embedded in the page (no extra request).
+
+---
+
 ## Feature: Order confirmation email
 
 ### What
