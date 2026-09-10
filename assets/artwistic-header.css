@@ -102,3 +102,9 @@
     transition: none;
   }
 }
+
+/* Header cart count bubble — same mono-figure treatment as every other
+   count/badge in the finalized design. */
+.cart-count-bubble {
+  font-family: var(--aw-font-mono);
+}
