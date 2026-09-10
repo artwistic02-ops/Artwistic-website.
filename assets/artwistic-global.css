@@ -183,6 +183,13 @@ body {
   font-family: var(--aw-font-mono);
 }
 
+/* Dawn's native sale/sold-out badges — small uppercase tags read as
+   "labels", matching the mockups' consistent mono treatment for tags,
+   counts and badges. */
+.badge {
+  font-family: var(--aw-font-mono);
+}
+
 .aw-tap-target {
   min-height: 44px;
   min-width: 44px;
@@ -323,6 +330,31 @@ body {
 
 .aw-btn--text:hover {
   text-decoration-color: currentColor;
+}
+
+/* ==========================================================================
+   Quantity stepper — overrides Dawn's plain bordered pill (component
+   base.css .quantity/.quantity__button) with the finalized design's
+   bold-border, hard-offset-shadow treatment. Reused everywhere Dawn
+   renders this component: product page, cart page, cart drawer, and
+   quick-add. No markup or JS touched — Dawn's quantity logic, min/max/
+   step rules and AJAX updates are unaffected.
+   ========================================================================== */
+
+.quantity {
+  background: var(--aw-color-paper);
+  border: 2px solid var(--aw-color-ink);
+  border-radius: var(--aw-radius-sm);
+  box-shadow: 2px 2px 0 var(--aw-color-border-strong);
+}
+
+.quantity::after,
+.quantity::before {
+  content: none;
+}
+
+.quantity__input {
+  font-family: var(--aw-font-mono);
 }
 
 @media (prefers-reduced-motion: reduce) {

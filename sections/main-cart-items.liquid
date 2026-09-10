@@ -31,7 +31,15 @@
 >
   <div class="page-width">
     <div class="title-wrapper-with-link">
-      <h1 class="title title--primary">{{ 'sections.cart.title' | t }}</h1>
+      <div class="aw-cart-page__titles">
+        <span class="aw-eyebrow">{{ 'sections.cart.eyebrow' | t }}</span>
+        <h1 class="title title--primary">
+          {{ 'sections.cart.title' | t }}
+          {%- if cart != empty -%}
+            <span class="aw-cart-page__count">{{ cart.item_count }}</span>
+          {%- endif -%}
+        </h1>
+      </div>
       <a href="{{ routes.all_products_collection_url }}" class="underlined-link">
         {{- 'general.continue_shopping' | t -}}
       </a>

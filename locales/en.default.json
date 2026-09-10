@@ -304,6 +304,7 @@
     },
     "cart": {
       "title": "Your cart",
+      "eyebrow": "Shopping bag",
       "caption": "Cart items",
       "remove_title": "Remove {{ title }}",
       "estimated_total": "Estimated total",

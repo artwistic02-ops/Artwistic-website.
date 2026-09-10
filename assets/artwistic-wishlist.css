@@ -104,6 +104,7 @@
 }
 
 .aw-wishlist-page__count {
+  font-family: var(--aw-font-mono);
   font-variant-numeric: tabular-nums;
   color: var(--aw-color-muted);
 }
@@ -172,7 +173,7 @@
 }
 
 .aw-wishlist-summary__price {
-  font-family: var(--aw-font-body);
+  font-family: var(--aw-font-mono);
   font-size: var(--aw-text-xl);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -252,6 +253,7 @@
 }
 
 .aw-wishlist-card__stock {
+  font-family: var(--aw-font-mono);
   font-size: var(--aw-text-xs);
   letter-spacing: var(--aw-tracking-wide);
   text-transform: uppercase;
