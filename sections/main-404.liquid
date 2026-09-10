@@ -19,7 +19,8 @@
 
 <div class="aw-404 section-{{ section.id }}-padding">
   <div class="aw-container aw-404__intro">
-    <p class="aw-eyebrow">404</p>
+    <div class="aw-404__dust" aria-hidden="true"></div>
+    <p class="aw-eyebrow aw-404__mark">404</p>
     <h1 class="aw-404__heading">{{ section.settings.heading | default: "Lost the trail?" }}</h1>
     <p class="aw-404__subtext">
       {{ section.settings.subtext | default: "That page doesn't exist — but here's how to find what you came for." }}

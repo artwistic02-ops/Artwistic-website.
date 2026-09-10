@@ -7,6 +7,57 @@
   max-width: 56rem;
   text-align: center;
   margin-inline: auto;
+  position: relative;
+}
+
+/* subtle gold shimmer through the "404" eyebrow — decorative only */
+.aw-404__mark {
+  display: inline-block;
+  background-image: linear-gradient(
+    100deg,
+    var(--aw-color-muted) 35%,
+    var(--aw-color-brand-accent) 48%,
+    var(--aw-color-muted) 60%
+  );
+  background-size: 260% 100%;
+  background-position: 120% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: aw-404-shimmer 5.5s ease-in-out infinite;
+}
+
+@keyframes aw-404-shimmer {
+  0%, 55% {
+    background-position: 120% 0;
+  }
+  85%, 100% {
+    background-position: -40% 0;
+  }
+}
+
+/* a handful of static, low-opacity sparkle dots behind the intro block —
+   pure CSS, no layout impact, no motion beyond the mark shimmer above */
+.aw-404__dust {
+  position: absolute;
+  inset: -4rem -2rem auto -2rem;
+  height: 20rem;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle, rgba(169, 124, 79, 0.35) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(169, 124, 79, 0.22) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(169, 124, 79, 0.28) 1.5px, transparent 1.5px);
+  background-size: 15rem 15rem, 22rem 22rem, 18rem 18rem;
+  background-position: 8% 20%, 78% 60%, 40% 85%;
+  background-repeat: no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-404__mark {
+    animation: none;
+    background-position: 0 0;
+  }
 }
 
 .aw-404__heading {
