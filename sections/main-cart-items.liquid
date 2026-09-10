@@ -465,6 +465,16 @@
         {{ 'accessibility.loading' | t }}
       </p>
     </form>
+
+    {%- if cart != empty -%}
+      {%- assign aw_last_item = cart.items | last -%}
+      <div
+        id="aw-cart-pair"
+        data-product-id="{{ aw_last_item.product_id }}"
+        data-limit="6"
+      ></div>
+      <script src="{{ 'artwistic-cart-recommendations.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
   </div>
 </cart-items>
 

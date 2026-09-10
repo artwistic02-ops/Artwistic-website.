@@ -323,6 +323,82 @@
   height: 2.4rem;
 }
 
+/* ==========================================================================
+   Rail — shared horizontal-scroll-with-arrows pattern for any product/media
+   rail (cart recommendations, wishlist cross-sell, etc). Pair with
+   assets/artwistic-rail.js, which wires [data-aw-rail-prev]/[data-aw-rail-next]
+   to whichever [data-aw-rail] sits inside the same .aw-rail-shell.
+   ========================================================================== */
+
+.aw-rail-shell {
+  position: relative;
+}
+
+[data-aw-rail] {
+  display: flex;
+  gap: var(--aw-space-4);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--aw-container-pad) var(--aw-space-1);
+}
+
+[data-aw-rail]::-webkit-scrollbar {
+  display: none;
+}
+
+.aw-rail-arrow {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 3.8rem;
+  height: 3.8rem;
+  border-radius: var(--aw-radius-full);
+  background-color: var(--aw-color-paper);
+  border: 1px solid var(--aw-color-border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: opacity var(--aw-duration-base) var(--aw-ease), background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-rail-arrow svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.aw-rail-arrow:hover {
+  background-color: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+}
+
+.aw-rail-arrow--prev {
+  left: 0.6rem;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.aw-rail-arrow--next {
+  right: 0.6rem;
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+.aw-rail-arrow[disabled] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-rail-arrow {
+    transition: none;
+  }
+}
+
 /* Skeleton/placeholder blocks used wherever real photography/copy is pending. */
 .aw-placeholder {
   background: repeating-linear-gradient(

@@ -1,0 +1,34 @@
+/**
+ * ARTWISTIC CART RECOMMENDATIONS — "Pair it with" cross-sell rail.
+ * See sections/artwistic-cart-recommendations.liquid and
+ * assets/artwistic-cart-recommendations.js. Rail scroll/arrow mechanics
+ * come from the shared .aw-rail-shell pattern in artwistic-global.css.
+ */
+
+.aw-pair {
+  padding-block: var(--aw-space-7);
+  background-color: rgb(var(--color-background));
+}
+
+.aw-pair__head {
+  padding-inline: var(--aw-container-pad);
+  margin-bottom: var(--aw-space-4);
+}
+
+.aw-pair__heading {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-xl);
+  margin: 0.4rem 0 0;
+}
+
+.aw-pair__item {
+  flex: 0 0 auto;
+  width: 20rem;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 749px) {
+  .aw-pair__item {
+    width: 16rem;
+  }
+}
