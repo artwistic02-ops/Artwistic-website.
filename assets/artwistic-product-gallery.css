@@ -42,3 +42,56 @@
     transition: none;
   }
 }
+
+/* --- Mobile swipe progress (stories-style segmented bar) --- */
+/* See assets/artwistic-product-gallery.js. Only injected on mobile where
+   thumbnails are hidden and swipe is the primary way to move through the
+   gallery — desktop keeps Dawn's own thumbnail rail as the position cue. */
+
+.aw-gallery-progress-host {
+  position: relative;
+}
+
+.aw-gallery-progress {
+  position: absolute;
+  top: var(--aw-space-2);
+  left: var(--aw-space-2);
+  right: var(--aw-space-2);
+  z-index: 2;
+  display: none;
+  gap: 0.5rem;
+}
+
+@media screen and (max-width: 749px) {
+  .aw-gallery-progress {
+    display: flex;
+  }
+}
+
+.aw-gallery-progress__seg {
+  flex: 1;
+  height: 0.3rem;
+  border-radius: var(--aw-radius-full);
+  background: rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+}
+
+.aw-gallery-progress__seg::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #fff;
+  border-radius: var(--aw-radius-full);
+  transition: width var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-gallery-progress__seg.is-done::after {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-gallery-progress__seg::after {
+    transition: none;
+  }
+}

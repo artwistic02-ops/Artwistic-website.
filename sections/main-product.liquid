@@ -786,6 +786,9 @@
       {%- if product.media.size > 0 -%}
         <script src="{{ 'product-modal.js' | asset_url }}" defer="defer"></script>
         <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
+        {%- if product.media.size > 1 -%}
+          <script src="{{ 'artwistic-product-gallery.js' | asset_url }}" defer="defer"></script>
+        {%- endif -%}
       {%- endif -%}
 
       {%- if first_3d_model -%}
