@@ -24,6 +24,39 @@
   margin-top: var(--aw-space-3);
 }
 
+/* Price tag — a torn-ticket treatment around the real Dawn price
+   component, matching the finalized design: dashed border, a punched
+   "hole" on the left edge, a slight rotation. Purely decorative; the
+   real price/compare-at/badge markup inside is untouched. */
+.aw-price-tag {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  border: 1.5px dashed var(--aw-color-border-strong);
+  border-radius: 0.3rem 1.2rem 1.2rem 0.3rem;
+  padding: var(--aw-space-2) var(--aw-space-3) var(--aw-space-2) var(--aw-space-5);
+  background: rgb(var(--color-background));
+  transform: rotate(-0.8deg);
+}
+
+.aw-price-tag::before {
+  content: '';
+  position: absolute;
+  left: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: rgb(var(--color-background));
+  box-shadow: 0 0 0 1.5px var(--aw-color-border-strong);
+}
+
+.aw-price-tag .price {
+  font-size: var(--aw-text-lg);
+  font-weight: 700;
+}
+
 /* --- Purchase confidence strip --- */
 
 .aw-purchase-confidence {
@@ -39,28 +72,35 @@
   margin: 0;
 }
 
+/* Dashed trust-row grid, matching the finalized product-page design:
+   each claim stacks icon-over-label instead of running inline, framed
+   top and bottom by a dashed rule. */
 .aw-purchase-confidence__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--aw-space-2) var(--aw-space-5);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--aw-space-3);
   margin: 0;
-  padding: 0;
+  padding: var(--aw-space-3) 0;
   list-style: none;
+  border-top: 1.5px dashed var(--aw-color-border-strong);
+  border-bottom: 1.5px dashed var(--aw-color-border-strong);
 }
 
 .aw-purchase-confidence__list li {
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
   gap: 0.6rem;
-  font-size: var(--aw-text-xs);
+  font-size: var(--aw-text-2xs);
   color: var(--aw-color-muted);
 }
 
 .aw-purchase-confidence__list svg {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 2.2rem;
+  height: 2.2rem;
   flex-shrink: 0;
-  color: var(--aw-color-accent);
+  color: var(--aw-color-brand-accent);
 }
 
 @media screen and (max-width: 749px) {
@@ -173,6 +213,41 @@
   height: 1.6rem;
   flex-shrink: 0;
   color: var(--aw-color-accent);
+}
+
+/* --- "Complete the look" product grid (related-products, renamed) ---
+   A tilted, propped-on-white-card treatment instead of Dawn's flat
+   grid cards, matching the finalized design. Scoped to .related-products
+   only, using real Shopify product recommendations — no separate
+   section or fabricated picks. */
+
+.related-products .grid__item:nth-child(3n+1) .card__inner {
+  transform: rotate(-1deg);
+}
+
+.related-products .grid__item:nth-child(3n+2) .card__inner {
+  transform: rotate(0.8deg);
+}
+
+.related-products .grid__item:nth-child(3n+3) .card__inner {
+  transform: rotate(-0.4deg);
+}
+
+.related-products .card__inner {
+  background: rgb(var(--color-background));
+  padding: 0.8rem 0.8rem 1.8rem;
+  box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, 0.16);
+  transition: transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.related-products .card__inner:hover {
+  transform: rotate(0deg) translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .related-products .card__inner {
+    transition: none;
+  }
 }
 
 /* --- Finish swatches ---

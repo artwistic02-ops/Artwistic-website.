@@ -103,15 +103,52 @@
   display: none;
 }
 
+/* Sticky-note treatment, matching the finalized design: a torn strip
+   of "tape" at the top of each card and a gentle alternating tilt
+   instead of a plain bordered box. */
 .aw-review-card {
+  position: relative;
   flex: 0 0 min(30rem, 82vw);
   scroll-snap-align: start;
   padding: var(--aw-space-5);
-  border: 1px solid var(--aw-color-border);
-  border-radius: var(--aw-radius-md);
+  border: none;
+  border-radius: 2px;
+  background: rgb(var(--color-background));
+  box-shadow: var(--aw-shadow-md);
   display: flex;
   flex-direction: column;
   gap: var(--aw-space-2);
+  transform: rotate(var(--aw-review-rot, 0deg));
+}
+
+.aw-review-card:nth-child(3n+1) {
+  --aw-review-rot: -1.1deg;
+}
+
+.aw-review-card:nth-child(3n+2) {
+  --aw-review-rot: 0.8deg;
+}
+
+.aw-review-card:nth-child(3n+3) {
+  --aw-review-rot: -0.4deg;
+}
+
+.aw-review-card::before {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  width: 4.4rem;
+  height: 1.8rem;
+  margin-left: -2.2rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(169, 124, 79, 0.5),
+    rgba(169, 124, 79, 0.5) 4px,
+    rgba(169, 124, 79, 0.32) 4px,
+    rgba(169, 124, 79, 0.32) 8px
+  );
+  transform: rotate(-4deg);
 }
 
 .aw-review-card__verified,

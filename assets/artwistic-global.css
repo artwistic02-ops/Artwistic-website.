@@ -32,6 +32,13 @@
   /* --- Typography: inherit Dawn's font families; add an editorial type scale --- */
   --aw-font-body: var(--font-body-family);
   --aw-font-heading: var(--font-heading-family);
+  /* A third, accent-only typeface for prices/eyebrows/labels/counts — the
+     finalized design's typographic signature. Dawn's theme settings only
+     expose two font slots (heading/body), so this one is loaded directly
+     via Google Fonts in layout/theme.liquid rather than through a
+     font_picker setting; it never carries body copy, only short numeric
+     or uppercase-label text. */
+  --aw-font-mono: 'IBM Plex Mono', 'Courier New', monospace;
   --aw-text-2xs: 1.1rem;
   --aw-text-xs: 1.2rem;
   --aw-text-sm: 1.4rem;
@@ -162,10 +169,18 @@ body {
 }
 
 .aw-eyebrow {
+  font-family: var(--aw-font-mono);
   font-size: var(--aw-text-xs);
   letter-spacing: var(--aw-tracking-wider);
   text-transform: uppercase;
   color: var(--aw-color-muted);
+}
+
+/* Dawn's native price component — mono figures everywhere a real price
+   renders (product page, cart, collection cards), not just the unused
+   .aw-price utility below. */
+.price {
+  font-family: var(--aw-font-mono);
 }
 
 .aw-tap-target {

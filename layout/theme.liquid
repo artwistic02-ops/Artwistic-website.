@@ -15,6 +15,20 @@
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
     {%- endunless -%}
 
+    {%- comment -%}
+      ARTWISTIC: IBM Plex Mono — the accent typeface used for prices,
+      eyebrows, labels and counts (--aw-font-mono in artwistic-global.css).
+      Dawn's font_picker settings only expose the header/body slots, so
+      this third typeface is loaded directly from Google Fonts rather
+      than self-hosted. See ARTWISTIC_CHANGELOG.md.
+    {%- endcomment -%}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+    >
+
     <title>
       {{ page_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
