@@ -150,7 +150,7 @@
   border-radius: 50%;
   background: var(--aw-color-brand-accent);
   pointer-events: none;
-  z-index: 90;
+  z-index: var(--aw-z-fx);
   animation: aw-shipping-spark-fly 0.85s cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
 }
 

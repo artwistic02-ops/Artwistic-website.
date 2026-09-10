@@ -152,7 +152,7 @@
 .aw-wishlist-summary {
   position: sticky;
   bottom: 0;
-  z-index: 4;
+  z-index: var(--aw-z-sticky);
   padding: var(--aw-space-4) var(--aw-container-pad);
   background: rgb(var(--color-background));
   border-top: 1px solid var(--aw-color-border);

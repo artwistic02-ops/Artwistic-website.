@@ -99,12 +99,23 @@
   --aw-z-drawer: 50;
   --aw-z-modal: 60;
   --aw-z-toast: 70;
+  --aw-z-fx: 80;
 }
 
 @media (min-width: 750px) {
   :root {
     --aw-container-pad: var(--aw-space-6);
   }
+}
+
+/* Belt-and-braces guard against horizontal page shift: every ARTWISTIC
+   rail/carousel scrolls inside its own [data-aw-rail]/overflow-x:auto
+   container, so this should never engage in practice — but it costs
+   nothing and fully prevents a mis-sized rail item from ever widening
+   the page itself, independent of overflow-y (used for drawer/modal
+   scroll-locking) which this does not touch. */
+body {
+  overflow-x: hidden;
 }
 
 /* ==========================================================================
