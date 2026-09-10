@@ -120,3 +120,19 @@
     transition: none;
   }
 }
+
+/* --- Payment icons next to checkout --- */
+/* Same rule as artwistic-product-page.css's .aw-payment-icons — duplicated
+   here (small, two rules) rather than shared, since this file loads
+   globally and the cart footer/drawer render the icons independently of
+   the product page. */
+
+.cart__ctas .aw-payment-icons {
+  margin-top: var(--aw-space-3);
+  text-align: center;
+}
+
+.cart__ctas .aw-payment-icons .list-payment {
+  margin: 0;
+  justify-content: center;
+}

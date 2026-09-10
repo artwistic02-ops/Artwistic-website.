@@ -60,8 +60,69 @@
   background-color: var(--aw-color-success);
 }
 
+/* the moment free shipping unlocks: one warm flash across the whole bar
+   plus a brief glow on the fill — see assets/artwistic-shipping-progress.js
+   for the detection (the bar itself is server-rendered and swapped in
+   wholesale on every cart change, so there's no persistent node to
+   transition from — this plays once the newly-unlocked state is detected) */
+.aw-shipping-progress--celebrating {
+  animation: aw-shipping-flash 0.9s var(--aw-ease);
+}
+
+@keyframes aw-shipping-flash {
+  0% {
+    background-color: rgba(169, 124, 79, 0);
+  }
+  30% {
+    background-color: rgba(169, 124, 79, 0.14);
+  }
+  100% {
+    background-color: rgba(169, 124, 79, 0);
+  }
+}
+
+.aw-shipping-progress--celebrating .aw-shipping-progress__fill {
+  animation: aw-shipping-glow 1.6s ease-in-out;
+}
+
+@keyframes aw-shipping-glow {
+  0%, 100% {
+    box-shadow: none;
+  }
+  30%, 70% {
+    box-shadow: 0 0 0 3px rgba(75, 106, 79, 0.28);
+  }
+}
+
+.aw-shipping-spark {
+  position: fixed;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--aw-color-brand-accent);
+  pointer-events: none;
+  z-index: 90;
+  animation: aw-shipping-spark-fly 0.85s cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
+}
+
+@keyframes aw-shipping-spark-fly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--aw-spark-x), var(--aw-spark-y)) scale(0);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .aw-shipping-progress__fill {
     transition: none;
+  }
+
+  .aw-shipping-progress--celebrating,
+  .aw-shipping-progress--celebrating .aw-shipping-progress__fill {
+    animation: none;
   }
 }

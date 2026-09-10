@@ -122,6 +122,10 @@
                 >
                   {{ 'sections.cart.checkout' | t }}
                 </button>
+                {%- comment -%} ARTWISTIC: real enabled payment-method icons next to checkout, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+                {%- if cart != empty -%}
+                  {%- render 'artwistic-payment-icons' -%}
+                {%- endif -%}
               </div>
 
               {%- if additional_checkout_buttons -%}
