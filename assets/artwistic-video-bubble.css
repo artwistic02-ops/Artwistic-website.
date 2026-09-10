@@ -1,0 +1,175 @@
+/**
+ * ARTWISTIC VIDEO BUBBLE — persistent looping video bubble on the product
+ * gallery. See snippets/artwistic-video-bubble.liquid,
+ * assets/artwistic-video-bubble.js. Anchored to .aw-product-media-wrapper
+ * (position: relative, see artwistic-wishlist.css) bottom-right, matching
+ * the mockup; expands in place on click rather than jumping to a modal.
+ */
+
+.aw-video-bubble {
+  position: absolute;
+  right: var(--aw-space-3);
+  bottom: var(--aw-space-4);
+  left: auto;
+  top: auto;
+  z-index: 3;
+  width: 8.2rem;
+  height: 11.4rem;
+  border: 0.2rem solid var(--aw-color-paper);
+  border-radius: 1.2rem;
+  box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.2);
+  padding: 0;
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  transition: width var(--aw-duration-base) var(--aw-ease), height var(--aw-duration-base) var(--aw-ease),
+    right var(--aw-duration-base) var(--aw-ease), bottom var(--aw-duration-base) var(--aw-ease),
+    left var(--aw-duration-base) var(--aw-ease), top var(--aw-duration-base) var(--aw-ease),
+    border-radius var(--aw-duration-base) var(--aw-ease), box-shadow var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-video-bubble__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aw-video-bubble__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aw-video-bubble__mute {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: var(--aw-radius-full);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-video-bubble__mute svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.aw-video-bubble__play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: var(--aw-radius-full);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-video-bubble__play svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: #fff;
+  margin-left: 0.15rem;
+}
+
+.aw-video-bubble:hover .aw-video-bubble__play {
+  opacity: 1;
+}
+
+.aw-video-bubble__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: var(--aw-radius-full);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-video-bubble__close svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.aw-video-bubble__cap {
+  position: absolute;
+  left: 1.2rem;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  color: #fff;
+  font-size: var(--aw-text-xs);
+  opacity: 0;
+  transition: opacity var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-video-backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 4;
+  display: none;
+}
+
+.aw-video-bubble.is-open {
+  right: var(--aw-space-3);
+  bottom: var(--aw-space-3);
+  left: var(--aw-space-3);
+  top: var(--aw-space-3);
+  width: auto;
+  height: auto;
+  border-radius: 1.8rem;
+  box-shadow: 0 3rem 8rem rgba(0, 0, 0, 0.35);
+  z-index: 5;
+}
+
+.aw-video-bubble.is-open .aw-video-bubble__mute {
+  opacity: 0;
+}
+
+.aw-video-bubble.is-open .aw-video-bubble__play {
+  opacity: 1;
+  width: 6.4rem;
+  height: 6.4rem;
+}
+
+.aw-video-bubble.is-open .aw-video-bubble__play svg {
+  width: 2.1rem;
+  height: 2.1rem;
+}
+
+.aw-video-bubble.is-open .aw-video-bubble__close,
+.aw-video-bubble.is-open .aw-video-bubble__cap {
+  opacity: 1;
+}
+
+.aw-video-backdrop.is-visible {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-video-bubble,
+  .aw-video-bubble__mute,
+  .aw-video-bubble__play,
+  .aw-video-bubble__close,
+  .aw-video-bubble__cap {
+    transition: none;
+  }
+}

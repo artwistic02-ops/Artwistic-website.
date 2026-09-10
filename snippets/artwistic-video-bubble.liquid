@@ -1,0 +1,60 @@
+{% comment %}
+  ARTWISTIC: Persistent video bubble on the product gallery — matches the
+  product-page mockup's small looping video bubble that expands into a
+  larger playing view on click. Renders only when the product has a real
+  uploaded video (product.media, media_type: video); no fabricated
+  view-count badge like the mockup's placeholder "2.1k" — that number
+  had no real source.
+
+  Usage:
+    {% render 'artwistic-video-bubble', product: product %}
+{% endcomment %}
+
+{%- assign aw_bubble_video = product.media | where: 'media_type', 'video' | first -%}
+
+{%- if aw_bubble_video -%}
+  {{ 'artwistic-video-bubble.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'artwistic-video-bubble.js' | asset_url }}" defer="defer"></script>
+
+  <button
+    type="button"
+    class="aw-video-bubble"
+    data-aw-video-bubble
+    aria-label="{{ 'sections.video.load_video' | t: description: aw_bubble_video.alt | escape }}"
+    aria-expanded="false"
+  >
+    <span class="aw-video-bubble__frame">
+      {{
+        aw_bubble_video
+        | video_tag:
+          image_size: '500x',
+          autoplay: false,
+          loop: true,
+          controls: false,
+          muted: true,
+          class: 'aw-video-bubble__video'
+      }}
+      <span class="aw-video-bubble__mute" data-aw-video-bubble-mute aria-hidden="true">
+        <svg class="aw-video-bubble__icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 9v6h4l5 4V5L8 9H4Z"></path>
+          <line x1="16" y1="9" x2="21" y2="15"></line>
+          <line x1="21" y1="9" x2="16" y2="15"></line>
+        </svg>
+        <svg class="aw-video-bubble__icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" hidden>
+          <path d="M4 9v6h4l5 4V5L8 9H4Z"></path>
+          <path d="M17 8a5 5 0 0 1 0 8"></path>
+        </svg>
+      </span>
+      <span class="aw-video-bubble__play" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+      </span>
+      <span class="aw-video-bubble__close" data-aw-video-bubble-close aria-hidden="true">
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </span>
+      {%- if aw_bubble_video.alt != blank -%}
+        <span class="aw-video-bubble__cap">{{ aw_bubble_video.alt }}</span>
+      {%- endif -%}
+    </span>
+  </button>
+  <div class="aw-video-backdrop" data-aw-video-backdrop hidden></div>
+{%- endif -%}

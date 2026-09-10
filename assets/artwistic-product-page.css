@@ -174,3 +174,56 @@
   flex-shrink: 0;
   color: var(--aw-color-accent);
 }
+
+/* --- Finish swatches ---
+   Restyles Dawn's native swatch-input component (component-swatch.css /
+   component-swatch-input.css) to match the mockup's larger thumbnail +
+   underline-dot "finish option" look. Uses Dawn's own --swatch-input--size
+   / --swatch-input--border-radius custom properties rather than
+   overriding its structure, so real merchant-configured variant swatch
+   images/colors keep working unchanged. */
+
+.product-form__input--swatch {
+  --swatch-input--size: 6.6rem;
+  --swatch-input--border-radius: var(--aw-radius-sm);
+}
+
+.product-form__input--swatch .swatch-input__input + .swatch-input__label {
+  position: relative;
+  padding-bottom: var(--aw-space-3);
+  outline: none;
+}
+
+.product-form__input--swatch .swatch-input__input + .swatch-input__label .swatch {
+  border: 2px solid var(--aw-color-border-strong);
+  box-shadow: 2px 2px 0 var(--aw-color-border-strong);
+  transition: border-color var(--aw-duration-fast) var(--aw-ease), box-shadow var(--aw-duration-fast) var(--aw-ease);
+}
+
+.product-form__input--swatch .swatch-input__input + .swatch-input__label::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: var(--aw-radius-full);
+  background: transparent;
+  transform: translateX(-50%);
+  transition: background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.product-form__input--swatch .swatch-input__input:checked + .swatch-input__label .swatch {
+  border-color: var(--aw-color-ink);
+  box-shadow: 2px 2px 0 var(--aw-color-ink);
+}
+
+.product-form__input--swatch .swatch-input__input:checked + .swatch-input__label::after {
+  background: var(--aw-color-ink);
+}
+
+.product-form__input--swatch .swatch-input__input:hover + .swatch-input__label,
+.product-form__input--swatch .swatch-input__input:focus-visible + .swatch-input__label {
+  outline: none;
+  box-shadow: none;
+}
