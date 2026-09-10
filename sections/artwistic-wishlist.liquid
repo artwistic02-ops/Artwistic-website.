@@ -27,7 +27,7 @@
 </div>
 
 <template id="aw-wishlist-card-template">
-  <li class="grid__item">
+  <li class="grid__item aw-wishlist-card">
     <div class="card-wrapper product-card-wrapper">
       <a class="aw-wishlist-card__media-link" href="">
         <div class="aw-wishlist-card__media">
@@ -36,8 +36,33 @@
       </a>
       <div class="aw-wishlist-card__content">
         <a class="aw-wishlist-card__title full-unstyled-link" href=""></a>
-        <span class="aw-wishlist-card__price price"></span>
-        <button type="button" class="link aw-wishlist-card__remove" data-aw-wishlist-remove>Remove</button>
+        <span
+          class="aw-wishlist-card__stock"
+          data-aw-wishlist-stock
+          data-label-in-stock="{{ 'general.wishlist.in_stock' | t }}"
+          data-label-out-of-stock="{{ 'general.wishlist.out_of_stock' | t }}"
+          hidden
+        ></span>
+        <span class="aw-wishlist-card__price-row">
+          <span class="aw-wishlist-card__price price"></span>
+          <s class="aw-wishlist-card__compare-price" data-aw-wishlist-compare hidden></s>
+        </span>
+        <div class="aw-wishlist-card__actions">
+          <button
+            type="button"
+            class="button button--secondary aw-wishlist-card__move"
+            data-aw-wishlist-move
+            data-label-idle="{{ 'general.wishlist.move_to_bag' | t }}"
+            data-label-loading="{{ 'general.wishlist.moving_to_bag' | t }}"
+            data-label-done="{{ 'general.wishlist.moved_to_bag' | t }}"
+            data-label-error="{{ 'general.wishlist.move_to_bag_error' | t }}"
+          >
+            {{ 'general.wishlist.move_to_bag' | t }}
+          </button>
+          <button type="button" class="link aw-wishlist-card__remove" data-aw-wishlist-remove>
+            {{ 'general.wishlist.remove' | t }}
+          </button>
+        </div>
       </div>
     </div>
   </li>

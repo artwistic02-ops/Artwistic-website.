@@ -29,6 +29,15 @@
       }
     },
     "continue_shopping": "Continue shopping",
+    "wishlist": {
+      "move_to_bag": "Move to bag",
+      "moving_to_bag": "Adding…",
+      "moved_to_bag": "Added",
+      "move_to_bag_error": "Couldn't add this to your bag. Try again.",
+      "remove": "Remove",
+      "in_stock": "In stock",
+      "out_of_stock": "Out of stock"
+    },
     "pagination": {
       "label": "Pagination",
       "page": "Page {{ number }}",
