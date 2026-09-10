@@ -16,7 +16,8 @@
             "box_align": "bottom-left",
             "text_alignment": "left",
             "text_alignment_mobile": "left",
-            "color_scheme": "scheme-3"
+            "color_scheme": "scheme-3",
+            "eyebrow": "New Season"
           }
         },
         "slide-2": {
@@ -32,7 +33,8 @@
             "box_align": "bottom-left",
             "text_alignment": "left",
             "text_alignment_mobile": "left",
-            "color_scheme": "scheme-3"
+            "color_scheme": "scheme-3",
+            "eyebrow": "The Everyday Edit"
           }
         },
         "slide-3": {
@@ -48,7 +50,8 @@
             "box_align": "bottom-left",
             "text_alignment": "left",
             "text_alignment_mobile": "left",
-            "color_scheme": "scheme-3"
+            "color_scheme": "scheme-3",
+            "eyebrow": "Fast Dispatch"
           }
         }
       },
