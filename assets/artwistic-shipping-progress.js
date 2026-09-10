@@ -1,11 +1,13 @@
 /**
- * ARTWISTIC SHIPPING PROGRESS — celebration on unlock.
+ * ARTWISTIC SHIPPING PROGRESS — celebration on unlock, per tier.
  *
- * The shipping-progress bar (see snippets/artwistic-shipping-progress.liquid)
- * is server-rendered and swapped in wholesale by cart.js/cart-drawer.js on
- * every cart mutation — there is no persistent DOM node to attach a
- * transition to, so this watches for the moment a freshly-swapped copy
- * carries the "unlocked" state where the previous one didn't, using a
+ * The progress bar (see snippets/artwistic-shipping-progress.liquid) has
+ * two milestone nodes — free shipping, then a free gift — each of which
+ * gets its own "reached" class. The whole bar is server-rendered and
+ * swapped in wholesale by cart.js/cart-drawer.js on every cart mutation —
+ * there is no persistent DOM node to attach a transition to, so this
+ * tracks each node's reached-state by position (first/last) across
+ * swaps and celebrates the moment either one newly appears, using a
  * single MutationObserver decoupled from Dawn's own cart update internals.
  * Runs once per page load; safe to be present on every page since the
  * observer callback is a no-op until the DOM actually changes.
@@ -17,7 +19,20 @@
   window.__awShippingCelebrateInit = true;
 
   var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var wasUnlocked = !!document.querySelector('.aw-shipping-progress__message--unlocked');
+  var wasReached = { shipping: false, gift: false };
+
+  function readState() {
+    var nodes = document.querySelectorAll('.aw-shipping-progress__node');
+    if (!nodes.length) return { shipping: false, gift: false };
+    var shippingNode = nodes[0];
+    var giftNode = nodes[nodes.length - 1];
+    return {
+      shipping: shippingNode.classList.contains('aw-shipping-progress__node--reached'),
+      gift: giftNode.classList.contains('aw-shipping-progress__node--reached'),
+    };
+  }
+
+  wasReached = readState();
 
   function sparkBurstFrom(el) {
     var rect = el.getBoundingClientRect();
@@ -58,9 +73,11 @@
   }
 
   function check() {
-    var isUnlocked = !!document.querySelector('.aw-shipping-progress__message--unlocked');
-    if (isUnlocked && !wasUnlocked) celebrate();
-    wasUnlocked = isUnlocked;
+    var isReached = readState();
+    if ((isReached.shipping && !wasReached.shipping) || (isReached.gift && !wasReached.gift)) {
+      celebrate();
+    }
+    wasReached = isReached;
   }
 
   var observer = new MutationObserver(check);

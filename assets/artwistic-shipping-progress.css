@@ -42,6 +42,11 @@
   height: 100%;
 }
 
+.aw-shipping-progress__track-row {
+  position: relative;
+  padding-inline: 1.2rem;
+}
+
 .aw-shipping-progress__track {
   height: 4px;
   border-radius: var(--aw-radius-full);
@@ -56,8 +61,52 @@
   transition: width var(--aw-duration-slow) var(--aw-ease);
 }
 
-.aw-shipping-progress__message--unlocked ~ .aw-shipping-progress__track .aw-shipping-progress__fill {
+.aw-shipping-progress__message--unlocked ~ .aw-shipping-progress__track-row .aw-shipping-progress__fill {
   background-color: var(--aw-color-success);
+}
+
+/* the two milestone markers along the track — shipping threshold sits
+   part-way, the gift threshold always sits at the end */
+.aw-shipping-progress__node {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--aw-color-paper);
+  border: 1.5px solid var(--aw-color-border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aw-color-muted);
+  transition: color var(--aw-duration-base) var(--aw-ease), border-color var(--aw-duration-base) var(--aw-ease),
+    background-color var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-shipping-progress__node svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.aw-shipping-progress__node--end {
+  right: -0.4rem;
+  left: auto;
+  transform: translate(0, -50%);
+}
+
+.aw-shipping-progress__node--reached {
+  background-color: var(--aw-color-success);
+  border-color: var(--aw-color-success);
+  color: var(--aw-color-paper);
+}
+
+.aw-shipping-progress__labels {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--aw-space-2);
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
 }
 
 /* the moment free shipping unlocks: one warm flash across the whole bar
