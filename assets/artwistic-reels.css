@@ -18,6 +18,7 @@
 }
 
 .aw-reels__rail {
+  position: relative;
   display: flex;
   gap: var(--aw-space-4);
   overflow-x: auto;
@@ -27,7 +28,30 @@
   scrollbar-width: none;
   list-style: none;
   margin: 0;
-  padding: 0 var(--aw-container-pad) var(--aw-space-1);
+  padding: var(--aw-space-4) var(--aw-container-pad) var(--aw-space-3);
+}
+
+/* Film-sprocket perforation strip along the top/bottom of the rail,
+   matching the finalized "Shop the Reels" filmstrip design. */
+.aw-reels__rail::before,
+.aw-reels__rail::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.2rem;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 2px, transparent 2px);
+  background-size: 2rem 100%;
+  background-position: 1rem center;
+  pointer-events: none;
+}
+
+.aw-reels__rail::before {
+  top: 0;
+}
+
+.aw-reels__rail::after {
+  bottom: 0;
 }
 
 .aw-reels__rail::-webkit-scrollbar {

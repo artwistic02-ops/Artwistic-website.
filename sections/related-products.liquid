@@ -28,6 +28,10 @@
     data-product-id="{{ product.id }}"
   >
     {% if recommendations.performed and recommendations.products_count > 0 %}
+      {%- comment -%} ARTWISTIC: optional eyebrow above the heading, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="aw-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
       <h2 class="related-products__heading inline-richtext {{ section.settings.heading_size }}">
         {{ section.settings.heading }}
       </h2>
@@ -68,6 +72,12 @@
     {
       "type": "paragraph",
       "content": "t:sections.related-products.settings.paragraph__1.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "info": "Optional small label above the heading (ARTWISTIC addition)."
     },
     {
       "type": "inline_richtext",

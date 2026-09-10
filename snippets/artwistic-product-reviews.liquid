@@ -1,52 +1,81 @@
 {% comment %}
-  Full review list for the current product — reviewer name, star rating,
-  verified-purchase badge, date, text, and any photos/video. Sourced
-  entirely from artwistic_review metaobject entries whose Product field
-  matches this product. Renders nothing if there are none yet (spec
-  section 57: no fabricated/placeholder reviews).
+  Full review section for the current product: a real ratings breakdown
+  (score + per-star percentage bars, computed from actual review data),
+  one real review featured as a pull-quote, and the rest in a
+  horizontally-scrolling sticky-note rail. Sourced entirely from
+  artwistic_review metaobject entries whose Product field matches this
+  product. Renders nothing if there are none yet (spec section 57: no
+  fabricated/placeholder reviews).
 
   Usage:
     {% render 'artwistic-product-reviews', product: product %}
 {% endcomment %}
 
 {{ 'artwistic-reviews.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'artwistic-reviews.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
   assign aw_review_count = 0
   assign aw_rating_total = 0
+  assign aw_star_5 = 0
+  assign aw_star_4 = 0
+  assign aw_star_3 = 0
+  assign aw_star_2 = 0
+  assign aw_star_1 = 0
+  assign aw_featured_review = null
+  assign aw_featured_length = 0
 -%}
 
-{%- capture aw_reviews_html -%}
+{%- capture aw_review_cards_html -%}
   {%- for aw_review in shop.metaobjects.artwistic_review.values -%}
     {%- if aw_review.product.value.id == product.id -%}
       {%- liquid
         assign aw_review_count = aw_review_count | plus: 1
         assign aw_rating_total = aw_rating_total | plus: aw_review.rating.value
+        assign aw_star_rounded = aw_review.rating.value | round
+        case aw_star_rounded
+          when 5
+            assign aw_star_5 = aw_star_5 | plus: 1
+          when 4
+            assign aw_star_4 = aw_star_4 | plus: 1
+          when 3
+            assign aw_star_3 = aw_star_3 | plus: 1
+          when 2
+            assign aw_star_2 = aw_star_2 | plus: 1
+          else
+            assign aw_star_1 = aw_star_1 | plus: 1
+        endcase
+
+        assign aw_length = aw_review.review_text.value | size
+        if aw_review.rating.value == 5 and aw_length > aw_featured_length
+          assign aw_featured_review = aw_review
+          assign aw_featured_length = aw_length
+        endif
+        if aw_featured_review == null
+          assign aw_featured_review = aw_review
+        endif
       -%}
-      <li class="aw-review">
-        <div class="aw-review__header">
-          {%- render 'artwistic-star-rating', rating: aw_review.rating.value -%}
-          {%- if aw_review.verified_purchase.value -%}
-            <span class="aw-review__verified">
-              {{- 'icon-checkmark.svg' | inline_asset_content -}}
-              Verified purchase
-            </span>
-          {%- endif -%}
-        </div>
-        <p class="aw-review__text">{{ aw_review.review_text.value | escape }}</p>
+      <li class="aw-review-card">
+        {%- render 'artwistic-star-rating', rating: aw_review.rating.value -%}
+        {%- if aw_review.verified_purchase.value -%}
+          <span class="aw-review-card__verified">
+            {{- 'icon-checkmark.svg' | inline_asset_content -}}
+            Verified purchase
+          </span>
+        {%- endif -%}
+        <p class="aw-review-card__text">{{ aw_review.review_text.value | escape }}</p>
         {%- if aw_review.photos.value.size > 0 -%}
-          <div class="aw-review__photos">
-            {%- for aw_photo in aw_review.photos.value -%}
-              <button type="button" class="aw-review__photo" data-aw-review-photo>
-                {{ aw_photo | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 300' }}
+          <div class="aw-review-card__photos">
+            {%- for aw_photo in aw_review.photos.value limit: 3 -%}
+              <button type="button" class="aw-review-card__photo" data-aw-review-photo>
+                {{ aw_photo | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100, 200' }}
               </button>
             {%- endfor -%}
           </div>
         {%- endif -%}
         {%- if aw_review.video.value != blank -%}
           <video
-            class="aw-review__video"
+            class="aw-review-card__video"
             controls
             preload="none"
             playsinline
@@ -57,10 +86,10 @@
             <source src="{{ aw_review.video.value.url }}" type="{{ aw_review.video.value.mime_type }}">
           </video>
         {%- endif -%}
-        <div class="aw-review__meta">
-          <span class="aw-review__name">{{ aw_review.reviewer_name.value | escape }}</span>
+        <div class="aw-review-card__meta">
+          <span class="aw-review-card__name">{{ aw_review.reviewer_name.value | escape }}</span>
           {%- if aw_review.reviewed_date.value != blank -%}
-            <span class="aw-review__date">{{ aw_review.reviewed_date.value | date: '%B %Y' }}</span>
+            <span class="aw-review-card__date">{{ aw_review.reviewed_date.value | date: '%B %Y' }}</span>
           {%- endif -%}
         </div>
       </li>
@@ -69,17 +98,78 @@
 {%- endcapture -%}
 
 {%- if aw_review_count > 0 -%}
-  {%- assign aw_average_rating = aw_rating_total | times: 10 | divided_by: aw_review_count | round | times: 1.0 | divided_by: 10 -%}
+  {%- liquid
+    assign aw_average_rating = aw_rating_total | times: 10 | divided_by: aw_review_count | round | times: 1.0 | divided_by: 10
+    assign aw_pct_5 = aw_star_5 | times: 100 | divided_by: aw_review_count
+    assign aw_pct_4 = aw_star_4 | times: 100 | divided_by: aw_review_count
+    assign aw_pct_3 = aw_star_3 | times: 100 | divided_by: aw_review_count
+    assign aw_pct_2 = aw_star_2 | times: 100 | divided_by: aw_review_count
+    assign aw_pct_1 = aw_star_1 | times: 100 | divided_by: aw_review_count
+  -%}
+
   <div id="artwistic-reviews" class="aw-reviews-section">
     <div class="aw-reviews-section__header">
-      <h2 class="aw-reviews-section__heading">Reviews</h2>
-      <div class="aw-reviews-section__summary">
+      <h2 class="aw-reviews-section__heading">{{ 'products.product.reviews.heading' | t }}</h2>
+    </div>
+
+    <div class="aw-ratings-summary">
+      <div class="aw-ratings-summary__score-col">
+        <div class="aw-ratings-summary__score">{{ aw_average_rating }}</div>
         {%- render 'artwistic-star-rating', rating: aw_average_rating, size: 'large' -%}
-        <span>{{ aw_average_rating }} out of 5 · {{ aw_review_count }} review{% if aw_review_count != 1 %}s{% endif %}</span>
+        <p class="aw-ratings-summary__count">
+          {{ 'products.product.reviews.count' | t: count: aw_review_count }}
+        </p>
+      </div>
+      <div class="aw-ratings-summary__bars">
+        <div class="aw-ratings-bar">
+          <span>5 star</span>
+          <div class="aw-ratings-bar__track"><div class="aw-ratings-bar__fill" style="width: {{ aw_pct_5 }}%;"></div></div>
+          <span>{{ aw_pct_5 }}%</span>
+        </div>
+        <div class="aw-ratings-bar">
+          <span>4 star</span>
+          <div class="aw-ratings-bar__track"><div class="aw-ratings-bar__fill" style="width: {{ aw_pct_4 }}%;"></div></div>
+          <span>{{ aw_pct_4 }}%</span>
+        </div>
+        <div class="aw-ratings-bar">
+          <span>3 star</span>
+          <div class="aw-ratings-bar__track"><div class="aw-ratings-bar__fill" style="width: {{ aw_pct_3 }}%;"></div></div>
+          <span>{{ aw_pct_3 }}%</span>
+        </div>
+        <div class="aw-ratings-bar">
+          <span>2 star</span>
+          <div class="aw-ratings-bar__track"><div class="aw-ratings-bar__fill" style="width: {{ aw_pct_2 }}%;"></div></div>
+          <span>{{ aw_pct_2 }}%</span>
+        </div>
+        <div class="aw-ratings-bar">
+          <span>1 star</span>
+          <div class="aw-ratings-bar__track"><div class="aw-ratings-bar__fill" style="width: {{ aw_pct_1 }}%;"></div></div>
+          <span>{{ aw_pct_1 }}%</span>
+        </div>
       </div>
     </div>
-    <ul class="aw-reviews-list" role="list">
-      {{ aw_reviews_html }}
-    </ul>
+
+    {%- if aw_featured_review.review_text.value != blank -%}
+      <div class="aw-pull-note">
+        <p class="aw-pull-note__mark">&ldquo;</p>
+        <p class="aw-pull-note__text">{{ aw_featured_review.review_text.value | escape }}</p>
+        <div class="aw-pull-note__meta">
+          {%- render 'artwistic-star-rating', rating: aw_featured_review.rating.value -%}
+          <span>{{ aw_featured_review.reviewer_name.value | escape }}</span>
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="aw-rail-shell">
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+      <ul class="aw-review-rail" role="list" data-aw-rail>
+        {{ aw_review_cards_html }}
+      </ul>
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+    </div>
   </div>
 {%- endif -%}

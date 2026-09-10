@@ -287,57 +287,148 @@
   margin: 0;
 }
 
-.aw-reviews-section__summary {
-  display: flex;
+/* --- Ratings breakdown: big score + per-star percentage bars, computed
+   live from this product's real review data (see
+   snippets/artwistic-product-reviews.liquid). --- */
+
+.aw-ratings-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--aw-space-6);
   align-items: center;
-  gap: var(--aw-space-2);
+  padding: var(--aw-space-5) 0;
+}
+
+@media screen and (max-width: 749px) {
+  .aw-ratings-summary {
+    grid-template-columns: 1fr;
+    gap: var(--aw-space-4);
+    text-align: center;
+  }
+}
+
+.aw-ratings-summary__score-col {
+  text-align: center;
+}
+
+.aw-ratings-summary__score {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-3xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.aw-ratings-summary__count {
+  margin: var(--aw-space-2) 0 0;
   font-size: var(--aw-text-sm);
   color: var(--aw-color-muted);
 }
 
-.aw-reviews-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
-  gap: var(--aw-space-5);
-  list-style: none;
-  margin: var(--aw-space-5) 0 0;
-  padding: 0;
-}
-
-.aw-review {
+.aw-ratings-summary__bars {
   display: flex;
   flex-direction: column;
   gap: var(--aw-space-2);
-  padding-bottom: var(--aw-space-4);
-  border-bottom: 1px solid var(--aw-color-border);
 }
 
-.aw-review__header {
+.aw-ratings-bar {
+  display: grid;
+  grid-template-columns: 5rem 1fr 4rem;
+  align-items: center;
+  gap: var(--aw-space-3);
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+}
+
+.aw-ratings-bar__track {
+  height: 0.8rem;
+  border-radius: var(--aw-radius-full);
+  background: rgba(var(--color-foreground), 0.06);
+  border: 1px solid var(--aw-color-border);
+  overflow: hidden;
+}
+
+.aw-ratings-bar__fill {
+  height: 100%;
+  background: var(--aw-color-brand-accent);
+}
+
+/* --- Pull-note: one real review, featured large --- */
+
+.aw-pull-note {
+  position: relative;
+  background: var(--aw-color-espresso, #2a2420);
+  color: #f5efe6;
+  padding: var(--aw-space-6);
+  margin: var(--aw-space-5) 0;
+  box-shadow: var(--aw-shadow-md);
+}
+
+.aw-pull-note__mark {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-3xl);
+  line-height: 1;
+  color: var(--aw-color-brand-accent);
+  opacity: 0.75;
+  margin: 0 0 var(--aw-space-2);
+}
+
+.aw-pull-note__text {
+  font-family: var(--aw-font-heading);
+  font-style: italic;
+  font-size: var(--aw-text-lg);
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 var(--aw-space-4);
+  max-width: 60ch;
+}
+
+.aw-pull-note__meta {
   display: flex;
   align-items: center;
   gap: var(--aw-space-3);
+  font-size: var(--aw-text-sm);
 }
 
-.aw-review__video {
+.aw-pull-note__meta .aw-star-rating {
+  color: var(--aw-color-brand-accent);
+}
+
+/* --- Review rail: reuses the .aw-review-card sticky-note styling
+   already defined above, laid out in the shared .aw-rail-shell pattern
+   (artwistic-global.css) instead of the homepage's bespoke rail. --- */
+
+.aw-review-rail {
+  display: flex;
+  gap: var(--aw-space-4);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  list-style: none;
+  margin: 0;
+  padding: var(--aw-space-2) var(--aw-container-pad) var(--aw-space-2);
+}
+
+.aw-review-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.aw-review-rail .aw-review-card {
+  flex: 0 0 min(30rem, 82vw);
+  scroll-snap-align: start;
+}
+
+.aw-review-card__video {
   width: 100%;
   max-width: 24rem;
   border-radius: var(--aw-radius-sm);
   background: rgba(var(--color-foreground), 0.04);
 }
 
-.aw-review__meta {
-  margin-top: auto;
-  padding-top: var(--aw-space-1);
-  display: flex;
-  align-items: baseline;
-  gap: var(--aw-space-2);
+.aw-review-card__date {
   font-size: var(--aw-text-xs);
   color: var(--aw-color-muted);
-}
-
-.aw-review__name {
-  font-weight: 600;
-  color: var(--aw-color-ink);
 }
 
 /* --- Photo lightbox --- */
