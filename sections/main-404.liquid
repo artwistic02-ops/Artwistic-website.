@@ -12,15 +12,56 @@
 {{ 'component-search.css' | asset_url | stylesheet_tag }}
 {{ 'artwistic-404.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'main-search.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-404.js' | asset_url }}" defer="defer"></script>
 
 {%- render 'artwistic-section-padding' -%}
 
 {%- assign aw_collection_blocks = section.blocks | where: 'type', 'collection' -%}
 
 <div class="aw-404 section-{{ section.id }}-padding">
-  <div class="aw-container aw-404__intro">
+  <div class="aw-404__intro color-{{ section.settings.color_scheme }} gradient">
     <div class="aw-404__dust" aria-hidden="true"></div>
-    <p class="aw-eyebrow aw-404__mark">404</p>
+    <div class="aw-container aw-404__intro-inner">
+    <p class="aw-eyebrow aw-404__eyebrow">Error 404 &middot; Page not found</p>
+
+    <div class="aw-404__mark" id="aw404Mark">
+      <span class="aw-404__digit">4</span>
+      <span class="aw-404__chain-link" aria-hidden="true">
+        <svg viewBox="0 0 24 40" fill="none">
+          <rect x="4" y="2" width="16" height="36" rx="8" stroke="currentColor" stroke-width="2.4"/>
+        </svg>
+      </span>
+      <span class="aw-404__gem-slot" id="aw404GemSlot">
+        <svg class="aw-404__gem" id="aw404Gem" viewBox="0 0 100 100" aria-label="Click for a little sparkle">
+          <polygon class="aw-404__facet aw-404__facet--a" points="50,6 78,28 50,50 22,28"/>
+          <polygon class="aw-404__facet aw-404__facet--b" points="22,28 50,50 38,94 8,40"/>
+          <polygon class="aw-404__facet aw-404__facet--c" points="78,28 92,40 62,94 50,50"/>
+          <polygon class="aw-404__facet aw-404__facet--d" points="38,94 50,50 62,94 50,100"/>
+          <g class="aw-404__glint" style="transform-origin: 32px 34px;">
+            <path d="M32 26 L35 34 L43 37 L35 40 L32 48 L29 40 L21 37 L29 34 Z" fill="#fff" opacity="0.9"/>
+          </g>
+          <g class="aw-404__glint aw-404__glint--2" style="transform-origin: 66px 44px;">
+            <path d="M66 38 L68 44 L74 46 L68 48 L66 54 L64 48 L58 46 L64 44 Z" fill="#fff" opacity="0.85"/>
+          </g>
+          <g class="aw-404__glint aw-404__glint--3" style="transform-origin: 48px 66px;">
+            <path d="M48 60 L50 66 L56 68 L50 70 L48 76 L46 70 L40 68 L46 66 Z" fill="#fff" opacity="0.8"/>
+          </g>
+        </svg>
+      </span>
+      <span class="aw-404__broken-link" id="aw404BrokenLink" aria-hidden="true">
+        <svg viewBox="0 0 36 52" fill="none">
+          <path d="M18 2v14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity="0.5"/>
+          <path d="M6 16c0-6 5-10 12-10s12 4 12 10-3 9-8 9" stroke="var(--aw-color-brand-accent)" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+          <path d="M22 25l-3 6 5 2-4 6" stroke="var(--aw-color-brand-accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.85"/>
+        </svg>
+      </span>
+      <span class="aw-404__gap" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 15l-2-2 2-2M15 9l2 2-2 2M10 13h4"/></svg>
+      </span>
+      <span class="aw-404__digit">4</span>
+    </div>
+    <p class="aw-404__snap-note">// this setting came up empty — drag the broken link if you don't believe it</p>
+
     <h1 class="aw-404__heading">{{ section.settings.heading | default: "Lost the trail?" }}</h1>
     <p class="aw-404__subtext">
       {{ section.settings.subtext | default: "That page doesn't exist — but here's how to find what you came for." }}
@@ -79,6 +120,31 @@
     <a href="{{ routes.all_products_collection_url }}" class="aw-btn aw-btn--primary">
       {{- 'general.continue_shopping' | t -}}
     </a>
+
+    <div class="aw-404__links">
+      <a href="{{ routes.root_url }}" class="aw-404__pill">
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+        Back home
+      </a>
+      <a href="{{ routes.all_products_collection_url }}?sort_by=best-selling" class="aw-404__pill">
+        {{- 'icon-heart.svg' | inline_asset_content -}}
+        Best sellers
+      </a>
+      <a href="{{ routes.all_products_collection_url }}?sort_by=created-descending" class="aw-404__pill">
+        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+        New arrivals
+      </a>
+      <a href="{{ pages.contact.url | default: '/pages/contact' }}" class="aw-404__pill">
+        {{- 'icon-account.svg' | inline_asset_content -}}
+        Contact us
+      </a>
+    </div>
+
+    <p class="aw-404__code-strip">
+      <span>STATUS: 404_NOT_FOUND</span>
+      <span>DISPATCH_STILL: 24&ndash;48HR</span>
+    </p>
+    </div>
   </div>
 
   {%- if aw_collection_blocks.size > 0 -%}
@@ -120,6 +186,12 @@
       "id": "collections_heading",
       "label": "Suggested collections heading",
       "default": "Or start here"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-4"
     },
     {
       "type": "header",
