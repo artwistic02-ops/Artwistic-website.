@@ -204,10 +204,23 @@
                       {%- endif -%}
                     {%- endif -%}
                   </p>
+                {%- comment -%} ARTWISTIC: description folded into an accordion instead of a raw always-visible block, matching the finalized design {%- endcomment -%}
                 {%- when 'description' -%}
                   {%- if product.description != blank -%}
-                    <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
-                      {{ product.description }}
+                    <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
+                      <details id="Details-{{ block.id }}-{{ section.id }}">
+                        <summary>
+                          <div class="summary__title">
+                            <h2 class="h4 accordion__title inline-richtext">
+                              {{ 'products.product.description' | t }}
+                            </h2>
+                          </div>
+                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        </summary>
+                        <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                          {{ product.description }}
+                        </div>
+                      </details>
                     </div>
                   {%- endif -%}
                 {%- comment -%} ARTWISTIC: material transparency + trust badges block, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
