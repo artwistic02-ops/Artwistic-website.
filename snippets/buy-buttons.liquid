@@ -89,10 +89,14 @@
                 {{ 'products.product.sold_out' | t }}
               {%- else -%}
                 {{ 'products.product.add_to_cart' | t }}
+                {%- comment -%} ARTWISTIC: price in the CTA label, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+                — {{ product.selected_or_first_available_variant.price | money }}
               {%- endif -%}
             </span>
             {%- render 'loading-spinner' -%}
           </button>
+          {%- comment -%} ARTWISTIC: secondary wishlist toggle beside the CTA, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+          {%- render 'artwistic-wishlist-button', product: product, size: 'large', style: 'inline' -%}
           {%- if show_dynamic_checkout -%}
             {{ form | payment_button }}
           {%- endif -%}

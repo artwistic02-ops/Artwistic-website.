@@ -60,6 +60,24 @@
   position: relative;
 }
 
+/* Secondary wishlist toggle rendered beside the Add to Bag button
+   (snippets/buy-buttons.liquid), matching the finalized design — a
+   bordered square button, not the floating circular one on the image. */
+.aw-wishlist-button--inline {
+  position: static;
+  flex-shrink: 0;
+  width: 5rem;
+  height: 5rem;
+  border: 2px solid var(--aw-color-ink);
+  border-radius: var(--aw-radius-sm);
+  background: none;
+}
+
+.aw-wishlist-button--inline:hover {
+  transform: none;
+  background: rgba(var(--color-foreground), 0.06);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .aw-wishlist-button,
   .aw-wishlist-button svg {
