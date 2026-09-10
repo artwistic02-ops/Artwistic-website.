@@ -99,13 +99,14 @@
   font-size: var(--aw-text-sm);
   letter-spacing: var(--aw-tracking-wide);
   text-transform: uppercase;
-  background-color: var(--aw-color-ink);
-  color: var(--aw-color-paper);
+  background-color: var(--aw-color-brand-accent);
+  color: var(--aw-color-ink);
   transition: background-color var(--aw-duration-base) var(--aw-ease);
 }
 
 .aw-cart-page.is-empty .cart__warnings > .button:hover {
-  background-color: var(--aw-color-muted);
+  background-color: var(--aw-color-ink);
+  color: var(--aw-color-paper);
 }
 
 .aw-cart-page.is-empty .cart__login-title,

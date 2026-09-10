@@ -261,24 +261,26 @@
 }
 
 .aw-btn--primary {
+  background-color: var(--aw-color-brand-accent);
+  border-color: var(--aw-color-brand-accent);
+  color: var(--aw-color-ink);
+}
+
+.aw-btn--primary:hover {
   background-color: var(--aw-color-ink);
   border-color: var(--aw-color-ink);
   color: var(--aw-color-paper);
 }
 
-.aw-btn--primary:hover {
-  background-color: var(--aw-color-muted);
-  border-color: var(--aw-color-muted);
-}
-
 .aw-btn--secondary {
   background-color: transparent;
-  border-color: var(--aw-color-ink);
-  color: var(--aw-color-ink);
+  border-color: var(--aw-color-brand-accent);
+  color: var(--aw-color-brand-accent);
 }
 
 .aw-btn--secondary:hover {
-  background-color: rgba(var(--color-foreground), 0.06);
+  background-color: var(--aw-color-brand-accent);
+  color: var(--aw-color-ink);
 }
 
 .aw-btn--text {
@@ -287,10 +289,10 @@
   border: none;
   text-transform: none;
   letter-spacing: normal;
-  color: var(--aw-color-ink);
+  color: var(--aw-color-brand-accent);
   text-underline-offset: 0.3rem;
   text-decoration: underline;
-  text-decoration-color: var(--aw-color-border-strong);
+  text-decoration-color: var(--aw-color-brand-accent);
 }
 
 .aw-btn--text:hover {
