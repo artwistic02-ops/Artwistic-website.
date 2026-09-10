@@ -133,6 +133,101 @@
   }
 }
 
+/* --- Editorial filter/sort toolbar (filter_type: "horizontal") ---
+   Dawn's native horizontal mode already renders exactly the structure
+   the mockup calls for: a row of per-attribute filter pills, then a
+   trailing sort dropdown + result count, with the "Filter" drawer
+   trigger appearing only below the desktop breakpoint. This restyles
+   Dawn's plain text-link filter summaries into bordered pill buttons
+   and turns the sort/count row into a single editorial toolbar line —
+   no facet logic, JS, or markup touched. --- */
+
+.facets__form {
+  align-items: center;
+  padding: var(--aw-space-3) 0;
+  border-bottom: 1px solid var(--aw-color-border);
+  margin-bottom: var(--aw-space-5);
+}
+
+.facets__heading {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-ink);
+}
+
+.facets__disclosure {
+  margin-right: var(--aw-space-3);
+}
+
+.facets__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: var(--aw-space-2) var(--aw-space-3);
+  border: 1px solid var(--aw-color-border-strong);
+  border-radius: var(--aw-radius-full);
+  font-size: var(--aw-text-xs);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+  color: var(--aw-color-ink);
+  margin-bottom: 0;
+  transition: border-color var(--aw-duration-fast) var(--aw-ease), background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.facets__disclosure[open] .facets__summary,
+.facets__summary:hover {
+  border-color: var(--aw-color-brand-accent);
+  background-color: rgba(169, 124, 79, 0.08);
+  color: var(--aw-color-ink);
+}
+
+.facets__summary:hover .facets__summary-label {
+  text-decoration: none;
+}
+
+.facet-filters.sorting {
+  margin-left: auto;
+}
+
+.facet-filters__label {
+  font-size: var(--aw-text-xs);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+  color: var(--aw-color-muted);
+}
+
+.facet-filters__sort {
+  border: 1px solid var(--aw-color-border-strong);
+  border-radius: var(--aw-radius-full);
+  font-size: var(--aw-text-xs);
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+}
+
+.product-count__text {
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.mobile-facets__open {
+  border: 1px solid var(--aw-color-border-strong);
+  border-radius: var(--aw-radius-full);
+  padding: var(--aw-space-2) var(--aw-space-3);
+  transition: border-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.mobile-facets__open:hover {
+  border-color: var(--aw-color-brand-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .facets__summary,
+  .mobile-facets__open {
+    transition: none;
+  }
+}
+
 /* --- Uniform product cards: fixed-height name/price rows so a short
    title and a long title produce identically sized cards, and prices
    line up across a row regardless of how many lines the name wraps to. --- */
