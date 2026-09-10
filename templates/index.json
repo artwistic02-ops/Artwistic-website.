@@ -41,7 +41,7 @@
             "image_overlay_opacity": 10,
             "heading": "Fast dispatch. No fine print.",
             "heading_size": "hxl",
-            "subheading": "Every order leaves within 24–48 working hours, and standard shipping is free above ₹1,499.",
+            "subheading": "Every order leaves within 24\u201348 working hours, and standard shipping is free above \u20b91,499.",
             "button_label": "Shop all",
             "button_style_secondary": true,
             "show_text_box": false,
@@ -52,7 +52,11 @@
           }
         }
       },
-      "block_order": ["slide-1", "slide-2", "slide-3"],
+      "block_order": [
+        "slide-1",
+        "slide-2",
+        "slide-3"
+      ],
       "settings": {
         "layout": "full_bleed",
         "slide_height": "large",
@@ -69,22 +73,39 @@
       "blocks": {
         "earrings": {
           "type": "category",
-          "settings": { "title": "Earrings", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Earrings",
+            "link": "shopify://collections/all"
+          }
         },
         "necklaces": {
           "type": "category",
-          "settings": { "title": "Necklaces", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Necklaces",
+            "link": "shopify://collections/all"
+          }
         },
         "rings": {
           "type": "category",
-          "settings": { "title": "Rings", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Rings",
+            "link": "shopify://collections/all"
+          }
         },
         "bracelets": {
           "type": "category",
-          "settings": { "title": "Bracelets", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Bracelets",
+            "link": "shopify://collections/all"
+          }
         }
       },
-      "block_order": ["earrings", "necklaces", "rings", "bracelets"],
+      "block_order": [
+        "earrings",
+        "necklaces",
+        "rings",
+        "bracelets"
+      ],
       "settings": {
         "heading": "Shop by category",
         "columns_desktop": "4",
@@ -100,22 +121,39 @@
       "blocks": {
         "everyday": {
           "type": "intent",
-          "settings": { "title": "Everyday", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Everyday",
+            "link": "shopify://collections/all"
+          }
         },
         "gifting": {
           "type": "intent",
-          "settings": { "title": "Gifting", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Gifting",
+            "link": "shopify://collections/all"
+          }
         },
         "under-1499": {
           "type": "intent",
-          "settings": { "title": "Under ₹1,499", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Under \u20b91,499",
+            "link": "shopify://collections/all"
+          }
         },
         "stackable": {
           "type": "intent",
-          "settings": { "title": "Stackable", "link": "shopify://collections/all" }
+          "settings": {
+            "title": "Stackable",
+            "link": "shopify://collections/all"
+          }
         }
       },
-      "block_order": ["everyday", "gifting", "under-1499", "stackable"],
+      "block_order": [
+        "everyday",
+        "gifting",
+        "under-1499",
+        "stackable"
+      ],
       "settings": {
         "heading": "Or shop by intent",
         "columns_desktop": "4",
@@ -172,7 +210,11 @@
           }
         }
       },
-      "block_order": ["everyday-edit", "golden-hour", "bridal"],
+      "block_order": [
+        "everyday-edit",
+        "golden-hour",
+        "bridal"
+      ],
       "settings": {
         "heading": "Shop by mood",
         "color_scheme": "scheme-1",
@@ -242,7 +284,7 @@
       "block_order": [],
       "settings": {
         "heading": "Shop the look",
-        "subheading": "One styled scene — tap a dot to see what's worn.",
+        "subheading": "One styled scene \u2014 tap a dot to see what's worn.",
         "color_scheme": "scheme-1",
         "padding_top": 56,
         "padding_bottom": 56
@@ -254,7 +296,7 @@
       "block_order": [],
       "settings": {
         "heading": "Loved by our customers",
-        "subheading": "Real, verified reviews — curated by us.",
+        "subheading": "Real, verified reviews \u2014 curated by us.",
         "color_scheme": "scheme-1",
         "padding_top": 56,
         "padding_bottom": 56
@@ -265,22 +307,39 @@
       "blocks": {
         "craftsmanship": {
           "type": "column",
-          "settings": { "title": "Thoughtful craftsmanship", "text": "<p>Designed and finished with care, not mass-stamped.</p>" }
+          "settings": {
+            "title": "Thoughtful craftsmanship",
+            "text": "<p>Designed and finished with care, not mass-stamped.</p>"
+          }
         },
         "materials": {
           "type": "column",
-          "settings": { "title": "Made to last", "text": "<p>Materials chosen for everyday wear, not just the photo.</p>" }
+          "settings": {
+            "title": "Made to last",
+            "text": "<p>Materials chosen for everyday wear, not just the photo.</p>"
+          }
         },
         "dispatch": {
           "type": "column",
-          "settings": { "title": "Fast dispatch", "text": "<p>Every order leaves us within 24–48 working hours — free standard shipping above ₹1,499.</p>" }
+          "settings": {
+            "title": "Fast dispatch",
+            "text": "<p>Every order leaves us within 24\u201348 working hours \u2014 free standard shipping above \u20b91,499.</p>"
+          }
         },
         "checkout": {
           "type": "column",
-          "settings": { "title": "Secure checkout", "text": "<p>Pay the way you already trust.</p>" }
+          "settings": {
+            "title": "Secure checkout",
+            "text": "<p>Pay the way you already trust.</p>"
+          }
         }
       },
-      "block_order": ["craftsmanship", "materials", "dispatch", "checkout"],
+      "block_order": [
+        "craftsmanship",
+        "materials",
+        "dispatch",
+        "checkout"
+      ],
       "settings": {
         "title": "Why Artwistic",
         "heading_size": "h2",
@@ -301,18 +360,34 @@
       "blocks": {
         "sizing": {
           "type": "guide",
-          "settings": { "title": "Ring sizing, explained", "icon": "icon-ruler.svg", "link": "" }
+          "settings": {
+            "title": "Ring sizing, explained",
+            "icon": "icon-ruler.svg",
+            "link": ""
+          }
         },
         "care": {
           "type": "guide",
-          "settings": { "title": "Caring for your jewellery", "icon": "icon-heart.svg", "link": "" }
+          "settings": {
+            "title": "Caring for your jewellery",
+            "icon": "icon-heart.svg",
+            "link": ""
+          }
         },
         "layering": {
           "type": "guide",
-          "settings": { "title": "How to layer necklaces", "icon": "icon-checkmark.svg", "link": "" }
+          "settings": {
+            "title": "How to layer necklaces",
+            "icon": "icon-checkmark.svg",
+            "link": ""
+          }
         }
       },
-      "block_order": ["sizing", "care", "layering"],
+      "block_order": [
+        "sizing",
+        "care",
+        "layering"
+      ],
       "settings": {
         "heading": "Jewellery, decoded",
         "color_scheme": "scheme-1",
@@ -325,14 +400,23 @@
       "blocks": {
         "heading": {
           "type": "heading",
-          "settings": { "heading": "Be first to know", "heading_size": "h2" }
+          "settings": {
+            "heading": "Be first to know",
+            "heading_size": "h2"
+          }
         },
         "paragraph": {
           "type": "paragraph",
-          "settings": { "text": "New edits, restocks, and the occasional surprise.", "text_style": "body" }
+          "settings": {
+            "text": "New edits, restocks, and the occasional surprise.",
+            "text_style": "body"
+          }
         }
       },
-      "block_order": ["heading", "paragraph"],
+      "block_order": [
+        "heading",
+        "paragraph"
+      ],
       "settings": {
         "show_background_image": false,
         "image_overlay_opacity": 0,
@@ -344,16 +428,92 @@
         "mobile_content_alignment": "center",
         "show_text_below": true
       }
+    },
+    "artwistic_trust_strip": {
+      "type": "artwistic-trust-strip",
+      "blocks": {
+        "claim-1": {
+          "type": "claim",
+          "settings": {
+            "icon": "icon-truck.svg",
+            "label": "Delivery across India"
+          }
+        },
+        "claim-2": {
+          "type": "claim",
+          "settings": {
+            "icon": "icon-star.svg",
+            "label": "Anti-tarnish finish"
+          }
+        },
+        "claim-3": {
+          "type": "claim",
+          "settings": {
+            "icon": "icon-return.svg",
+            "label": "Made to last"
+          }
+        },
+        "claim-4": {
+          "type": "claim",
+          "settings": {
+            "icon": "icon-chat-bubble.svg",
+            "label": "Premium support"
+          }
+        },
+        "claim-5": {
+          "type": "claim",
+          "settings": {
+            "icon": "icon-box.svg",
+            "label": "18K gold plated"
+          }
+        }
+      },
+      "block_order": [
+        "claim-1",
+        "claim-2",
+        "claim-3",
+        "claim-4",
+        "claim-5"
+      ],
+      "settings": {
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "artwistic_reels": {
+      "type": "artwistic-reels",
+      "blocks": {
+        "reel-1": {
+          "type": "reel",
+          "settings": {}
+        },
+        "reel-2": {
+          "type": "reel",
+          "settings": {}
+        },
+        "reel-3": {
+          "type": "reel",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "reel-1",
+        "reel-2",
+        "reel-3"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "hero_slideshow",
+    "artwistic_trust_strip",
     "artwistic_shop_by_category",
     "artwistic_shop_by_intent",
     "artwistic_social_proof",
     "artwistic_shop_by_mood",
     "best_sellers",
     "new_arrivals",
+    "artwistic_reels",
     "artwistic_shop_the_look",
     "artwistic_reviews",
     "artwistic_why",

@@ -1,0 +1,185 @@
+{% comment %}
+  ARTWISTIC: Reels — a horizontal rail of real, merchant-uploaded
+  portrait videos, matching the homepage mockup's "Reels" module. Uses
+  Shopify's native video upload (video_tag/deferred-media, same pattern
+  as sections/video.liquid) — no third-party embed. Each block can
+  optionally link a real product; the mockup's fake per-reel like counts
+  are intentionally not reproduced (no real engagement data exists to
+  show), replaced with the real wishlist-heart toggle on the linked
+  product when one is set.
+{% endcomment %}
+
+{{ 'artwistic-reels.css' | asset_url | stylesheet_tag }}
+{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
+<script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
+
+<div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+  <div class="aw-container aw-reels__head">
+    <h2 class="aw-reels__heading">{{ section.settings.heading | default: 'Reels' }}</h2>
+    {%- if section.settings.view_all_url != blank -%}
+      <a href="{{ section.settings.view_all_url }}" class="aw-reels__view-all link">
+        {{ section.settings.view_all_label | default: 'Watch all' }}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div class="aw-rail-shell">
+    <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </button>
+    <ul class="aw-reels__rail" role="list" data-aw-rail>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign reel_video_id = block.settings.video.id
+          assign reel_poster = block.settings.video.preview_image | default: block.settings.poster
+        -%}
+        <li class="aw-reels__card" {{ block.shopify_attributes }}>
+          {%- if block.settings.video != blank -%}
+            <deferred-media class="aw-reels__media deferred-media" data-media-id="{{ reel_video_id }}">
+              <button
+                id="Deferred-Poster-Reel-{{ section.id }}-{{ forloop.index }}"
+                class="aw-reels__poster deferred-media__poster"
+                type="button"
+                aria-label="{{ 'sections.video.load_video' | t: description: block.settings.caption | escape }}"
+              >
+                {%- if reel_poster != null -%}
+                  {{ reel_poster | image_url: width: 700 | image_tag: sizes: '(min-width: 750px) 17rem, 13rem', widths: '260, 350, 520, 700' }}
+                {%- endif -%}
+                <span class="aw-reels__play motion-reduce">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                </span>
+              </button>
+              <template>
+                {{
+                  block.settings.video
+                  | video_tag:
+                    image_size: '700x',
+                    autoplay: true,
+                    loop: true,
+                    controls: true,
+                    muted: false
+                }}
+              </template>
+            </deferred-media>
+          {%- else -%}
+            <div class="aw-reels__media aw-reels__media--empty">
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {%- endif -%}
+
+          {%- if block.settings.caption != blank or block.settings.product != blank -%}
+            <div class="aw-reels__cap">
+              {%- if block.settings.product != blank -%}
+                {%- render 'artwistic-wishlist-button', product: block.settings.product -%}
+                <a href="{{ block.settings.product.url }}" class="aw-reels__cap-link">
+                  {{- block.settings.caption | default: block.settings.product.title -}}
+                </a>
+              {%- else -%}
+                <span>{{ block.settings.caption }}</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+    <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </button>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Reels",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Reels"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "\"Watch all\" link",
+      "info": "Optional. Leave blank to hide the link."
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "\"Watch all\" label",
+      "default": "Watch all"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "reel",
+      "name": "Reel",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster image",
+          "info": "Used only if the video has no thumbnail yet."
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Linked product",
+          "info": "Optional. Shows a wishlist heart and a link to the product."
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "info": "Defaults to the linked product's title."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Reels",
+      "blocks": [{ "type": "reel" }, { "type": "reel" }, { "type": "reel" }]
+    }
+  ]
+}
+{% endschema %}

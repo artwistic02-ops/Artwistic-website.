@@ -1,0 +1,63 @@
+/**
+ * ARTWISTIC TRUST STRIP — row of real product/service claim badges.
+ * See sections/artwistic-trust-strip.liquid. Scrolls with arrow controls
+ * on mobile (.aw-rail-shell/.aw-rail-arrow from artwistic-global.css);
+ * lays out as a static centered row on desktop, matching the mockup.
+ */
+
+.aw-trust-strip {
+  display: flex;
+  gap: var(--aw-space-6);
+  align-items: flex-start;
+}
+
+.aw-trust-strip__item {
+  flex: 0 0 auto;
+  width: 9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--aw-space-2);
+  scroll-snap-align: start;
+}
+
+.aw-trust-strip__icon {
+  width: 3.6rem;
+  height: 3.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aw-color-brand-accent);
+}
+
+.aw-trust-strip__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.aw-trust-strip__label {
+  font-size: var(--aw-text-xs);
+  line-height: 1.3;
+  color: var(--aw-color-muted);
+}
+
+.aw-trust-strip__arrow {
+  display: none;
+}
+
+@media (max-width: 749px) {
+  .aw-trust-strip__arrow {
+    display: flex;
+  }
+}
+
+@media (min-width: 750px) {
+  .aw-trust-strip {
+    justify-content: center;
+    overflow-x: visible;
+  }
+}

@@ -1,0 +1,143 @@
+/**
+ * ARTWISTIC REELS — portrait video rail. See sections/artwistic-reels.liquid.
+ * Rail scroll/arrow mechanics come from the shared .aw-rail-shell pattern
+ * in artwistic-global.css.
+ */
+
+.aw-reels__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--aw-space-3);
+  margin-bottom: var(--aw-space-4);
+}
+
+.aw-reels__heading {
+  font-family: var(--aw-font-heading);
+  margin: 0;
+}
+
+.aw-reels__rail {
+  display: flex;
+  gap: var(--aw-space-4);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--aw-container-pad) var(--aw-space-1);
+}
+
+.aw-reels__rail::-webkit-scrollbar {
+  display: none;
+}
+
+.aw-reels__card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 17.4rem;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 749px) {
+  .aw-reels__card {
+    width: 13rem;
+  }
+}
+
+.aw-reels__media {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--aw-radius-md);
+  overflow: hidden;
+  background: linear-gradient(160deg, #2a2420, #4a3f34 60%, #211d1a);
+}
+
+.aw-reels__media--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aw-reels__media img,
+.aw-reels__media video,
+.aw-reels__media iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aw-reels__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aw-reels__play {
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--aw-radius-full);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--aw-duration-base) var(--aw-ease), background-color var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-reels__poster:hover .aw-reels__play {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.06);
+}
+
+.aw-reels__play svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: #fff;
+  margin-left: 0.2rem;
+}
+
+.aw-reels__cap {
+  position: absolute;
+  left: 1.2rem;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  color: #fff;
+  font-size: var(--aw-text-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 1;
+}
+
+.aw-reels__cap .aw-wishlist-button {
+  position: static;
+  flex-shrink: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  background: none;
+  color: #fff;
+}
+
+.aw-reels__cap-link {
+  color: #fff;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-reels__play {
+    transition: none;
+  }
+}

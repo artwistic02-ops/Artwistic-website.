@@ -1,0 +1,103 @@
+{% comment %}
+  ARTWISTIC: Trust strip — a row of real product/service claims (delivery
+  coverage, finish/material facts, support), matching the homepage
+  mockup's icon strip. Merchant-editable blocks so every claim stays one
+  the merchant actually stands behind, rather than hardcoded copy.
+{% endcomment %}
+
+{{ 'artwistic-trust-strip.css' | asset_url | stylesheet_tag }}
+{% render 'artwistic-section-padding' %}
+
+<div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+  <div class="aw-rail-shell aw-trust-strip__shell">
+    <button type="button" class="aw-rail-arrow aw-rail-arrow--prev aw-trust-strip__arrow" data-aw-rail-prev aria-label="Previous">
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </button>
+    <ul class="aw-trust-strip" role="list" data-aw-rail>
+      {%- for block in section.blocks -%}
+        <li class="aw-trust-strip__item" {{ block.shopify_attributes }}>
+          <span class="aw-trust-strip__icon">
+            {{- block.settings.icon | inline_asset_content -}}
+          </span>
+          <span class="aw-trust-strip__label">{{ block.settings.label }}</span>
+        </li>
+      {%- endfor -%}
+    </ul>
+    <button type="button" class="aw-rail-arrow aw-rail-arrow--next aw-trust-strip__arrow" data-aw-rail-next aria-label="Next">
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </button>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Trust strip",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 28
+    }
+  ],
+  "blocks": [
+    {
+      "type": "claim",
+      "name": "Claim",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon filename",
+          "info": "An asset filename in the theme's icon library, e.g. icon-truck.svg.",
+          "default": "icon-truck.svg"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Delivery across India"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Trust strip",
+      "blocks": [
+        { "type": "claim", "settings": { "icon": "icon-truck.svg", "label": "Delivery across India" } },
+        { "type": "claim", "settings": { "icon": "icon-star.svg", "label": "Anti-tarnish finish" } },
+        { "type": "claim", "settings": { "icon": "icon-return.svg", "label": "Made to last" } },
+        { "type": "claim", "settings": { "icon": "icon-chat-bubble.svg", "label": "Premium support" } },
+        { "type": "claim", "settings": { "icon": "icon-box.svg", "label": "18K gold plated" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
