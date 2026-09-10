@@ -1,0 +1,70 @@
+{% comment %}
+  ARTWISTIC: "You might also like" cross-sell rail for the wishlist page.
+  Not referenced in any JSON template — rendered on demand by Shopify's
+  recommendation endpoint (routes.product_recommendations_url), fetched
+  with ?section_id=artwistic-wishlist-recommendations&product_id=X, using
+  Shopify's own complementary-products logic seeded from the most
+  recently saved wishlist item. No fabricated picks.
+
+  See assets/artwistic-wishlist-recommendations.js for the fetch.
+  Shares markup/CSS with sections/artwistic-cart-recommendations.liquid
+  (assets/artwistic-cart-recommendations.css, the .aw-pair / .aw-rail-shell
+  classes) since both are the same "pair it with" rail pattern.
+{% endcomment %}
+
+{% if recommendations.performed and recommendations.products_count > 0 %}
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'artwistic-cart-recommendations.css' | asset_url | stylesheet_tag }}
+
+  <div class="aw-pair">
+    <div class="aw-pair__head">
+      <span class="aw-eyebrow">{{ section.settings.eyebrow | default: 'Based on your saves' }}</span>
+      <h2 class="aw-pair__heading">{{ section.settings.heading | default: 'You might also like' }}</h2>
+    </div>
+    <div class="aw-rail-shell">
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+      <ul class="aw-pair__rail" role="list" data-aw-rail>
+        {%- for product in recommendations.products limit: section.settings.product_limit -%}
+          <li class="aw-pair__item">
+            {%- render 'card-product', card_product: product, media_aspect_ratio: 'square', quick_add: 'standard', section_id: section.id -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Wishlist recommendations",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Based on your saves"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You might also like"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Maximum products to show",
+      "default": 6
+    }
+  ]
+}
+{% endschema %}

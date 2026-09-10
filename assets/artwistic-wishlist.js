@@ -33,6 +33,16 @@
     return readList().indexOf(handle) !== -1;
   }
 
+  function add(handle) {
+    var list = readList();
+    if (list.indexOf(handle) !== -1) return false;
+    list.push(handle);
+    writeList(list);
+    syncButtons();
+    updateCountBubble();
+    return true;
+  }
+
   function toggle(handle) {
     var list = readList();
     var index = list.indexOf(handle);
@@ -91,6 +101,7 @@
   window.ArtwisticWishlist = Object.freeze({
     list: readList,
     has: has,
+    add: add,
     toggle: toggle,
   });
 })();

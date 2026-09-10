@@ -14,7 +14,28 @@
 <script src="{{ 'artwistic-wishlist-page.js' | asset_url }}" defer="defer"></script>
 
 <div class="aw-container aw-wishlist-page color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
-  <h1 class="aw-wishlist-page__heading">{{ section.settings.heading | default: 'Your wishlist' }}</h1>
+  <div class="aw-wishlist-page__head">
+    <div class="aw-wishlist-page__titles">
+      <span class="aw-eyebrow">{{ 'general.wishlist.eyebrow' | t }}</span>
+      <h1 class="aw-wishlist-page__heading">
+        {{ section.settings.heading | default: 'Your wishlist' }}
+        <span class="aw-wishlist-page__count" data-aw-wishlist-count hidden>0</span>
+      </h1>
+    </div>
+    <button
+      type="button"
+      class="aw-wishlist-page__share"
+      data-aw-wishlist-share
+      data-label-idle="{{ 'general.wishlist.share' | t }}"
+      data-label-done="{{ 'general.wishlist.share_link_copied' | t }}"
+      data-share-title="{{ 'general.wishlist.share_title' | t }}"
+      data-share-text="{{ 'general.wishlist.share_text' | t }}"
+      hidden
+    >
+      {{- 'icon-share.svg' | inline_asset_content -}}
+      <span data-aw-wishlist-share-label>{{ 'general.wishlist.share' | t }}</span>
+    </button>
+  </div>
 
   <div data-aw-wishlist-empty class="aw-wishlist-page__empty">
     <p>Nothing saved yet. Tap the heart on any product to add it here.</p>
@@ -25,6 +46,28 @@
 
   <ul data-aw-wishlist-grid class="aw-wishlist-page__grid grid grid--2-col-tablet-down grid--4-col-desktop" hidden role="list"></ul>
 </div>
+
+<div data-aw-wishlist-summary class="aw-wishlist-summary" hidden>
+  <div class="aw-wishlist-summary__row">
+    <span class="aw-wishlist-summary__label">{{ 'general.wishlist.value_label' | t }}</span>
+    <span class="aw-wishlist-summary__price" data-aw-wishlist-summary-total></span>
+  </div>
+  <p class="aw-wishlist-summary__note">{{ 'general.wishlist.value_note' | t }}</p>
+  <button
+    type="button"
+    class="aw-wishlist-summary__move-all"
+    data-aw-wishlist-move-all
+    data-label-idle="{{ 'general.wishlist.move_all_to_bag' | t }}"
+    data-label-loading="{{ 'general.wishlist.moving_all_to_bag' | t }}"
+    data-label-error="{{ 'general.wishlist.move_to_bag_error' | t }}"
+  >
+    {{ 'general.wishlist.move_all_to_bag' | t }}
+  </button>
+  <p class="aw-wishlist-summary__footnote">{{ 'general.wishlist.move_all_note' | t }}</p>
+</div>
+
+<div id="aw-wishlist-pair"></div>
+<script src="{{ 'artwistic-wishlist-recommendations.js' | asset_url }}" defer="defer"></script>
 
 <template id="aw-wishlist-card-template">
   <li class="grid__item aw-wishlist-card">

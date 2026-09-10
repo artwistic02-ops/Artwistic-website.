@@ -13,6 +13,10 @@
   var grid = document.querySelector('[data-aw-wishlist-grid]');
   var emptyState = document.querySelector('[data-aw-wishlist-empty]');
   var template = document.getElementById('aw-wishlist-card-template');
+  var shareButton = document.querySelector('[data-aw-wishlist-share]');
+  var summaryBar = document.querySelector('[data-aw-wishlist-summary]');
+  var summaryTotal = document.querySelector('[data-aw-wishlist-summary-total]');
+  var moveAllButton = document.querySelector('[data-aw-wishlist-move-all]');
   if (!grid || !emptyState || !template || !window.ArtwisticWishlist) return;
 
   // Toggling storage dispatches 'artwistic:wishlist:change', which this
@@ -126,31 +130,158 @@
     grid.hidden = isEmpty;
   }
 
+  function renderSummary(products) {
+    if (!summaryBar || !summaryTotal) return;
+    var available = products.filter(function (product) {
+      var variant = product.variants && product.variants[0];
+      return !!(variant && variant.available);
+    });
+
+    if (available.length === 0) {
+      summaryBar.hidden = true;
+      return;
+    }
+
+    var total = available.reduce(function (sum, product) {
+      return sum + product.price;
+    }, 0);
+    summaryTotal.textContent = formatMoney(total);
+    summaryBar.hidden = false;
+  }
+
+  function moveAllToBag() {
+    if (!moveAllButton) return;
+    var products = grid.__awProducts || [];
+    var available = products.filter(function (product) {
+      var variant = product.variants && product.variants[0];
+      return !!(variant && variant.available);
+    });
+    if (available.length === 0) return;
+
+    moveAllButton.disabled = true;
+    moveAllButton.textContent = moveAllButton.dataset.labelLoading;
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        items: available.map(function (product) {
+          return { id: product.variants[0].id, quantity: 1 };
+        }),
+      }),
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error('cart add failed');
+        return response.json();
+      })
+      .then(function () {
+        refreshCartIconBubble();
+        available.forEach(function (product) {
+          window.ArtwisticWishlist.toggle(product.handle);
+        });
+        moveAllButton.disabled = false;
+        moveAllButton.textContent = moveAllButton.dataset.labelIdle;
+      })
+      .catch(function () {
+        moveAllButton.disabled = false;
+        moveAllButton.textContent = moveAllButton.dataset.labelError;
+        window.setTimeout(function () {
+          moveAllButton.textContent = moveAllButton.dataset.labelIdle;
+        }, 2200);
+      });
+  }
+
   function load() {
     var handles = window.ArtwisticWishlist.list();
     if (handles.length === 0) {
       toggleEmptyState(true);
+      if (summaryBar) summaryBar.hidden = true;
+      grid.__awProducts = [];
       return;
     }
 
     toggleEmptyState(false);
     grid.innerHTML = '';
 
-    handles.forEach(function (handle) {
-      fetch('/products/' + encodeURIComponent(handle) + '.js')
-        .then(function (response) {
-          if (!response.ok) throw new Error('not found');
-          return response.json();
-        })
-        .then(function (product) {
-          grid.appendChild(renderCard(product));
+    var fetches = handles.map(function (handle) {
+      return fetch('/products/' + encodeURIComponent(handle) + '.js').then(function (response) {
+        if (!response.ok) throw new Error('not found');
+        return response.json();
+      });
+    });
+
+    Promise.allSettled(fetches).then(function (results) {
+      var products = [];
+      results.forEach(function (result) {
+        if (result.status !== 'fulfilled') return;
+        products.push(result.value);
+        grid.appendChild(renderCard(result.value));
+      });
+      grid.__awProducts = products;
+      renderSummary(products);
+    });
+  }
+
+  function importSharedHandles() {
+    var params = new URLSearchParams(window.location.search);
+    var shared = params.get('shared');
+    if (!shared) return;
+
+    shared
+      .split(',')
+      .map(function (handle) {
+        return handle.trim();
+      })
+      .filter(Boolean)
+      .forEach(function (handle) {
+        window.ArtwisticWishlist.add(handle);
+      });
+
+    params.delete('shared');
+    var query = params.toString();
+    var cleanUrl = window.location.pathname + (query ? '?' + query : '');
+    window.history.replaceState({}, '', cleanUrl);
+  }
+
+  if (shareButton) {
+    shareButton.hidden = false;
+    shareButton.addEventListener('click', function () {
+      var handles = window.ArtwisticWishlist.list();
+      if (handles.length === 0) return;
+      var shareUrl = window.location.origin + window.location.pathname + '?shared=' + handles.map(encodeURIComponent).join(',');
+
+      if (navigator.share) {
+        navigator.share({
+          title: shareButton.dataset.shareTitle,
+          text: shareButton.dataset.shareText,
+          url: shareUrl,
+        }).catch(function () {
+          /* User cancelled the native share sheet — no fallback needed. */
+        });
+        return;
+      }
+
+      var label = shareButton.querySelector('[data-aw-wishlist-share-label]');
+      navigator.clipboard
+        .writeText(shareUrl)
+        .then(function () {
+          if (!label) return;
+          label.textContent = shareButton.dataset.labelDone;
+          window.setTimeout(function () {
+            label.textContent = shareButton.dataset.labelIdle;
+          }, 2200);
         })
         .catch(function () {
-          /* Product removed/unpublished since it was saved — skip it silently. */
+          /* Clipboard unavailable — the share link still works if copied manually. */
         });
     });
   }
 
+  if (moveAllButton) {
+    moveAllButton.addEventListener('click', moveAllToBag);
+  }
+
+  importSharedHandles();
   document.addEventListener('artwistic:wishlist:change', load);
   document.addEventListener('DOMContentLoaded', load);
   if (document.readyState !== 'loading') load();

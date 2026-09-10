@@ -36,7 +36,17 @@
       "move_to_bag_error": "Couldn't add this to your bag. Try again.",
       "remove": "Remove",
       "in_stock": "In stock",
-      "out_of_stock": "Out of stock"
+      "out_of_stock": "Out of stock",
+      "eyebrow": "Saved for later",
+      "share": "Share",
+      "share_link_copied": "Link copied",
+      "share_title": "My Artwistic wishlist",
+      "share_text": "Take a look at what I've saved on Artwistic",
+      "value_label": "Wishlist value",
+      "value_note": "Move everything in stock to your bag in one tap",
+      "move_all_to_bag": "Move all to bag",
+      "moving_all_to_bag": "Adding…",
+      "move_all_note": "Out-of-stock pieces stay saved, not added"
     },
     "pagination": {
       "label": "Pagination",
