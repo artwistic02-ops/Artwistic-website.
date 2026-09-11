@@ -45,11 +45,13 @@
   display: inline-flex;
   position: relative;
   align-items: center;
+  gap: var(--aw-space-3);
   border: 1.5px dashed var(--aw-color-border-strong);
   border-radius: 0.3rem 1.2rem 1.2rem 0.3rem;
   padding: var(--aw-space-2) var(--aw-space-3) var(--aw-space-2) var(--aw-space-5);
   background: rgb(var(--color-background));
   transform: rotate(-0.8deg);
+  flex-wrap: wrap;
 }
 
 .aw-price-tag::before {
@@ -68,6 +70,12 @@
 .aw-price-tag .price {
   font-size: var(--aw-text-lg);
   font-weight: 700;
+}
+
+.aw-price-tag__save {
+  font-size: var(--aw-text-xs);
+  font-weight: 700;
+  color: var(--aw-color-success);
 }
 
 /* --- Purchase confidence strip --- */
@@ -261,6 +269,27 @@
   .related-products .card__inner {
     transition: none;
   }
+}
+
+/* --- "You might also like" — the second related-products instance
+   (templates/product.json), a wider real-recommendation rail below
+   "Complete the look" and Reviews, matching the mockup. Shares all of
+   the card styling above via the same .related-products class; this
+   only adds a perforated top divider so the two rails read as
+   distinct bands instead of running together. */
+
+[data-section-id='you-might-also-like'] {
+  position: relative;
+}
+
+[data-section-id='you-might-also-like']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--aw-container-pad);
+  right: var(--aw-container-pad);
+  height: 2px;
+  background-image: repeating-linear-gradient(90deg, var(--aw-color-border-strong) 0 7px, transparent 7px 14px);
 }
 
 /* --- Finish swatches ---

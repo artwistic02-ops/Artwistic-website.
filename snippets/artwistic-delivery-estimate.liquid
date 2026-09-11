@@ -6,6 +6,13 @@
   docs/SHOPIFY_ADMIN_SETUP.md for the exact rules and how to keep the
   holiday list current.
 
+  Visual: a 3-tier "Order now / Dispatches / Delivered" stepper,
+  matching the approved product-page mockup. The state dropdown (real,
+  reliable) is kept as the input mechanism rather than the mockup's
+  pincode-prefix guess — same underlying calculation, just restyled.
+  The tier row is decorative/aria-hidden; the visually-hidden status
+  paragraph carries the real live-announced result for screen readers.
+
   Usage:
     {% render 'artwistic-delivery-estimate', block: block %}
 {% endcomment %}
@@ -74,5 +81,31 @@
       </optgroup>
     </select>
   </div>
-  <p class="aw-delivery-estimate__result" data-aw-delivery-result role="status"></p>
+  <div class="aw-tier-row" data-aw-tier-row data-aw-motion hidden aria-hidden="true">
+    <div class="aw-tier-track">
+      <div class="aw-tier-track__fill" data-aw-tier-fill></div>
+    </div>
+    <div class="aw-tier is-active" data-tier="1">
+      <span class="aw-tier__icon aw-tier__icon--order">
+        {{- 'icon-check-mark.svg' | inline_asset_content -}}
+      </span>
+      <span class="aw-tier__label">Order now</span>
+      <span class="aw-tier__date">Today</span>
+    </div>
+    <div class="aw-tier" data-tier="2" data-aw-tier-dispatch>
+      <span class="aw-tier__icon aw-tier__icon--dispatch">
+        {{- 'icon-box.svg' | inline_asset_content -}}
+      </span>
+      <span class="aw-tier__label">Dispatches</span>
+      <span class="aw-tier__date" data-aw-tier-dispatch-date>&mdash;</span>
+    </div>
+    <div class="aw-tier" data-tier="3" data-aw-tier-delivered>
+      <span class="aw-tier__icon aw-tier__icon--delivered">
+        {{- 'icon-truck.svg' | inline_asset_content -}}
+      </span>
+      <span class="aw-tier__label">Delivered</span>
+      <span class="aw-tier__date" data-aw-tier-delivered-date>&mdash;</span>
+    </div>
+  </div>
+  <p class="aw-delivery-estimate__result aw-visually-hidden" data-aw-delivery-result role="status"></p>
 </div>

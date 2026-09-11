@@ -53,9 +53,19 @@
     return date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
   }
 
+  function formatRange(from, to) {
+    return from.getTime() === to.getTime() ? formatDate(from) : formatDate(from) + ' – ' + formatDate(to);
+  }
+
   function init(container) {
     var select = container.querySelector('[data-aw-delivery-state]');
     var result = container.querySelector('[data-aw-delivery-result]');
+    var tierRow = container.querySelector('[data-aw-tier-row]');
+    var tierFill = container.querySelector('[data-aw-tier-fill]');
+    var tierDispatch = container.querySelector('[data-aw-tier-dispatch]');
+    var tierDelivered = container.querySelector('[data-aw-tier-delivered]');
+    var tierDispatchDate = container.querySelector('[data-aw-tier-dispatch-date]');
+    var tierDeliveredDate = container.querySelector('[data-aw-tier-delivered-date]');
     if (!select || !result) return;
 
     var holidays = parseHolidays(container.getAttribute('data-holidays'));
@@ -76,6 +86,10 @@
       var group = select.value;
       if (!group) {
         result.textContent = '';
+        if (tierRow) tierRow.hidden = true;
+        if (tierFill) tierFill.style.width = '';
+        if (tierDispatch) tierDispatch.classList.remove('is-active');
+        if (tierDelivered) tierDelivered.classList.remove('is-active');
         return;
       }
 
@@ -86,8 +100,22 @@
       var deliveryEarliest = addBusinessDays(dispatchEarliest, transitRange.min, holidays);
       var deliveryLatest = addBusinessDays(dispatchLatest, transitRange.max, holidays);
 
-      result.textContent =
-        'Arrives ' + formatDate(deliveryEarliest) + ' – ' + formatDate(deliveryLatest);
+      result.textContent = 'Arrives ' + formatRange(deliveryEarliest, deliveryLatest);
+
+      if (tierDispatchDate) tierDispatchDate.textContent = formatRange(dispatchEarliest, dispatchLatest);
+      if (tierDeliveredDate) tierDeliveredDate.textContent = formatRange(deliveryEarliest, deliveryLatest);
+
+      if (tierRow) {
+        tierRow.hidden = false;
+        // Force a reflow before adding the fill class so the width
+        // transition (0% -> 100%) actually plays, matching how the
+        // approved mockup animates the tier line filling in left to right.
+        // eslint-disable-next-line no-unused-expressions
+        tierRow.offsetWidth;
+        if (tierFill) tierFill.style.width = '100%';
+        if (tierDispatch) tierDispatch.classList.add('is-active');
+        if (tierDelivered) tierDelivered.classList.add('is-active');
+      }
     });
   }
 

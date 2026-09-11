@@ -126,6 +126,20 @@
                       show_badges: true,
                       price_class: 'price--large'
                     -%}
+                    {%- comment -%} ARTWISTIC: real "Save X%" computed from compare_at_price — never a fabricated number, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+                    {%- liquid
+                      assign aw_price_variant = product.selected_or_first_available_variant
+                      assign aw_compare_at = aw_price_variant.compare_at_price
+                    -%}
+                    {%- if aw_compare_at > aw_price_variant.price -%}
+                      {%- assign aw_save_pct = aw_compare_at
+                        | minus: aw_price_variant.price
+                        | times: 100.0
+                        | divided_by: aw_compare_at
+                        | round
+                      -%}
+                      <span class="aw-price-tag__save" data-aw-save-percentage>Save {{ aw_save_pct }}%</span>
+                    {%- endif -%}
                   </div>
                   {%- if product.quantity_price_breaks_configured? -%}
                     <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
