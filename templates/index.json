@@ -295,8 +295,22 @@
     },
     "artwistic_reviews": {
       "type": "artwistic-reviews",
-      "blocks": {},
-      "block_order": [],
+      "blocks": {
+        "review-1": { "type": "review", "settings": { "review": "" } },
+        "review-2": { "type": "review", "settings": { "review": "" } },
+        "review-3": { "type": "review", "settings": { "review": "" } },
+        "review-4": { "type": "review", "settings": { "review": "" } },
+        "review-5": { "type": "review", "settings": { "review": "" } },
+        "review-6": { "type": "review", "settings": { "review": "" } },
+        "review-7": { "type": "review", "settings": { "review": "" } },
+        "review-8": { "type": "review", "settings": { "review": "" } },
+        "review-9": { "type": "review", "settings": { "review": "" } },
+        "review-10": { "type": "review", "settings": { "review": "" } }
+      },
+      "block_order": [
+        "review-1", "review-2", "review-3", "review-4", "review-5",
+        "review-6", "review-7", "review-8", "review-9", "review-10"
+      ],
       "settings": {
         "heading": "Loved by our customers",
         "subheading": "Real, verified reviews \u2014 curated by us.",
