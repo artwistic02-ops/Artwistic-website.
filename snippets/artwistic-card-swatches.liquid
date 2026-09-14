@@ -1,0 +1,65 @@
+{% comment %}
+  ARTWISTIC: real variant-swatch row for the global product card (see
+  snippets/card-product.liquid and ARTWISTIC_CHANGELOG.md). Renders only
+  when the product actually has a swatch-configured option (Shopify's
+  native product-option swatches, Settings → the option's own "Swatches"
+  config) — no fabricated colors, and nothing renders for a product with
+  only one value or no swatch data.
+
+  Clicking a swatch swaps the card's displayed image to that value's
+  variant image (when the variant has one) and updates which variant the
+  card's Add to cart button will add — a real preview, not a decorative
+  toggle. Only the first swatch-configured option is used; a second
+  differentiator (e.g. size) still resolves via Shopify's own "first
+  available variant" logic when the card's Add to cart button is used.
+
+  Usage:
+    {% render 'artwistic-card-swatches', product: card_product, max: 4 %}
+{% endcomment %}
+
+{%- liquid
+  assign aw_swatch_option = null
+  for aw_option in product.options_with_values
+    assign aw_has_swatch = false
+    for aw_value in aw_option.values
+      if aw_value.swatch.color != blank or aw_value.swatch.image != blank
+        assign aw_has_swatch = true
+      endif
+    endfor
+    if aw_has_swatch and aw_swatch_option == null
+      assign aw_swatch_option = aw_option
+    endif
+  endfor
+  assign aw_max = max | default: 4
+-%}
+
+{%- if aw_swatch_option and aw_swatch_option.values.size > 1 -%}
+  <div class="aw-card-swatches" data-aw-card-swatches data-option-position="{{ aw_swatch_option.position }}">
+    {%- for aw_value in aw_swatch_option.values limit: aw_max -%}
+      {%- liquid
+        case aw_swatch_option.position
+          when 1
+            assign aw_variant = product.variants | where: 'option1', aw_value.name | first
+          when 2
+            assign aw_variant = product.variants | where: 'option2', aw_value.name | first
+          when 3
+            assign aw_variant = product.variants | where: 'option3', aw_value.name | first
+        endcase
+      -%}
+      <button
+        type="button"
+        class="aw-card-swatch{% if forloop.first %} is-selected{% endif %}"
+        data-aw-card-swatch
+        data-variant-id="{{ aw_variant.id }}"
+        data-variant-image="{% if aw_variant.featured_image %}{{ aw_variant.featured_image | image_url: width: 720 }}{% endif %}"
+        aria-label="{{ aw_value.name | escape }}"
+        aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+      >
+        {%- render 'swatch', swatch: aw_value.swatch -%}
+      </button>
+    {%- endfor -%}
+    {%- if aw_swatch_option.values.size > aw_max -%}
+      <span class="aw-card-swatch-more">+{{ aw_swatch_option.values.size | minus: aw_max }}</span>
+    {%- endif -%}
+  </div>
+{%- endif -%}

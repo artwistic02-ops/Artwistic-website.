@@ -4,6 +4,30 @@ Every meaningful ARTWISTIC change to this theme is recorded here. See [DAWN_UPDA
 
 ---
 
+## 2026-09-14 — Global product card redesign
+
+**Feature/change:** Rebuilt the single product-card component (`snippets/card-product.liquid`, used everywhere: homepage rails, collection grids, related products, search, cart/wishlist recommendations) to match the approved card mockup: one top-left badge, always-visible cart + wishlist icons over the image (no hover-to-reveal), real variant swatches with a real image/variant preview on click, and a real savings note next to the price.
+
+**Files added:**
+- `assets/artwistic-product-card.css` — badge, always-visible action icons, swatch row, offer-note, and the global 2-line title clamp (previously scoped only to the collection page in `artwistic-collection.css`).
+- `assets/artwistic-product-card.js` — direct add-to-cart (first/selected variant, no modal) reusing Dawn's own cart-drawer section re-render + pub/sub, and swatch-click variant/image swap.
+- `snippets/artwistic-card-badge.liquid` — one badge slot: sold out → merchant-set text (`product.metafields.artwistic.card_badge_text`) → real auto-computed "X% off" → nothing.
+- `snippets/artwistic-card-swatches.liquid` — real variant swatches (Shopify's native swatch config), only rendered when a swatch-configured option with 2+ values actually exists.
+
+**Dawn files modified:**
+- `snippets/card-product.liquid` — added the new badge/actions/swatches into the media-card branch; skipped Dawn's own duplicate below-image sold-out/sale badge for media cards (kept for text-only cards, which have no image to overlay); skipped Dawn's native full-width `quick_add: 'standard'` button (superseded by the on-image cart icon) — `quick_add: 'bulk'` is untouched.
+- `snippets/artwistic-wishlist-button.liquid` — added a `style: 'card-action'` variant so the existing wishlist button can sit inline in the new action row instead of its default top-right placement.
+
+**Reason:** the merchant wanted one consistent, on-brand product card everywhere instead of Dawn's default per-context styling, with the top badge text editable straight from the Shopify Admin (no code/theme-editor step) per product.
+
+**Shopify dependencies:** none (works with zero setup — badge falls back to auto-discount or nothing, swatches only show for products with real swatch-configured options).
+**Metafield dependencies:** `artwistic.card_badge_text` (optional) — see [docs/METAFIELDS.md](docs/METAFIELDS.md).
+**Metaobject dependencies:** none.
+
+**Known tradeoff:** the on-image cart icon always adds the product's first/selected variant directly (no size/option picker), matching the approved design. For a multi-variant product where the swatch row doesn't fully disambiguate (e.g. a ring that also varies by size), this can add a variant the shopper didn't intend — cart contents are always correct and editable, but the shopper should double check on the cart page.
+
+---
+
 ## 2026-08-30 — Foundation layer
 
 **Feature/change:** Established the isolated ARTWISTIC customization layer on top of the stock Dawn theme.

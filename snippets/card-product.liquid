@@ -30,6 +30,9 @@
   {%- comment -%} ARTWISTIC: wishlist toggle on product cards, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
   {{ 'artwistic-wishlist.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
+  {%- comment -%} ARTWISTIC: global product card — badge, always-visible cart/wishlist, swatches, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+  {{ 'artwistic-product-card.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'artwistic-product-card.js' | asset_url }}" defer="defer"></script>
 {%- endunless -%}
 {%- if card_product and card_product != empty -%}
   {%- liquid
@@ -63,9 +66,25 @@
           style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
         >
           {%- if card_product.featured_media -%}
+            {%- assign aw_badge_id = 'Badge-' | append: section_id | append: '-' | append: card_product.id -%}
             <div class="card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
-              {%- comment -%} ARTWISTIC: wishlist toggle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-              {%- render 'artwistic-wishlist-button', product: card_product -%}
+              {%- comment -%} ARTWISTIC: global card badge + always-visible actions, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+              {%- render 'artwistic-card-badge', product: card_product, id: aw_badge_id -%}
+              <div class="aw-card-actions">
+                {%- render 'artwistic-wishlist-button', product: card_product, style: 'card-action' -%}
+                <button
+                  type="button"
+                  class="aw-card-add"
+                  data-aw-card-add
+                  data-variant-id="{{ card_product.selected_or_first_available_variant.id }}"
+                  aria-label="{{ 'products.product.add_to_cart' | t }}"
+                  {% if card_product.selected_or_first_available_variant.available == false %}
+                    disabled
+                  {% endif %}
+                >
+                  {{- 'icon-cart.svg' | inline_asset_content -}}
+                </button>
+              </div>
               <div class="media media--transparent media--hover-effect">
                 {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
                 <img
@@ -212,6 +231,12 @@
               {%- endif -%}
 
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+              {%- comment -%} ARTWISTIC: real savings note + variant swatches, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+              {%- if card_product.compare_at_price > card_product.price -%}
+                {%- assign aw_card_percent_off = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price | round -%}
+                <span class="aw-card-offer-note">{{ aw_card_percent_off }}% off</span>
+              {%- endif -%}
+              {%- render 'artwistic-card-swatches', product: card_product -%}
               {%- if card_product.quantity_price_breaks_configured? -%}
                 {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                   {% liquid
@@ -296,7 +321,14 @@
             </div>
           </div>
           {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
-          {% if quick_add == 'standard' %}
+          {%- comment -%}
+            ARTWISTIC: quick_add == 'standard' is now handled by the
+            always-visible cart icon rendered directly on the image (see
+            .aw-card-actions above) — Dawn's own full-width "Add to
+            cart"/"Choose options" button below the price is redundant
+            with it and intentionally skipped. Bulk mode is untouched.
+          {%- endcomment -%}
+          {% if quick_add == 'standard' and false %}
             <div class="quick-add no-js-hidden">
               {%- liquid
                 assign qty_rules = false
@@ -555,23 +587,30 @@
               </div>
             {% endif %}
           {% endif %}
-          <div class="card__badge {{ settings.badge_position }}">
-            {%- if card_product.available == false -%}
-              <span
-                id="Badge-{{ section_id }}-{{ card_product.id }}"
-                class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
-              >
-                {{- 'products.product.sold_out' | t -}}
-              </span>
-            {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
-              <span
-                id="Badge-{{ section_id }}-{{ card_product.id }}"
-                class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
-              >
-                {{- 'products.product.on_sale' | t -}}
-              </span>
-            {%- endif -%}
-          </div>
+          {%- comment -%}
+            ARTWISTIC: for media cards, the badge already rendered on the
+            image itself (see aw-card-badge above) — this text-only
+            fallback only applies when there's no image to put it on.
+          {%- endcomment -%}
+          {%- unless card_product.featured_media -%}
+            <div class="card__badge {{ settings.badge_position }}">
+              {%- if card_product.available == false -%}
+                <span
+                  id="Badge-{{ section_id }}-{{ card_product.id }}"
+                  class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
+                >
+                  {{- 'products.product.sold_out' | t -}}
+                </span>
+              {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
+                <span
+                  id="Badge-{{ section_id }}-{{ card_product.id }}"
+                  class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
+                >
+                  {{- 'products.product.on_sale' | t -}}
+                </span>
+              {%- endif -%}
+            </div>
+          {%- endunless -%}
         </div>
       </div>
     </div>

@@ -34,6 +34,7 @@ Every metafield ARTWISTIC theme code reads. Create each one in Shopify Admin **b
 | `artwistic` | `anti_tarnish` | Anti-Tarnish | True or false | — | Optional | Whether the piece is treated to resist tarnishing | Product page trust badges | `true` |
 | `artwistic` | `warranty` | Warranty | Single line text | — | Optional | Warranty terms, if offered | Product page trust module | `6-month manufacturing defect warranty` |
 | `artwistic` | `package_contents` | Package Contents | Single line text | — | Optional | What ships in the box | Product page trust module | `1x necklace, branded pouch, care card` |
+| `artwistic` | `card_badge_text` | Card Badge Text | Single line text | — | Optional | The top-left badge text on the global product card — e.g. "Selling fast", "Loved by many", "Bestseller". Edit this per product straight from the Admin, no theme/code changes needed. When left blank, the card falls back to an auto-computed real "X% off" badge if the product has a genuine discount, or no badge at all. | Global product card (`snippets/card-product.liquid`) everywhere it's used: homepage rails, collection grids, related products, search, cart/wishlist recommendations | `Selling fast` |
 
 **Owner for all rows above:** Products.
 

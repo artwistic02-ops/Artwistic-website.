@@ -7,12 +7,13 @@
     {% render 'artwistic-wishlist-button', product: card_product %}
     {% render 'artwistic-wishlist-button', product: product, size: 'large' %}
     {% render 'artwistic-wishlist-button', product: product, size: 'large', style: 'inline' %}
+    {% render 'artwistic-wishlist-button', product: product, style: 'card-action' %}
 {% endcomment %}
 
 {%- if product != blank -%}
   <button
     type="button"
-    class="aw-wishlist-button{% if size == 'large' %} aw-wishlist-button--large{% endif %}{% if style == 'inline' %} aw-wishlist-button--inline{% endif %}"
+    class="aw-wishlist-button{% if size == 'large' %} aw-wishlist-button--large{% endif %}{% if style == 'inline' %} aw-wishlist-button--inline{% endif %}{% if style == 'card-action' %} aw-wishlist-button--card-action{% endif %}"
     data-aw-wishlist-toggle
     data-aw-product-id="{{ product.id }}"
     data-aw-product-handle="{{ product.handle }}"

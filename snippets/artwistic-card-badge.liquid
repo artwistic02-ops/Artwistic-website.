@@ -1,0 +1,35 @@
+{% comment %}
+  ARTWISTIC: single top-left badge for the global product card (see
+  snippets/card-product.liquid and ARTWISTIC_CHANGELOG.md). One slot,
+  in priority order:
+    1. Sold out — real availability, never overridable.
+    2. Merchant-set text (product.metafields.artwistic.card_badge_text)
+       — e.g. "Selling fast", "Loved by many", "Bestseller" — edited
+       directly on the product in Shopify Admin, no code or theme
+       editor involved. See docs/METAFIELDS.md.
+    3. A real discount, auto-computed from compare_at_price, only when
+       no merchant text is set — never fabricated, never shown if the
+       product isn't actually discounted.
+  Renders nothing when none of the above apply.
+
+  Usage:
+    {% render 'artwistic-card-badge', product: card_product, id: badge_id %}
+{% endcomment %}
+
+{%- liquid
+  assign aw_badge_text = product.metafields.artwistic.card_badge_text.value
+  assign aw_percent_off = 0
+  if product.compare_at_price > product.price
+    assign aw_percent_off = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round
+  endif
+-%}
+
+{%- if product.available == false -%}
+  <span id="{{ id }}" class="aw-card-badge aw-card-badge--soldout">
+    {{- 'products.product.sold_out' | t -}}
+  </span>
+{%- elsif aw_badge_text != blank -%}
+  <span id="{{ id }}" class="aw-card-badge">{{ aw_badge_text }}</span>
+{%- elsif aw_percent_off > 0 -%}
+  <span id="{{ id }}" class="aw-card-badge aw-card-badge--sale">{{ aw_percent_off }}% off</span>
+{%- endif -%}
