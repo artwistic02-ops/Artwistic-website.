@@ -23,6 +23,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  max-width: calc(100% - 2 * var(--aw-space-2));
   background: rgb(var(--color-background));
   color: var(--aw-color-ink);
   font-family: var(--aw-font-mono);
@@ -31,6 +32,9 @@
   padding: 0.4rem 0.9rem;
   border-radius: var(--aw-radius-xs);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .aw-card-badge--sale {
@@ -105,6 +109,7 @@
 }
 
 .aw-card-offer-note {
+  display: block;
   font-size: var(--aw-text-xs);
   font-weight: 600;
   color: var(--aw-color-success);
@@ -113,13 +118,18 @@
 .aw-card-swatches {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 0.2rem;
   --swatch-input--size: 1.8rem;
 }
 
 .aw-card-swatch {
-  padding: 0;
+  /* Visual swatch stays small (--swatch-input--size), but the tappable
+     area is padded out to a real touch target so it's usable on
+     mobile without enlarging the swatch itself. */
+  padding: 0.7rem;
+  margin: -0.7rem;
   border: none;
   background: none;
   cursor: pointer;
@@ -130,7 +140,7 @@
 .aw-card-swatch.is-selected::after {
   content: '';
   position: absolute;
-  inset: -0.4rem;
+  inset: 0.5rem;
   border: 1.5px solid var(--aw-color-ink);
   border-radius: 50%;
 }
@@ -139,6 +149,33 @@
   font-family: var(--aw-font-mono);
   font-size: var(--aw-text-xs);
   color: var(--aw-color-muted);
+  white-space: nowrap;
+}
+
+/* ---------- Mobile (Dawn's own small-viewport breakpoint) ---------- */
+@media screen and (max-width: 749px) {
+  /* Real touch targets (44px minimum) instead of the desktop-hover
+     sizing — these buttons have no hover state to fall back on for a
+     tap, so they need to be comfortably tappable at their base size. */
+  .aw-card-add,
+  .aw-wishlist-button--card-action {
+    width: 4.2rem;
+    height: 4.2rem;
+  }
+
+  .aw-card-actions {
+    gap: 0.9rem;
+  }
+
+  .aw-card-badge {
+    font-size: 1rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .aw-card-swatches {
+    --swatch-input--size: 2rem;
+    gap: 1rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
