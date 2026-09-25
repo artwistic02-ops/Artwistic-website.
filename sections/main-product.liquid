@@ -14,9 +14,10 @@
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
   {{ 'component-slider.css' | asset_url | stylesheet_tag }}
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
+  {{ 'notify-me-form.css' | asset_url | stylesheet_tag }}
+  {{ 'sticky-atc.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
-  {%- comment -%} ARTWISTIC: trust/gallery/layout styling, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-  {{ 'artwistic-trust.css' | asset_url | stylesheet_tag }}
+  {%- comment -%} ARTWISTIC: product-page gallery/layout restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
   {{ 'artwistic-product-gallery.css' | asset_url | stylesheet_tag }}
   {{ 'artwistic-product-page.css' | asset_url | stylesheet_tag }}
 
@@ -79,15 +80,16 @@
   {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
   <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
     <div class="page-width">
-      {%- comment -%} ARTWISTIC: breadcrumbs, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-      {{ 'artwistic-collection.css' | asset_url | stylesheet_tag }}
-      {%- render 'artwistic-breadcrumbs' -%}
       <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
-        <div class="grid__item product__media-wrapper aw-product-media-wrapper">
+        <div class="grid__item product__media-wrapper">
           {%- comment -%} ARTWISTIC: wishlist toggle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
           {%- render 'artwistic-card-actions', card_product: product, heart_only: true, size: 'large' -%}
           {% render 'product-media-gallery', variant_images: variant_images %}
+          {%- comment -%} ARTWISTIC: persistent video bubble + mobile stories progress bar, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
           {%- render 'artwistic-video-bubble', product: product -%}
+          {%- if product.media.size > 1 -%}
+            <script src="{{ 'artwistic-product-gallery.js' | asset_url }}" defer="defer"></script>
+          {%- endif -%}
         </div>
         <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
           <section
@@ -216,15 +218,15 @@
                       {%- endif -%}
                     {%- endif -%}
                   </p>
-                {%- comment -%} ARTWISTIC: description folded into an accordion instead of a raw always-visible block, matching the finalized design {%- endcomment -%}
                 {%- when 'description' -%}
                   {%- if product.description != blank -%}
                     <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
-                      <details id="Details-{{ block.id }}-{{ section.id }}">
+                      <details id="Details-{{ block.id }}-{{ section.id }}" {% if block.settings.open_by_default %}open{% endif %}>
                         <summary>
                           <div class="summary__title">
+                            {% render 'icon-accordion', icon: block.settings.icon %}
                             <h2 class="h4 accordion__title inline-richtext">
-                              {{ 'products.product.description' | t }}
+                              {{ block.settings.heading | default: 'Description' }}
                             </h2>
                           </div>
                           {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -235,24 +237,6 @@
                       </details>
                     </div>
                   {%- endif -%}
-                {%- comment -%} ARTWISTIC: material transparency + trust badges block, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-                {%- when 'artwistic_trust' -%}
-                  <div class="quick-add-hidden" {{ block.shopify_attributes }}>
-                    {%- if block.settings.show_badges -%}
-                      {%- render 'artwistic-trust-signals', product: product -%}
-                    {%- endif -%}
-                    {%- render 'artwistic-product-information', product: product, heading: block.settings.heading -%}
-                  </div>
-                {%- comment -%} ARTWISTIC: glanceable rating chip, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-                {%- when 'artwistic_rating_summary' -%}
-                  <div {{ block.shopify_attributes }}>
-                    {%- render 'artwistic-rating-summary', product: product -%}
-                  </div>
-                {%- comment -%} ARTWISTIC: full verified review list, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-                {%- when 'artwistic_reviews' -%}
-                  <div class="quick-add-hidden" {{ block.shopify_attributes }}>
-                    {%- render 'artwistic-product-reviews', product: product -%}
-                  </div>
                 {%- when 'sku' -%}
                   <p
                     class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
@@ -266,6 +250,26 @@
                 {%- when 'custom_liquid' -%}
                   {{ block.settings.custom_liquid }}
                 {%- when 'collapsible_tab' -%}
+                  {%- comment -%}
+                    ARTWISTIC: optional per-product override. block.settings.content/page
+                    are the site-wide default (same text on every product using this
+                    template) — override_metafield lets the merchant point this specific
+                    row at a real product metafield instead, so e.g. "Why you'll love it"
+                    can say something different per product. Matched by an explicit
+                    select (not by guessing from the heading text), so it only applies
+                    when the merchant deliberately wires this block to a field.
+                  {%- endcomment -%}
+                  {%- assign aw_tab_override = blank -%}
+                  {%- case block.settings.override_metafield -%}
+                    {%- when 'why_you_love_it' -%}
+                      {%- assign aw_tab_override = product.metafields.custom.why_you_love_it.value -%}
+                    {%- when 'details_care' -%}
+                      {%- assign aw_tab_override = product.metafields.custom.details_care.value -%}
+                    {%- when 'shipping_policy' -%}
+                      {%- assign aw_tab_override = product.metafields.custom.shipping_policy_text.value -%}
+                    {%- when 'faq' -%}
+                      {%- assign aw_tab_override = product.metafields.custom.faq_content.value -%}
+                  {%- endcase -%}
                   <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
                     <details id="Details-{{ block.id }}-{{ section.id }}">
                       <summary>
@@ -278,8 +282,12 @@
                         {{- 'icon-caret.svg' | inline_asset_content -}}
                       </summary>
                       <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
-                        {{ block.settings.content }}
-                        {{ block.settings.page.content }}
+                        {%- if aw_tab_override != blank -%}
+                          {{ aw_tab_override | newline_to_br }}
+                        {%- else -%}
+                          {{ block.settings.content }}
+                          {{ block.settings.page.content }}
+                        {%- endif -%}
                       </div>
                     </details>
                   </div>
@@ -546,7 +554,11 @@
                     block: block,
                     product_form_id: product_form_id
                   %}
+                  {%- comment -%} ARTWISTIC: hand-drawn annotation tied to the selected option, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
                   {%- render 'artwistic-finish-annotation', product: product -%}
+                {%- comment -%} ARTWISTIC: cross-product Finish swatches (real metafield-linked sibling products, not variants), see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+                {%- when 'artwistic_related_finish' -%}
+                  {%- render 'artwistic-related-finish', product: product -%}
                 {%- when 'buy_buttons' -%}
                   {%- render 'buy-buttons',
                     block: block,
@@ -555,22 +567,9 @@
                     section_id: section.id,
                     show_pickup_availability: true
                   -%}
-                {%- comment -%} ARTWISTIC: glanceable purchase confidence strip, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+                {%- comment -%} ARTWISTIC: glanceable purchase-confidence strip + delivery estimate, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
                 {%- when 'artwistic_confidence' -%}
-                  {%- render 'artwistic-purchase-confidence', product: product, block: block -%}
-                {%- comment -%} ARTWISTIC: trust/meaning features, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-                {%- when 'artwistic_contact_link' -%}
-                  {%- render 'artwistic-contact-link', block: block -%}
-                {%- when 'artwistic_payment_icons' -%}
-                  {%- render 'artwistic-payment-icons' -%}
-                {%- when 'artwistic_stock_indicator' -%}
-                  {%- render 'artwistic-stock-indicator', product: product, block: block -%}
-                {%- when 'artwistic_gift_option' -%}
-                  {%- render 'artwistic-gift-option', block: block, product_form_id: product_form_id -%}
-                {%- when 'artwistic_faq_item' -%}
-                  {%- render 'artwistic-faq-item', block: block -%}
-                {%- when 'artwistic_complete_look' -%}
-                  {%- render 'artwistic-complete-the-look', product: product -%}
+                  {%- render 'artwistic-purchase-confidence', block: block -%}
                 {%- when 'artwistic_delivery' -%}
                   {%- render 'artwistic-delivery-estimate', block: block -%}
                 {%- when 'rating' -%}
@@ -774,16 +773,6 @@
 
       {% render 'product-media-modal', variant_images: variant_images %}
 
-      {%- comment -%} ARTWISTIC: mobile sticky Add to Cart bar, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-      {%- if section.settings.artwistic_sticky_add_to_cart -%}
-        {%- render 'artwistic-sticky-add-to-cart', product: product, section_id: section.id -%}
-      {%- endif -%}
-
-      {%- comment -%} ARTWISTIC: recently viewed rail, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-      {%- if section.settings.artwistic_show_recently_viewed -%}
-        {%- render 'artwistic-recently-viewed', current_product: product -%}
-      {%- endif -%}
-
       {% assign popups = section.blocks | where: 'type', 'popup' %}
       {%- for block in popups -%}
         <modal-dialog id="PopupModal-{{ block.id }}" class="product-popup-modal" {{ block.shopify_attributes }}>
@@ -813,9 +802,6 @@
       {%- if product.media.size > 0 -%}
         <script src="{{ 'product-modal.js' | asset_url }}" defer="defer"></script>
         <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
-        {%- if product.media.size > 1 -%}
-          <script src="{{ 'artwistic-product-gallery.js' | asset_url }}" defer="defer"></script>
-        {%- endif -%}
       {%- endif -%}
 
       {%- if first_3d_model -%}
@@ -839,6 +825,8 @@
     </div>
   </product-component>
 </product-info>
+{%- render 'sticky-atc', section_id: section.id -%}
+<script src="{{ 'sticky-atc.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {
@@ -1033,7 +1021,206 @@
     {
       "type": "description",
       "name": "t:sections.main-product.blocks.description.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Description"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "apple",
+              "label": "Apple"
+            },
+            {
+              "value": "banana",
+              "label": "Banana"
+            },
+            {
+              "value": "bottle",
+              "label": "Bottle"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "carrot",
+              "label": "Carrot"
+            },
+            {
+              "value": "chat_bubble",
+              "label": "Chat bubble"
+            },
+            {
+              "value": "check_mark",
+              "label": "Check mark"
+            },
+            {
+              "value": "clipboard",
+              "label": "Clipboard"
+            },
+            {
+              "value": "dairy",
+              "label": "Dairy"
+            },
+            {
+              "value": "dairy_free",
+              "label": "Dairy-free"
+            },
+            {
+              "value": "dryer",
+              "label": "Dryer"
+            },
+            {
+              "value": "eye",
+              "label": "Eye"
+            },
+            {
+              "value": "fire",
+              "label": "Fire"
+            },
+            {
+              "value": "gluten_free",
+              "label": "Gluten-free"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "iron",
+              "label": "Iron"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "leather",
+              "label": "Leather"
+            },
+            {
+              "value": "lightning_bolt",
+              "label": "Lightning bolt"
+            },
+            {
+              "value": "lipstick",
+              "label": "Lipstick"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "map_pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "nut_free",
+              "label": "Nut-free"
+            },
+            {
+              "value": "pants",
+              "label": "Pants"
+            },
+            {
+              "value": "paw_print",
+              "label": "Paw print"
+            },
+            {
+              "value": "pepper",
+              "label": "Pepper"
+            },
+            {
+              "value": "perfume",
+              "label": "Perfume"
+            },
+            {
+              "value": "plane",
+              "label": "Plane"
+            },
+            {
+              "value": "plant",
+              "label": "Plant"
+            },
+            {
+              "value": "price_tag",
+              "label": "Price tag"
+            },
+            {
+              "value": "question_mark",
+              "label": "Question mark"
+            },
+            {
+              "value": "recycle",
+              "label": "Recycle"
+            },
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "serving_dish",
+              "label": "Serving dish"
+            },
+            {
+              "value": "shirt",
+              "label": "Shirt"
+            },
+            {
+              "value": "shoe",
+              "label": "Shoe"
+            },
+            {
+              "value": "silhouette",
+              "label": "Silhouette"
+            },
+            {
+              "value": "snowflake",
+              "label": "Snowflake"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "stopwatch",
+              "label": "Stopwatch"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "washing",
+              "label": "Washing"
+            }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "info": "Still closes on click like every other row — this only controls its starting state.",
+          "default": true
+        }
+      ]
     },
     {
       "type": "share",
@@ -1306,253 +1493,20 @@
           "type": "page",
           "id": "page",
           "label": "t:sections.main-product.blocks.collapsible_tab.settings.page.label"
-        }
-      ]
-    },
-    {
-      "type": "artwistic_trust",
-      "name": "ARTWISTIC: Material",
-      "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "Heading",
-          "default": "Details & care"
         },
         {
-          "type": "checkbox",
-          "id": "show_badges",
-          "label": "Show trust badges (water resistant / anti-tarnish / warranty)",
-          "info": "Off by default — badges are shown once already, in the Purchase Confidence block near Add to Cart. Turn this on only if you removed that block.",
-          "default": false
-        },
-        {
-          "type": "paragraph",
-          "content": "Reads product metafields under the \"artwistic\" namespace. See docs/METAFIELDS.md for setup."
-        }
-      ]
-    },
-    {
-      "type": "artwistic_rating_summary",
-      "name": "ARTWISTIC: Rating summary",
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "A compact star-rating chip, e.g. \"4.8 · 32 reviews\", linking down to the full review list. Place this near the title/price block. Renders nothing until the product has at least one review — see docs/METAOBJECTS.md."
-        }
-      ]
-    },
-    {
-      "type": "artwistic_reviews",
-      "name": "ARTWISTIC: Reviews",
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "The full list of this product's verified reviews, with photos/video. Renders nothing until the product has at least one review — see docs/METAOBJECTS.md."
-        }
-      ]
-    },
-    {
-      "type": "artwistic_confidence",
-      "name": "ARTWISTIC: Confidence",
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "A compact, glanceable reassurance strip placed right under Add to Cart — write your real policies here, nothing is pre-filled with a claim you haven't verified."
-        },
-        {
-          "type": "checkbox",
-          "id": "show_trust_badges",
-          "label": "Show trust badges (water resistant / anti-tarnish / warranty)",
-          "info": "Reads the same product metafields as the Material & Trust block. See docs/METAFIELDS.md.",
-          "default": true
-        },
-        {
-          "type": "text",
-          "id": "dispatch_text",
-          "label": "Dispatch/delivery line",
-          "default": "Usually dispatched in 1–2 business days"
-        },
-        {
-          "type": "text",
-          "id": "policy_text",
-          "label": "Policy line",
-          "info": "Artwistic's real policy is final sale, no returns or exchanges — do not repurpose this field for a returns/exchange promise.",
-          "default": "Final sale — no returns or exchanges"
-        },
-        {
-          "type": "text",
-          "id": "secure_text",
-          "label": "Checkout reassurance line",
-          "default": "Secure checkout"
-        }
-      ]
-    },
-    {
-      "type": "artwistic_contact_link",
-      "name": "ARTWISTIC: Contact link",
-      "settings": [
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link (e.g. wa.me/91XXXXXXXXXX or mailto:)"
-        },
-        {
-          "type": "text",
-          "id": "label",
-          "label": "Label",
-          "default": "Questions? Message us on WhatsApp"
-        }
-      ]
-    },
-    {
-      "type": "artwistic_payment_icons",
-      "name": "ARTWISTIC: Payment icons",
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "Shows the payment methods actually enabled in Settings → Payments — nothing to configure here."
-        }
-      ]
-    },
-    {
-      "type": "artwistic_stock_indicator",
-      "name": "ARTWISTIC: Low Stock",
-      "settings": [
-        {
-          "type": "range",
-          "id": "threshold",
-          "label": "Show when quantity is at or below",
-          "min": 1,
-          "max": 20,
-          "step": 1,
-          "default": 5
-        },
-        {
-          "type": "paragraph",
-          "content": "Only shows for variants with real Shopify inventory tracking turned on — never an invented number."
-        }
-      ]
-    },
-    {
-      "type": "artwistic_gift_option",
-      "name": "ARTWISTIC: Gift option",
-      "settings": [
-        {
-          "type": "checkbox",
-          "id": "enable",
-          "label": "Enable gift wrap checkbox + note",
-          "default": true
-        },
-        {
-          "type": "text",
-          "id": "wrap_label",
-          "label": "Gift wrap checkbox label",
-          "default": "Add gift wrapping (free)"
-        },
-        {
-          "type": "text",
-          "id": "note_label",
-          "label": "Gift note field label",
-          "default": "Add a gift note (optional)"
-        }
-      ]
-    },
-    {
-      "type": "artwistic_faq_item",
-      "name": "ARTWISTIC: FAQ item",
-      "settings": [
-        {
-          "type": "text",
-          "id": "question",
-          "label": "Question",
-          "default": "Will this tarnish?"
-        },
-        {
-          "type": "richtext",
-          "id": "answer",
-          "label": "Answer"
-        }
-      ]
-    },
-    {
-      "type": "artwistic_complete_look",
-      "name": "ARTWISTIC: In a Look",
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "Automatically shows \"Featured in: [Look name]\" if this product appears in a Shop the Look scene. Renders nothing otherwise."
-        }
-      ]
-    },
-    {
-      "type": "artwistic_delivery",
-      "name": "ARTWISTIC: Delivery",
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "Manual, no-API estimate based on the state the shopper selects. Verify these numbers and the holiday list match your actual courier calendar before launch — see docs/SHOPIFY_ADMIN_SETUP.md."
-        },
-        {
-          "type": "range",
-          "id": "dispatch_days_min",
-          "label": "Dispatch — minimum business days",
-          "min": 1,
-          "max": 5,
-          "step": 1,
-          "default": 1
-        },
-        {
-          "type": "range",
-          "id": "dispatch_days_max",
-          "label": "Dispatch — maximum business days",
-          "min": 1,
-          "max": 5,
-          "step": 1,
-          "default": 2
-        },
-        {
-          "type": "range",
-          "id": "transit_fast_min",
-          "label": "Transit (Gujarat/Maharashtra) — minimum business days",
-          "min": 1,
-          "max": 10,
-          "step": 1,
-          "default": 2
-        },
-        {
-          "type": "range",
-          "id": "transit_fast_max",
-          "label": "Transit (Gujarat/Maharashtra) — maximum business days",
-          "min": 1,
-          "max": 10,
-          "step": 1,
-          "default": 3
-        },
-        {
-          "type": "range",
-          "id": "transit_other_min",
-          "label": "Transit (other states) — minimum business days",
-          "min": 1,
-          "max": 10,
-          "step": 1,
-          "default": 3
-        },
-        {
-          "type": "range",
-          "id": "transit_other_max",
-          "label": "Transit (other states) — maximum business days",
-          "min": 1,
-          "max": 10,
-          "step": 1,
-          "default": 5
-        },
-        {
-          "type": "textarea",
-          "id": "holiday_dates",
-          "label": "Non-business days (comma-separated YYYY-MM-DD)",
-          "default": "2026-01-26, 2026-03-03, 2026-03-21, 2026-03-31, 2026-04-03, 2026-05-01, 2026-05-27, 2026-06-26, 2026-08-15, 2026-08-26, 2026-10-02, 2026-10-20, 2026-11-08, 2026-11-24, 2026-12-25",
-          "info": "Pre-filled with 2026's major nationally-observed gazetted holidays (Republic Day, Holi, Id-ul-Fitr, Mahavir Jayanti, Good Friday, Buddha Purnima, Bakrid, Muharram, Independence Day, Milad-un-Nabi, Gandhi Jayanti, Dussehra, Diwali, Guru Nanak's Birthday, Christmas). Verify against your courier's actual holiday calendar and add any regional dates specific to your dispatch location — a couple of these dates vary slightly by source, so double-check the ones nearest your busiest season."
+          "type": "select",
+          "id": "override_metafield",
+          "label": "Per-product override",
+          "info": "Optional — point this row at a real product metafield so it can say something different per product. Leave as None to always use the Content above for every product.",
+          "options": [
+            { "value": "none", "label": "None — use Content above" },
+            { "value": "why_you_love_it", "label": "Why you'll love it" },
+            { "value": "details_care", "label": "Details & care" },
+            { "value": "shipping_policy", "label": "Shipping & policy" },
+            { "value": "faq", "label": "FAQ" }
+          ],
+          "default": "none"
         }
       ]
     },
@@ -2478,6 +2432,878 @@
           "info": "t:sections.main-product.blocks.icon_with_text.settings.heading.info"
         }
       ]
+    },
+    {
+      "type": "artwistic_confidence",
+      "name": "ARTWISTIC: Confidence",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "A compact, glanceable reassurance strip placed right under Add to Cart — write your store's real policies here, nothing is pre-filled with an unverified claim."
+        },
+        {
+          "type": "text",
+          "id": "dispatch_text",
+          "label": "Dispatch/delivery line",
+          "default": "Dispatched in 24–48 hrs"
+        },
+        {
+          "type": "text",
+          "id": "material_text",
+          "label": "Material/quality line",
+          "default": "Anti-tarnish finish"
+        },
+        {
+          "type": "text",
+          "id": "policy_text",
+          "label": "Shipping line",
+          "default": "Free shipping above ₹1,499"
+        },
+        {
+          "type": "text",
+          "id": "secure_text",
+          "label": "Sale/returns policy line",
+          "default": "Final sale, no returns"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_payment_icons",
+          "label": "Show enabled payment method icons",
+          "info": "Reads Settings → Payments — always reflects real enabled methods.",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "dispatch_icon",
+          "label": "Dispatch/delivery icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "apple",
+              "label": "Apple"
+            },
+            {
+              "value": "banana",
+              "label": "Banana"
+            },
+            {
+              "value": "bottle",
+              "label": "Bottle"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "carrot",
+              "label": "Carrot"
+            },
+            {
+              "value": "chat_bubble",
+              "label": "Chat bubble"
+            },
+            {
+              "value": "check_mark",
+              "label": "Check mark"
+            },
+            {
+              "value": "clipboard",
+              "label": "Clipboard"
+            },
+            {
+              "value": "dairy",
+              "label": "Dairy"
+            },
+            {
+              "value": "dairy_free",
+              "label": "Dairy-free"
+            },
+            {
+              "value": "dryer",
+              "label": "Dryer"
+            },
+            {
+              "value": "eye",
+              "label": "Eye"
+            },
+            {
+              "value": "fire",
+              "label": "Fire"
+            },
+            {
+              "value": "gluten_free",
+              "label": "Gluten-free"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "iron",
+              "label": "Iron"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "leather",
+              "label": "Leather"
+            },
+            {
+              "value": "lightning_bolt",
+              "label": "Lightning bolt"
+            },
+            {
+              "value": "lipstick",
+              "label": "Lipstick"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "map_pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "nut_free",
+              "label": "Nut-free"
+            },
+            {
+              "value": "pants",
+              "label": "Pants"
+            },
+            {
+              "value": "paw_print",
+              "label": "Paw print"
+            },
+            {
+              "value": "pepper",
+              "label": "Pepper"
+            },
+            {
+              "value": "perfume",
+              "label": "Perfume"
+            },
+            {
+              "value": "plane",
+              "label": "Plane"
+            },
+            {
+              "value": "plant",
+              "label": "Plant"
+            },
+            {
+              "value": "price_tag",
+              "label": "Price tag"
+            },
+            {
+              "value": "question_mark",
+              "label": "Question mark"
+            },
+            {
+              "value": "recycle",
+              "label": "Recycle"
+            },
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "serving_dish",
+              "label": "Serving dish"
+            },
+            {
+              "value": "shirt",
+              "label": "Shirt"
+            },
+            {
+              "value": "shoe",
+              "label": "Shoe"
+            },
+            {
+              "value": "silhouette",
+              "label": "Silhouette"
+            },
+            {
+              "value": "snowflake",
+              "label": "Snowflake"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "stopwatch",
+              "label": "Stopwatch"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "washing",
+              "label": "Washing"
+            }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "select",
+          "id": "material_icon",
+          "label": "Material/quality icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "apple",
+              "label": "Apple"
+            },
+            {
+              "value": "banana",
+              "label": "Banana"
+            },
+            {
+              "value": "bottle",
+              "label": "Bottle"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "carrot",
+              "label": "Carrot"
+            },
+            {
+              "value": "chat_bubble",
+              "label": "Chat bubble"
+            },
+            {
+              "value": "check_mark",
+              "label": "Check mark"
+            },
+            {
+              "value": "clipboard",
+              "label": "Clipboard"
+            },
+            {
+              "value": "dairy",
+              "label": "Dairy"
+            },
+            {
+              "value": "dairy_free",
+              "label": "Dairy-free"
+            },
+            {
+              "value": "dryer",
+              "label": "Dryer"
+            },
+            {
+              "value": "eye",
+              "label": "Eye"
+            },
+            {
+              "value": "fire",
+              "label": "Fire"
+            },
+            {
+              "value": "gluten_free",
+              "label": "Gluten-free"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "iron",
+              "label": "Iron"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "leather",
+              "label": "Leather"
+            },
+            {
+              "value": "lightning_bolt",
+              "label": "Lightning bolt"
+            },
+            {
+              "value": "lipstick",
+              "label": "Lipstick"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "map_pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "nut_free",
+              "label": "Nut-free"
+            },
+            {
+              "value": "pants",
+              "label": "Pants"
+            },
+            {
+              "value": "paw_print",
+              "label": "Paw print"
+            },
+            {
+              "value": "pepper",
+              "label": "Pepper"
+            },
+            {
+              "value": "perfume",
+              "label": "Perfume"
+            },
+            {
+              "value": "plane",
+              "label": "Plane"
+            },
+            {
+              "value": "plant",
+              "label": "Plant"
+            },
+            {
+              "value": "price_tag",
+              "label": "Price tag"
+            },
+            {
+              "value": "question_mark",
+              "label": "Question mark"
+            },
+            {
+              "value": "recycle",
+              "label": "Recycle"
+            },
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "serving_dish",
+              "label": "Serving dish"
+            },
+            {
+              "value": "shirt",
+              "label": "Shirt"
+            },
+            {
+              "value": "shoe",
+              "label": "Shoe"
+            },
+            {
+              "value": "silhouette",
+              "label": "Silhouette"
+            },
+            {
+              "value": "snowflake",
+              "label": "Snowflake"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "stopwatch",
+              "label": "Stopwatch"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "washing",
+              "label": "Washing"
+            }
+          ],
+          "default": "star"
+        },
+        {
+          "type": "select",
+          "id": "policy_icon",
+          "label": "Shipping icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "apple",
+              "label": "Apple"
+            },
+            {
+              "value": "banana",
+              "label": "Banana"
+            },
+            {
+              "value": "bottle",
+              "label": "Bottle"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "carrot",
+              "label": "Carrot"
+            },
+            {
+              "value": "chat_bubble",
+              "label": "Chat bubble"
+            },
+            {
+              "value": "check_mark",
+              "label": "Check mark"
+            },
+            {
+              "value": "clipboard",
+              "label": "Clipboard"
+            },
+            {
+              "value": "dairy",
+              "label": "Dairy"
+            },
+            {
+              "value": "dairy_free",
+              "label": "Dairy-free"
+            },
+            {
+              "value": "dryer",
+              "label": "Dryer"
+            },
+            {
+              "value": "eye",
+              "label": "Eye"
+            },
+            {
+              "value": "fire",
+              "label": "Fire"
+            },
+            {
+              "value": "gluten_free",
+              "label": "Gluten-free"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "iron",
+              "label": "Iron"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "leather",
+              "label": "Leather"
+            },
+            {
+              "value": "lightning_bolt",
+              "label": "Lightning bolt"
+            },
+            {
+              "value": "lipstick",
+              "label": "Lipstick"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "map_pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "nut_free",
+              "label": "Nut-free"
+            },
+            {
+              "value": "pants",
+              "label": "Pants"
+            },
+            {
+              "value": "paw_print",
+              "label": "Paw print"
+            },
+            {
+              "value": "pepper",
+              "label": "Pepper"
+            },
+            {
+              "value": "perfume",
+              "label": "Perfume"
+            },
+            {
+              "value": "plane",
+              "label": "Plane"
+            },
+            {
+              "value": "plant",
+              "label": "Plant"
+            },
+            {
+              "value": "price_tag",
+              "label": "Price tag"
+            },
+            {
+              "value": "question_mark",
+              "label": "Question mark"
+            },
+            {
+              "value": "recycle",
+              "label": "Recycle"
+            },
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "serving_dish",
+              "label": "Serving dish"
+            },
+            {
+              "value": "shirt",
+              "label": "Shirt"
+            },
+            {
+              "value": "shoe",
+              "label": "Shoe"
+            },
+            {
+              "value": "silhouette",
+              "label": "Silhouette"
+            },
+            {
+              "value": "snowflake",
+              "label": "Snowflake"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "stopwatch",
+              "label": "Stopwatch"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "washing",
+              "label": "Washing"
+            }
+          ],
+          "default": "box"
+        },
+        {
+          "type": "select",
+          "id": "secure_icon",
+          "label": "Sale/returns policy icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "apple",
+              "label": "Apple"
+            },
+            {
+              "value": "banana",
+              "label": "Banana"
+            },
+            {
+              "value": "bottle",
+              "label": "Bottle"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "carrot",
+              "label": "Carrot"
+            },
+            {
+              "value": "chat_bubble",
+              "label": "Chat bubble"
+            },
+            {
+              "value": "check_mark",
+              "label": "Check mark"
+            },
+            {
+              "value": "clipboard",
+              "label": "Clipboard"
+            },
+            {
+              "value": "dairy",
+              "label": "Dairy"
+            },
+            {
+              "value": "dairy_free",
+              "label": "Dairy-free"
+            },
+            {
+              "value": "dryer",
+              "label": "Dryer"
+            },
+            {
+              "value": "eye",
+              "label": "Eye"
+            },
+            {
+              "value": "fire",
+              "label": "Fire"
+            },
+            {
+              "value": "gluten_free",
+              "label": "Gluten-free"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "iron",
+              "label": "Iron"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "leather",
+              "label": "Leather"
+            },
+            {
+              "value": "lightning_bolt",
+              "label": "Lightning bolt"
+            },
+            {
+              "value": "lipstick",
+              "label": "Lipstick"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "map_pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "nut_free",
+              "label": "Nut-free"
+            },
+            {
+              "value": "pants",
+              "label": "Pants"
+            },
+            {
+              "value": "paw_print",
+              "label": "Paw print"
+            },
+            {
+              "value": "pepper",
+              "label": "Pepper"
+            },
+            {
+              "value": "perfume",
+              "label": "Perfume"
+            },
+            {
+              "value": "plane",
+              "label": "Plane"
+            },
+            {
+              "value": "plant",
+              "label": "Plant"
+            },
+            {
+              "value": "price_tag",
+              "label": "Price tag"
+            },
+            {
+              "value": "question_mark",
+              "label": "Question mark"
+            },
+            {
+              "value": "recycle",
+              "label": "Recycle"
+            },
+            {
+              "value": "return",
+              "label": "Return"
+            },
+            {
+              "value": "ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "serving_dish",
+              "label": "Serving dish"
+            },
+            {
+              "value": "shirt",
+              "label": "Shirt"
+            },
+            {
+              "value": "shoe",
+              "label": "Shoe"
+            },
+            {
+              "value": "silhouette",
+              "label": "Silhouette"
+            },
+            {
+              "value": "snowflake",
+              "label": "Snowflake"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "stopwatch",
+              "label": "Stopwatch"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "washing",
+              "label": "Washing"
+            }
+          ],
+          "default": "price_tag"
+        }
+      ]
+    },
+    {
+      "type": "artwistic_delivery",
+      "name": "ARTWISTIC: Delivery",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Manual, no-API delivery estimate. The shopper enters their pincode; dates are computed client-side from the business-day rules below. Pincode-to-region matching uses standard Indian postal prefixes (Gujarat 360000–396999, Mumbai 400xxx) — verify against your real courier's serviceable pincodes before launch."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Accessible label",
+          "info": "Not shown visually — read by screen readers only. The typing hint below is what shoppers actually see.",
+          "default": "Check estimated delivery"
+        },
+        {
+          "type": "text",
+          "id": "hint_text",
+          "label": "Typing hint (shown in the pincode field)",
+          "default": "Enter pincode to check delivery"
+        },
+        {
+          "type": "range",
+          "id": "dispatch_days_min",
+          "label": "Dispatch — minimum business days",
+          "min": 0,
+          "max": 10,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "range",
+          "id": "dispatch_days_max",
+          "label": "Dispatch — maximum business days",
+          "min": 0,
+          "max": 10,
+          "step": 1,
+          "default": 2
+        },
+        {
+          "type": "range",
+          "id": "transit_fast_min",
+          "label": "Transit (Gujarat &amp; Mumbai) — minimum business days",
+          "min": 0,
+          "max": 15,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "range",
+          "id": "transit_fast_max",
+          "label": "Transit (Gujarat &amp; Mumbai) — maximum business days",
+          "min": 0,
+          "max": 15,
+          "step": 1,
+          "default": 2
+        },
+        {
+          "type": "range",
+          "id": "transit_other_min",
+          "label": "Transit (all other states) — minimum business days",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "transit_other_max",
+          "label": "Transit (all other states) — maximum business days",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "default": 6
+        },
+        {
+          "type": "textarea",
+          "id": "holiday_dates",
+          "label": "Holiday dates (comma-separated, YYYY-MM-DD)",
+          "info": "Sundays are already excluded automatically. Add every Indian national holiday your courier observes here, and verify against your real courier's calendar before launch.",
+          "default": "2026-01-26, 2026-08-15, 2026-10-02, 2026-12-25"
+        }
+      ]
+    },
+    {
+      "type": "artwistic_related_finish",
+      "name": "ARTWISTIC: Finish",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Cross-product Finish swatches, for when each finish is a separate product rather than a variant. Reads the \"custom.related-finish\" metafield (type: List of products) — renders nothing until that's set up. See ARTWISTIC_CHANGELOG.md."
+        }
+      ]
     }
   ],
   "settings": [
@@ -2486,20 +3312,6 @@
       "id": "enable_sticky_info",
       "default": true,
       "label": "t:sections.main-product.settings.enable_sticky_info.label"
-    },
-    {
-      "type": "checkbox",
-      "id": "artwistic_sticky_add_to_cart",
-      "default": true,
-      "label": "ARTWISTIC: Show sticky Add to Cart bar on mobile",
-      "info": "Appears once the main Add to Cart button scrolls out of view. See ARTWISTIC_CHANGELOG.md."
-    },
-    {
-      "type": "checkbox",
-      "id": "artwistic_show_recently_viewed",
-      "default": true,
-      "label": "ARTWISTIC: Show \"Recently viewed\" rail",
-      "info": "Reads from the shopper's browser storage, no account required. See ARTWISTIC_CHANGELOG.md."
     },
     {
       "type": "color_scheme",

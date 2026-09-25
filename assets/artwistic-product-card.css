@@ -484,17 +484,20 @@ slider-component.slider-mobile-gutter {
 }
 
 /* --- Product page: static (non-floating), larger wishlist heart —
-   snippets/artwistic-card-actions.liquid heart_only mode. --- */
-.aw-product-media-wrapper {
+   snippets/artwistic-card-actions.liquid heart_only mode. Scoped to
+   Dawn's real .product__media-wrapper class (sections/main-product.liquid),
+   not a custom wrapper class. --- */
+.product__media-wrapper {
   position: relative;
 }
 
-.aw-product-media-wrapper .aw-card-actions.aw-card-actions--product-page {
+.product__media-wrapper .aw-card-actions.aw-card-actions--product-page {
   position: absolute;
   top: var(--aw-space-3);
   right: var(--aw-space-3);
   left: auto;
   bottom: auto;
+  z-index: 5;
 }
 
 .aw-card-action--large {
