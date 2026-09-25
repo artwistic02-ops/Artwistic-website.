@@ -1,19 +1,37 @@
 {% comment %}
-  ARTWISTIC: Wishlist page. Renders an empty state server-side (so the
-  page is never blank if JS fails) and a container that
-  artwistic-wishlist.js populates client-side by fetching each saved
-  product handle from Shopify's Storefront AJAX API
-  (/products/{handle}.js) — no app, no server-side account storage.
-  See ARTWISTIC_CHANGELOG.md and docs/FEATURE_REGISTER.md.
+  ARTWISTIC: Wishlist page — reads the real, already-live wishlist data
+  layer in assets/artwistic-product-card.js (window.awWishlist, entries
+  shaped {id, handle}, event 'aw:wishlist:change'). No new storage
+  mechanism — this page is purely a client-side renderer for that
+  existing, shared API: it fetches each saved product's real live data
+  via /products/<handle>.js and reuses the site's real heart-toggle and
+  add-to-cart click-delegation (both already wired in
+  artwistic-product-card.js, loaded site-wide from layout/theme.liquid).
 {% endcomment %}
 
 {% render 'artwistic-dark-mode-init' %}
 {{ 'artwistic-wishlist.css' | asset_url | stylesheet_tag }}
-{% render 'artwistic-section-padding' %}
-{{ 'component-price.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
-<script src="{{ 'artwistic-wishlist-page.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'artwistic-dark-mode.js' | asset_url }}" defer="defer"></script>
+<script>
+  window.Shopify = window.Shopify || {};
+  Shopify.money_format = {{ shop.money_format | json }};
+</script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: clamp(
+      {{ section.settings.padding_top | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_top | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_top }}px
+    );
+    padding-bottom: clamp(
+      {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_bottom | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_bottom }}px
+    );
+  }
+{%- endstyle -%}
 
 <div class="aw-container aw-wishlist-page color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
   <div class="aw-wishlist-page__head">
@@ -21,98 +39,35 @@
       <span class="aw-eyebrow">{{ 'general.wishlist.eyebrow' | t }}</span>
       <h1 class="aw-wishlist-page__heading">
         {{ section.settings.heading | default: 'Your wishlist' }}
-        <span class="aw-wishlist-page__count" data-aw-wishlist-count hidden>0</span>
+        <span class="aw-wishlist-page__count" data-aw-wishlist-page-count hidden>0</span>
       </h1>
     </div>
-    <button
-      type="button"
-      class="aw-wishlist-page__share"
-      data-aw-wishlist-share
-      data-label-idle="{{ 'general.wishlist.share' | t }}"
-      data-label-done="{{ 'general.wishlist.share_link_copied' | t }}"
-      data-share-title="{{ 'general.wishlist.share_title' | t }}"
-      data-share-text="{{ 'general.wishlist.share_text' | t }}"
-      hidden
-    >
-      {{- 'icon-share.svg' | inline_asset_content -}}
-      <span data-aw-wishlist-share-label>{{ 'general.wishlist.share' | t }}</span>
-    </button>
-    {% render 'artwistic-dark-mode-toggle' %}
+    <div class="aw-wishlist-page__head-actions">
+      {% render 'artwistic-dark-mode-toggle' %}
+      <button type="button" class="aw-wishlist-page__share" data-aw-wishlist-share hidden>
+        {{- 'icon-share.svg' | inline_asset_content -}}
+        <span data-aw-wishlist-share-label>{{ 'general.wishlist.share' | t }}</span>
+      </button>
+    </div>
   </div>
 
-  <div data-aw-wishlist-empty class="aw-wishlist-page__empty">
-    <p>Nothing saved yet. Tap the heart on any product to add it here.</p>
-    <a href="{{ section.settings.empty_state_link | default: routes.all_products_collection_url }}" class="link">
-      {{ section.settings.empty_state_link_label | default: 'Continue shopping' }}
+  <div class="aw-wishlist-empty" data-aw-wishlist-empty hidden>
+    <p>{{ section.settings.empty_text | default: "Nothing saved yet. Tap the heart on any product to add it here." }}</p>
+    <a href="{{ section.settings.empty_link | default: routes.all_products_collection_url }}" class="button button--secondary">
+      {{ section.settings.empty_button_label | default: 'Continue shopping' }}
     </a>
   </div>
 
-  <ul data-aw-wishlist-grid class="aw-wishlist-page__grid grid grid--2-col-tablet-down grid--4-col-desktop" hidden role="list"></ul>
-</div>
+  <ul class="aw-wishlist-grid grid grid--2-col-tablet-down grid--4-col-desktop" data-aw-wishlist-grid hidden role="list"></ul>
 
-<div data-aw-wishlist-summary class="aw-wishlist-summary" hidden>
-  <div class="aw-wishlist-summary__row">
-    <span class="aw-wishlist-summary__label">{{ 'general.wishlist.value_label' | t }}</span>
-    <span class="aw-wishlist-summary__price" data-aw-wishlist-summary-total></span>
+  <div class="aw-wishlist-loading" data-aw-wishlist-loading>
+    {%- render 'loading-spinner' -%}
   </div>
-  <p class="aw-wishlist-summary__note">{{ 'general.wishlist.value_note' | t }}</p>
-  <button
-    type="button"
-    class="aw-wishlist-summary__move-all"
-    data-aw-wishlist-move-all
-    data-label-idle="{{ 'general.wishlist.move_all_to_bag' | t }}"
-    data-label-loading="{{ 'general.wishlist.moving_all_to_bag' | t }}"
-    data-label-error="{{ 'general.wishlist.move_to_bag_error' | t }}"
-  >
-    {{ 'general.wishlist.move_all_to_bag' | t }}
-  </button>
-  <p class="aw-wishlist-summary__footnote">{{ 'general.wishlist.move_all_note' | t }}</p>
 </div>
 
-<div id="aw-wishlist-pair"></div>
-<script src="{{ 'artwistic-wishlist-recommendations.js' | asset_url }}" defer="defer"></script>
-
-<template id="aw-wishlist-card-template">
-  <li class="grid__item aw-wishlist-card">
-    <div class="card-wrapper product-card-wrapper">
-      <a class="aw-wishlist-card__media-link" href="">
-        <div class="aw-wishlist-card__media">
-          <img src="" alt="" loading="lazy" width="360" height="450">
-        </div>
-      </a>
-      <div class="aw-wishlist-card__content">
-        <a class="aw-wishlist-card__title full-unstyled-link" href=""></a>
-        <span
-          class="aw-wishlist-card__stock"
-          data-aw-wishlist-stock
-          data-label-in-stock="{{ 'general.wishlist.in_stock' | t }}"
-          data-label-out-of-stock="{{ 'general.wishlist.out_of_stock' | t }}"
-          hidden
-        ></span>
-        <span class="aw-wishlist-card__price-row">
-          <span class="aw-wishlist-card__price price"></span>
-          <s class="aw-wishlist-card__compare-price" data-aw-wishlist-compare hidden></s>
-        </span>
-        <div class="aw-wishlist-card__actions">
-          <button
-            type="button"
-            class="button button--secondary aw-wishlist-card__move"
-            data-aw-wishlist-move
-            data-label-idle="{{ 'general.wishlist.move_to_bag' | t }}"
-            data-label-loading="{{ 'general.wishlist.moving_to_bag' | t }}"
-            data-label-done="{{ 'general.wishlist.moved_to_bag' | t }}"
-            data-label-error="{{ 'general.wishlist.move_to_bag_error' | t }}"
-          >
-            {{ 'general.wishlist.move_to_bag' | t }}
-          </button>
-          <button type="button" class="link aw-wishlist-card__remove" data-aw-wishlist-remove>
-            {{ 'general.wishlist.remove' | t }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </li>
-</template>
+<template id="aw-wishlist-icon-heart">{{- 'icon-heart.svg' | inline_asset_content -}}</template>
+<template id="aw-wishlist-icon-plus">{{- 'icon-plus.svg' | inline_asset_content -}}</template>
+<template id="aw-wishlist-icon-check">{{- 'icon-check-mark.svg' | inline_asset_content -}}</template>
 
 {% schema %}
 {
@@ -127,15 +82,21 @@
       "default": "Your wishlist"
     },
     {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty state text",
+      "default": "Nothing saved yet. Tap the heart on any product to add it here."
+    },
+    {
       "type": "url",
-      "id": "empty_state_link",
+      "id": "empty_link",
       "label": "Empty state link",
-      "info": "Where \"Continue shopping\" points when the wishlist is empty. Defaults to the all-products collection."
+      "info": "Defaults to the all-products collection if left blank."
     },
     {
       "type": "text",
-      "id": "empty_state_link_label",
-      "label": "Empty state link label",
+      "id": "empty_button_label",
+      "label": "Empty state button label",
       "default": "Continue shopping"
     },
     {

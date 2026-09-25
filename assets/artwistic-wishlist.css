@@ -1,125 +1,25 @@
 /**
- * ARTWISTIC WISHLIST — heart toggle button (on product cards, the product
- * page, and the header entry point) plus the wishlist page grid.
- * See assets/artwistic-wishlist.js, assets/artwistic-wishlist-page.js,
- * snippets/artwistic-wishlist-button.liquid, sections/artwistic-wishlist.liquid.
+ * ARTWISTIC WISHLIST PAGE — see sections/artwistic-wishlist.liquid,
+ * assets/artwistic-wishlist.js. Cards reuse the site's real
+ * .aw-card-action / .aw-card-actions floating-button styling
+ * (assets/artwistic-product-card.css) so the wishlist/cart buttons
+ * look and behave identically to every other product card.
  */
 
-.aw-wishlist-button {
-  position: absolute;
-  top: var(--aw-space-2);
-  right: var(--aw-space-2);
-  z-index: 2;
-  width: 3.2rem;
-  height: 3.2rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: rgba(var(--color-background), 0.85);
-  color: var(--aw-color-ink);
-  cursor: pointer;
-  transition: transform var(--aw-duration-fast) var(--aw-ease);
-}
-
-.aw-wishlist-button svg {
-  width: 1.6rem;
-  height: 1.6rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  transition: fill var(--aw-duration-fast) var(--aw-ease), stroke var(--aw-duration-fast) var(--aw-ease);
-}
-
-.aw-wishlist-button:hover {
-  transform: scale(1.06);
-}
-
-.aw-wishlist-button[aria-pressed='true'] {
-  color: var(--aw-color-sale);
-}
-
-.aw-wishlist-button[aria-pressed='true'] svg {
-  fill: currentColor;
-}
-
-.aw-wishlist-button--large {
-  width: 4.4rem;
-  height: 4.4rem;
-  top: var(--aw-space-3);
-  right: var(--aw-space-3);
-}
-
-.aw-wishlist-button--large svg {
-  width: 2rem;
-  height: 2rem;
-}
-
-.aw-product-media-wrapper {
-  position: relative;
-}
-
-/* Secondary wishlist toggle rendered beside the Add to Bag button
-   (snippets/buy-buttons.liquid), matching the finalized design — a
-   bordered square button, not the floating circular one on the image. */
-.aw-wishlist-button--inline {
-  position: static;
-  flex-shrink: 0;
-  width: 5rem;
-  height: 5rem;
-  border: 2px solid var(--aw-color-ink);
-  border-radius: var(--aw-radius-sm);
-  background: none;
-}
-
-.aw-wishlist-button--inline:hover {
-  transform: none;
-  background: rgba(var(--color-foreground), 0.06);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .aw-wishlist-button,
-  .aw-wishlist-button svg {
-    transition: none;
-  }
-}
-
-/* --- Header entry point --- */
-
-.aw-wishlist-link {
-  position: relative;
-}
-
-.aw-wishlist-count-bubble {
-  position: absolute;
-  top: 0.2rem;
-  right: 0.2rem;
-  min-width: 1.6rem;
-  height: 1.6rem;
-  padding: 0 0.3rem;
-  border-radius: var(--aw-radius-full);
-  background: var(--aw-color-accent);
-  color: var(--aw-color-accent-text);
-  font-family: var(--aw-font-mono);
-  font-size: 1rem;
-  line-height: 1.6rem;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-/* --- Wishlist page --- */
+/* --- Page head --- */
 
 .aw-wishlist-page__head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--aw-space-3);
+  flex-wrap: wrap;
   margin-bottom: var(--aw-space-5);
 }
 
 .aw-wishlist-page__heading {
   margin: 0.4rem 0 0;
+  font-family: var(--aw-font-heading);
 }
 
 .aw-wishlist-page__count {
@@ -134,6 +34,12 @@
 
 .aw-wishlist-page__count::after {
   content: ')';
+}
+
+.aw-wishlist-page__head-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-3);
 }
 
 .aw-wishlist-page__share {
@@ -152,7 +58,7 @@
   letter-spacing: var(--aw-tracking-wide);
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color var(--aw-duration-fast) var(--aw-ease), background-color var(--aw-duration-fast) var(--aw-ease);
+  transition: border-color var(--aw-duration-fast) var(--aw-ease);
 }
 
 .aw-wishlist-page__share svg {
@@ -167,80 +73,36 @@
   border-color: var(--aw-color-brand-accent);
 }
 
-/* --- Sticky wishlist-value summary bar --- */
+/* --- Empty / loading states --- */
 
-.aw-wishlist-summary {
-  position: sticky;
-  bottom: 0;
-  z-index: var(--aw-z-sticky);
-  padding: var(--aw-space-4) var(--aw-container-pad);
-  background: rgb(var(--color-background));
-  border-top: 1px solid var(--aw-color-border);
-  box-shadow: 0 -1.2rem 3.2rem rgba(0, 0, 0, 0.1);
-}
-
-.aw-wishlist-summary__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 0.4rem;
-}
-
-.aw-wishlist-summary__label {
-  font-family: var(--aw-font-heading);
-  font-size: var(--aw-text-lg);
-}
-
-.aw-wishlist-summary__price {
-  font-family: var(--aw-font-mono);
-  font-size: var(--aw-text-xl);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-.aw-wishlist-summary__note {
-  color: var(--aw-color-muted);
-  font-size: var(--aw-text-sm);
-  margin: 0 0 var(--aw-space-3);
-}
-
-.aw-wishlist-summary__move-all {
-  width: 100%;
-  min-height: 5.2rem;
-  border: none;
-  border-radius: var(--aw-radius-sm);
-  background: var(--aw-color-brand-accent);
-  color: var(--aw-color-accent-text);
-  font-size: var(--aw-text-base);
-  font-weight: 700;
-  letter-spacing: var(--aw-tracking-wide);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: opacity var(--aw-duration-fast) var(--aw-ease);
-}
-
-.aw-wishlist-summary__move-all:hover {
-  opacity: 0.9;
-}
-
-.aw-wishlist-summary__move-all:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.aw-wishlist-summary__footnote {
-  text-align: center;
-  color: var(--aw-color-muted);
-  font-size: var(--aw-text-xs);
-  margin: var(--aw-space-2) 0 0;
-}
-
-.aw-wishlist-page__empty {
+.aw-wishlist-empty {
   display: flex;
   flex-direction: column;
-  gap: var(--aw-space-2);
+  gap: var(--aw-space-3);
   align-items: flex-start;
   color: var(--aw-color-muted);
+  padding: var(--aw-space-7) 0;
+}
+
+.aw-wishlist-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--aw-space-6) 0;
+}
+
+.aw-wishlist-loading .loading__spinner {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* --- Grid + cards --- */
+
+.aw-wishlist-grid {
+  row-gap: var(--aw-space-6);
+}
+
+.aw-wishlist-card__wrapper {
+  position: relative;
 }
 
 .aw-wishlist-card__media-link {
@@ -248,9 +110,10 @@
 }
 
 .aw-wishlist-card__media {
+  position: relative;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  border-radius: var(--aw-radius-sm);
+  border-radius: var(--aw-radius-md, 1.4rem);
   background: rgba(var(--color-foreground), 0.04);
 }
 
@@ -261,78 +124,43 @@
 }
 
 .aw-wishlist-card__content {
-  margin-top: var(--aw-space-2);
+  margin-top: var(--aw-space-3);
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
 }
 
-.aw-wishlist-card__title {
+.aw-wishlist-card__heading {
+  font-size: var(--aw-text-sm);
+  margin: 0;
+}
+
+.aw-wishlist-card__price {
+  font-family: var(--aw-font-mono);
   font-size: var(--aw-text-sm);
 }
 
-.aw-wishlist-card__stock {
+.aw-wishlist-card__soldout {
   font-family: var(--aw-font-mono);
   font-size: var(--aw-text-xs);
   letter-spacing: var(--aw-tracking-wide);
   text-transform: uppercase;
-  color: var(--aw-color-success);
-}
-
-.aw-wishlist-card__stock--low {
   color: var(--aw-color-muted);
 }
 
-.aw-wishlist-card__price-row {
-  display: flex;
-  align-items: baseline;
-  gap: var(--aw-space-2);
-}
-
-.aw-wishlist-card__compare-price {
-  font-size: var(--aw-text-xs);
+.price-item--compare {
   color: var(--aw-color-muted);
+  margin-right: 0.4rem;
 }
 
-.aw-wishlist-card__actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--aw-space-2);
-  margin-top: 0.2rem;
-}
+/* Card action buttons here reuse .aw-card-action / .aw-card-actions
+   from assets/artwistic-product-card.css verbatim — no local overrides
+   needed since .aw-wishlist-card__wrapper is position: relative,
+   matching every other card's positioning context. */
 
-.aw-wishlist-card__move {
-  min-height: 3.6rem;
-  padding: 0 var(--aw-space-3);
-  font-size: var(--aw-text-xs);
-}
-
-.aw-wishlist-card__move:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.aw-wishlist-card__remove {
-  flex-shrink: 0;
-  font-size: var(--aw-text-xs);
-  color: var(--aw-color-muted);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-/* smooth collapse when a card leaves the grid (removed, or moved to bag) */
+/* smooth collapse when a card leaves the grid on removal */
 .aw-wishlist-card {
   transition: opacity var(--aw-duration-base) var(--aw-ease), transform var(--aw-duration-base) var(--aw-ease);
-}
-
-.aw-wishlist-card--leaving {
-  opacity: 0;
-  transform: scale(0.97) translateY(-0.4rem);
-  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -346,20 +174,12 @@
    scheme already defined in Theme Settings), scoped to this page only.
    Toggled by assets/artwistic-dark-mode.js via data-aw-theme on <html>.
    ========================================================================== */
-[data-aw-theme='dark'] .aw-wishlist-page,
-[data-aw-theme='dark'] .aw-wishlist-summary,
-[data-aw-theme='dark'] #aw-wishlist-pair {
+[data-aw-theme='dark'] .aw-wishlist-page {
   --color-background: 23, 19, 15;
   --color-foreground: 245, 239, 230;
 }
 
-[data-aw-theme='dark'] .aw-wishlist-page [class*='color-scheme-'],
-[data-aw-theme='dark'] .aw-wishlist-summary [class*='color-scheme-'],
-[data-aw-theme='dark'] #aw-wishlist-pair [class*='color-scheme-'] {
+[data-aw-theme='dark'] .aw-wishlist-page [class*='color-scheme-'] {
   --color-background: 23, 19, 15 !important;
   --color-foreground: 245, 239, 230 !important;
-}
-
-.aw-wishlist-page__head {
-  flex-wrap: wrap;
 }
