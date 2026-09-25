@@ -15,20 +15,6 @@
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
     {%- endunless -%}
 
-    {%- comment -%}
-      ARTWISTIC: IBM Plex Mono — the accent typeface used for prices,
-      eyebrows, labels and counts (--aw-font-mono in artwistic-global.css).
-      Dawn's font_picker settings only expose the header/body slots, so
-      this third typeface is loaded directly from Google Fonts rather
-      than self-hosted. See ARTWISTIC_CHANGELOG.md.
-    {%- endcomment -%}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
-    >
-
     <title>
       {{ page_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
@@ -66,11 +52,6 @@
     <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'artwistic-global.js' | asset_url }}" defer="defer"></script> {%- comment -%} ARTWISTIC: shared helpers, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-    <script src="{{ 'artwistic-product-card.js' | asset_url }}" defer="defer"></script> {%- comment -%} ARTWISTIC: shared wishlist/quick-add data layer, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-    <script src="{{ 'artwistic-quick-add.js' | asset_url }}" defer="defer"></script> {%- comment -%} ARTWISTIC: card quick-add size sheet, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-    <script src="{{ 'artwistic-shipping-progress.js' | asset_url }}" defer="defer"></script> {%- comment -%} ARTWISTIC: free-shipping unlock celebration, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-    <script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script> {%- comment -%} ARTWISTIC: shared rail-arrow controls, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
     <script src="{{ 'cart-disclosure-modal.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'cart-disclosure-tooltip.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
@@ -298,9 +279,25 @@
     {% endstyle %}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
-    {{ 'artwistic-global.css' | asset_url | stylesheet_tag }} {%- comment -%} ARTWISTIC: global tokens/utilities, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-    {{ 'artwistic-product-card.css' | asset_url | stylesheet_tag }} {%- comment -%} ARTWISTIC: shared wishlist/quick-add card buttons, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-    {{ 'artwistic-quick-add.css' | asset_url | stylesheet_tag }} {%- comment -%} ARTWISTIC: card quick-add size sheet, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+    {%- comment -%} ARTWISTIC: global design tokens + the accent mono typeface (Dawn's font_picker only exposes header/body slots), see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+    {{ 'artwistic-global.css' | asset_url | stylesheet_tag }}
+    {%- comment -%} ARTWISTIC: shared product card restyle (badge, wishlist/add-to-cart quick actions) — used by Best Sellers, New Arrivals, and any future collection grid, loaded once globally since card-product.liquid renders in a loop. {%- endcomment -%}
+    {{ 'artwistic-product-card.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'artwistic-product-card.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%} ARTWISTIC: real quick-add size picker for multi-variant product cards, used wherever the card renders. {%- endcomment -%}
+    {{ 'artwistic-quick-add.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'artwistic-quick-add.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%} ARTWISTIC: header search modal typing-animation overlay — the search icon/modal lives in the header on every page. {%- endcomment -%}
+    {{ 'artwistic-search.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'artwistic-search.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%}theme-check-disable RemoteAsset{%- endcomment -%}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap"
+    >
+    {%- comment -%}theme-check-enable RemoteAsset{%- endcomment -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
     {%- if settings.cart_type == 'drawer' -%}
@@ -309,15 +306,6 @@
       {{ 'component-totals.css' | asset_url | stylesheet_tag }}
       {{ 'component-price.css' | asset_url | stylesheet_tag }}
       {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
-    {%- endif -%}
-    {%- if settings.cart_type == 'drawer' or request.page_type == 'cart' -%}
-      {%- comment -%} ARTWISTIC: cart restyle (drawer + full cart page), see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-      {{ 'artwistic-cart.css' | asset_url | stylesheet_tag }}
-      {{ 'artwistic-shipping-progress.css' | asset_url | stylesheet_tag }}
-    {%- endif -%}
-    {%- if request.page_type == 'index' -%}
-      {%- comment -%} ARTWISTIC: homepage hero slideshow restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-      {{ 'artwistic-hero-slideshow.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
 
     {%- unless settings.type_body_font.system? -%}
