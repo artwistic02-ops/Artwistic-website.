@@ -1,0 +1,246 @@
+/**
+ * ARTWISTIC PRODUCT CARD — floating wishlist/quick-add buttons shared by
+ * every product card, the product page, and the Wishlist Hub page's own
+ * client-rendered cards. See assets/artwistic-product-card.js.
+ */
+
+.card__media {
+  position: relative;
+}
+
+.aw-card-actions {
+  position: absolute;
+  top: var(--aw-space-2);
+  right: var(--aw-space-2);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-space-2);
+}
+
+.aw-card-action {
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(var(--color-background), 0.92);
+  color: var(--aw-color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+  cursor: pointer;
+  transition: background-color var(--aw-duration-base) var(--aw-ease),
+    color var(--aw-duration-base) var(--aw-ease), transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-card-action svg {
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
+}
+
+.aw-card-action:hover {
+  transform: scale(1.06);
+}
+
+.aw-card-action:active {
+  transform: scale(0.95);
+}
+
+/* --- wishlist heart --- */
+.aw-card-action--wishlist svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.aw-card-action--wishlist.is-active {
+  background: var(--aw-color-sale, #b3441e);
+  color: #fff;
+}
+
+.aw-card-action--wishlist.is-active svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* --- quick-add plus/spinner/check --- */
+.aw-card-action--cart {
+  position: relative;
+}
+
+.aw-card-action-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity var(--aw-duration-fast) var(--aw-ease), transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-card-action-icon--plus {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.aw-card-action--cart.is-loading .aw-card-action-icon--plus {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.aw-card-action--cart.is-loading::after {
+  content: '';
+  position: absolute;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--color-foreground), 0.25);
+  border-top-color: var(--aw-color-ink);
+  animation: aw-card-action-spin 0.7s linear infinite;
+}
+
+.aw-card-action--cart.is-added {
+  background: var(--aw-color-success, #4b6a4f);
+  color: #fff;
+}
+
+.aw-card-action--cart.is-added .aw-card-action-icon--plus {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.aw-card-action--cart.is-added .aw-card-action-icon--check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.aw-card-action--cart[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@keyframes aw-card-action-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- product page: large / inline heart variant --- */
+.aw-card-action--large {
+  position: static;
+  width: 4.6rem;
+  height: 4.6rem;
+  border: 1.5px solid rgba(var(--color-foreground), 0.2);
+  box-shadow: none;
+}
+
+.aw-product-media-wrapper {
+  position: relative;
+}
+
+.aw-product-media-wrapper .aw-card-actions.aw-card-actions--product-page {
+  top: var(--aw-space-3);
+  right: var(--aw-space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-card-action,
+  .aw-card-action-icon,
+  .aw-card-action--cart.is-loading::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}
+
+/* ---- size sheet (multi-variant quick-add) ---- */
+.aw-size-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-size-sheet.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.aw-size-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.aw-size-sheet__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(var(--color-background));
+  border-radius: var(--aw-radius-md) var(--aw-radius-md) 0 0;
+  padding: var(--aw-space-5) var(--aw-space-4) var(--aw-space-6);
+  transform: translateY(100%);
+  transition: transform var(--aw-duration-base) var(--aw-ease);
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.aw-size-sheet.is-open .aw-size-sheet__panel {
+  transform: translateY(0);
+}
+
+@media screen and (min-width: 750px) {
+  .aw-size-sheet__panel {
+    left: 50%;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, calc(-50% + 12px));
+    border-radius: var(--aw-radius-md);
+    width: 38rem;
+  }
+
+  .aw-size-sheet.is-open .aw-size-sheet__panel {
+    transform: translate(-50%, -50%);
+  }
+}
+
+.aw-size-sheet__title {
+  font-family: var(--aw-font-heading, inherit);
+  font-size: var(--aw-text-md);
+  margin: 0 0 var(--aw-space-4);
+}
+
+.aw-size-sheet__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--aw-space-2);
+}
+
+.aw-size-sheet__option {
+  min-width: 5.2rem;
+  height: 4.4rem;
+  padding: 0 var(--aw-space-3);
+  border-radius: var(--aw-radius-sm);
+  border: 1.5px solid rgba(var(--color-foreground), 0.2);
+  background: none;
+  color: var(--aw-color-ink);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-sm);
+  cursor: pointer;
+  transition: border-color var(--aw-duration-fast) var(--aw-ease), background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-size-sheet__option:hover {
+  border-color: var(--aw-color-brand-accent);
+}
+
+.aw-size-sheet__option.is-unavailable {
+  opacity: 0.35;
+  text-decoration: line-through;
+  cursor: default;
+}

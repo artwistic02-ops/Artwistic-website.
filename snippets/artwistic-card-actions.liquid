@@ -1,0 +1,69 @@
+{% comment %}
+  ARTWISTIC: real wishlist (heart) + quick-add (plus) buttons for a
+  product. Purely client-side — see assets/artwistic-product-card.js /
+  assets/artwistic-product-card.css. Guests get localStorage persistence
+  for the wishlist; quick-add posts a real variant to /cart/add.js.
+
+  Usage:
+    {% render 'artwistic-card-actions', product: card_product %}
+    {% render 'artwistic-card-actions', product: product, heart_only: true, size: 'large' %}
+{% endcomment %}
+
+{%- if product != blank -%}
+  {%- liquid
+    assign variant = product.selected_or_first_available_variant
+    assign is_multi_variant = false
+    if product.variants.size > 1
+      assign is_multi_variant = true
+    endif
+
+    assign variants_json = '['
+    for v in product.variants
+      assign option_label = v.title
+      if product.options.size == 1
+        assign option_label = v.option1
+      endif
+      assign label_json = option_label | json
+      assign variants_json = variants_json | append: '{"id":' | append: v.id | append: ',"label":' | append: label_json | append: ',"available":' | append: v.available | append: '}'
+      unless forloop.last
+        assign variants_json = variants_json | append: ','
+      endunless
+    endfor
+    assign variants_json = variants_json | append: ']'
+  -%}
+
+  <div class="aw-card-actions{% if heart_only %} aw-card-actions--product-page{% endif %}">
+    <button
+      type="button"
+      class="aw-card-action aw-card-action--wishlist{% if size == 'large' %} aw-card-action--large{% endif %}"
+      data-aw-wishlist-toggle
+      data-product-id="{{ product.id }}"
+      data-product-handle="{{ product.handle }}"
+      aria-pressed="false"
+      aria-label="Add {{ product.title | escape }} to wishlist"
+    >
+      {{- 'icon-heart.svg' | inline_asset_content -}}
+    </button>
+
+    {%- unless heart_only -%}
+      <button
+        type="button"
+        class="aw-card-action aw-card-action--cart"
+        data-aw-quick-add
+        data-variant-id="{{ variant.id }}"
+        data-multi-variant="{{ is_multi_variant }}"
+        data-product-title="{{ product.title | escape }}"
+        data-variants='{{ variants_json }}'
+        aria-label="Add {{ product.title | escape }} to cart"
+        {% if variant.available == false and is_multi_variant == false %}disabled{% endif %}
+      >
+        <span class="aw-card-action-icon aw-card-action-icon--plus">
+          {{- 'icon-plus.svg' | inline_asset_content -}}
+        </span>
+        <span class="aw-card-action-icon aw-card-action-icon--check">
+          {{- 'icon-check-mark.svg' | inline_asset_content -}}
+        </span>
+      </button>
+    {%- endunless -%}
+  </div>
+{%- endif -%}
