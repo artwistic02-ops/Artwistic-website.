@@ -1,143 +1,163 @@
 /**
- * ARTWISTIC PRODUCT CARD — real, shared wishlist + quick-add data layer.
- * Loaded once, site-wide (layout/theme.liquid), not per-card. Drives every
- * .aw-card-action button (product cards, product page, and the Wishlist
- * Hub page's own client-rendered cards via assets/artwistic-wishlist.js).
- *
- * window.awWishlist:
- *   get()            -> [{ id, handle, savedAt }]
- *   toggle(id,handle) -> boolean (true = now saved)
- *   isSaved(id)       -> boolean
- *   remove(id)        -> void
- * Every mutation fires document 'aw:wishlist:change' (already listened
- * for by artwistic-wishlist-header-count.js and artwistic-wishlist.js).
+ * ARTWISTIC PRODUCT CARD — shared wishlist toggle (localStorage) and
+ * quick add-to-cart, wired via event delegation so it works for every
+ * card on the page (Best Sellers, New Arrivals, Collections later)
+ * without per-section setup. Add-to-cart uses the same real
+ * fetchConfig + routes.cart_add_url + publish(cartUpdate) +
+ * cart.renderContents() pattern already proven in
+ * assets/artwistic-complete-the-look.js — not a re-invented call.
  */
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'aw_wishlist';
+  var WISHLIST_KEY = 'aw_wishlist';
+  var MIN_SPIN_MS = 450;
 
-  function readEntries() {
+  function getWishlist() {
     try {
-      var raw = window.localStorage.getItem(STORAGE_KEY);
+      var raw = window.localStorage.getItem(WISHLIST_KEY);
       var parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
+      // Entries are {id, handle, savedAt} objects — filter out anything from
+      // an older bare-id-array format so the Wishlist page's handle-based
+      // /products/<handle>.js fetch always has what it needs. savedAt drives
+      // the Wishlist Hub's real 30-day expiry — entries saved before this
+      // field existed just don't show an age/expiry line, they're not lost.
+      return parsed.filter(function (entry) {
+        return entry && typeof entry === 'object' && entry.id && entry.handle;
+      });
+    } catch (e) {
       return [];
     }
   }
 
-  function writeEntries(entries) {
+  function setWishlist(entries) {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    } catch (error) {
-      /* Storage unavailable — state still works for this page view. */
+      window.localStorage.setItem(WISHLIST_KEY, JSON.stringify(entries));
+    } catch (e) {
+      /* localStorage unavailable — wishlist just won't persist this session */
     }
-    document.dispatchEvent(new CustomEvent('aw:wishlist:change'));
   }
 
-  window.awWishlist = {
-    get: function () {
-      return readEntries();
-    },
-    isSaved: function (id) {
-      id = String(id);
-      return readEntries().some(function (entry) {
-        return String(entry.id) === id;
-      });
-    },
-    toggle: function (id, handle) {
-      var entries = readEntries();
-      id = String(id);
-      var existingIndex = -1;
-      entries.forEach(function (entry, index) {
-        if (String(entry.id) === id) existingIndex = index;
-      });
-      var nowSaved;
-      if (existingIndex > -1) {
-        entries.splice(existingIndex, 1);
-        nowSaved = false;
-      } else {
-        entries.push({ id: id, handle: handle, savedAt: Date.now() });
-        nowSaved = true;
-      }
-      writeEntries(entries);
-      return nowSaved;
-    },
-    remove: function (id) {
-      id = String(id);
-      var entries = readEntries().filter(function (entry) {
-        return String(entry.id) !== id;
-      });
-      writeEntries(entries);
-    }
-  };
-
-  /* ---- wishlist heart: reflect saved state on load ---- */
-  function paintWishlistButtons(root) {
-    (root || document).querySelectorAll('[data-aw-wishlist-toggle]').forEach(function (button) {
-      var saved = window.awWishlist.isSaved(button.dataset.productId);
-      button.classList.toggle('is-active', saved);
-      button.setAttribute('aria-pressed', String(saved));
+  function paintWishlistButtons() {
+    var ids = getWishlist().map(function (entry) {
+      return String(entry.id);
+    });
+    document.querySelectorAll('[data-aw-wishlist-toggle]').forEach(function (btn) {
+      var isActive = ids.indexOf(String(btn.dataset.productId)) !== -1;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    paintWishlistButtons(document);
-  });
-  document.addEventListener('aw:wishlist:change', function () {
-    paintWishlistButtons(document);
-  });
+  function toggleWishlist(productId, productHandle, sourceButton) {
+    var entries = getWishlist();
+    var index = entries.findIndex(function (entry) {
+      return String(entry.id) === String(productId);
+    });
+    var willBeActive = index === -1;
+    if (willBeActive) {
+      entries.push({ id: String(productId), handle: productHandle, savedAt: Date.now() });
+    } else {
+      entries.splice(index, 1);
+    }
+    setWishlist(entries);
+    paintWishlistButtons();
+    document.dispatchEvent(new CustomEvent('aw:wishlist:change', { detail: { entries: entries } }));
 
-  /* ---- quick-add: real /cart/add.js, single-variant direct, multi-variant via a size sheet ---- */
-  var MIN_SPIN_MS = 450;
+    if (willBeActive && sourceButton) {
+      sourceButton.classList.remove('is-popping');
+      void sourceButton.offsetWidth;
+      sourceButton.classList.add('is-popping');
+      window.setTimeout(function () {
+        sourceButton.classList.remove('is-popping');
+      }, 600);
+    }
+  }
 
-  function addVariantToCart(variantId, button) {
-    if (!variantId) return;
-    button.classList.add('is-loading');
+  function removeFromWishlist(productId) {
+    var entries = getWishlist().filter(function (entry) {
+      return String(entry.id) !== String(productId);
+    });
+    setWishlist(entries);
+    paintWishlistButtons();
+    document.dispatchEvent(new CustomEvent('aw:wishlist:change', { detail: { entries: entries } }));
+  }
+
+  /**
+   * Real, working today — the Wishlist page (sections/artwistic-wishlist.liquid)
+   * and a header wishlist-count badge read/write through this shared API
+   * instead of touching localStorage directly, so there's exactly one
+   * source of truth: window.awWishlist.get() returns the current
+   * [{id, handle}, ...] array, .toggle(id, handle) adds/removes and
+   * re-paints every heart on the page, .remove(id) is a plain removal
+   * (used by the Wishlist page's own remove control), and the
+   * 'aw:wishlist:change' event (dispatched above) fires on every change
+   * for anything that wants to react live without polling localStorage.
+   */
+  window.awWishlist = {
+    get: getWishlist,
+    toggle: toggleWishlist,
+    remove: removeFromWishlist,
+  };
+
+  function getCart() {
+    return document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+  }
+
+  function addToCart(button) {
+    if (button.disabled || button.classList.contains('is-loading')) return;
+    var variantId = button.dataset.variantId;
+    if (!variantId || typeof fetchConfig !== 'function' || !window.routes) return;
+
     button.disabled = true;
-    var started = Date.now();
+    button.classList.add('is-loading');
+    var startedAt = Date.now();
 
+    var cart = getCart();
     var config = fetchConfig('javascript');
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
     delete config.headers['Content-Type'];
+
     var formData = new FormData();
     formData.append('id', variantId);
-    formData.append('quantity', '1');
+    formData.append('quantity', 1);
+    if (cart) {
+      formData.append(
+        'sections',
+        cart.getSectionsToRender().map(function (section) {
+          return section.id;
+        })
+      );
+      formData.append('sections_url', window.location.pathname);
+    }
     config.body = formData;
 
-    fetch(window.routes.cart_add_url, config)
+    fetch(routes.cart_add_url, config)
       .then(function (response) {
         return response.json();
       })
       .then(function (response) {
-        var elapsed = Date.now() - started;
-        var wait = Math.max(0, MIN_SPIN_MS - elapsed);
+        if (response.status) {
+          throw new Error(response.description || response.message || 'Cart add failed');
+        }
+        if (cart) {
+          publish(PUB_SUB_EVENTS.cartUpdate, {
+            source: 'artwistic-product-card',
+            productVariantId: variantId,
+            cartData: response,
+          });
+          cart.renderContents(response);
+        }
+
+        var elapsed = Date.now() - startedAt;
+        var wait = Math.max(MIN_SPIN_MS - elapsed, 0);
         window.setTimeout(function () {
           button.classList.remove('is-loading');
-          button.disabled = false;
-          if (response.status) {
-            button.classList.remove('is-added');
-            return;
-          }
           button.classList.add('is-added');
+          button.disabled = false;
           window.setTimeout(function () {
             button.classList.remove('is-added');
-          }, 2000);
-
-          if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
-            publish(PUB_SUB_EVENTS.cartUpdate, {
-              source: 'artwistic-product-card',
-              productVariantId: variantId,
-              cartData: response
-            });
-          }
-          var cartNotification = document.querySelector('cart-notification');
-          var cartDrawer = document.querySelector('cart-drawer');
-          var target = cartNotification || cartDrawer;
-          if (target && typeof target.renderContents === 'function') {
-            target.renderContents(response);
-          }
+          }, 2200);
         }, wait);
       })
       .catch(function () {
@@ -146,87 +166,74 @@
       });
   }
 
-  /* ---- size sheet for multi-variant quick-add ---- */
-  var sheetEl = null;
+  /**
+   * Exposed so assets/artwistic-quick-add.js can reuse this exact real
+   * /cart/add.js flow instead of duplicating it — the quick-add sheet
+   * just resolves a real variant id, sets it on the card's own button,
+   * and calls this the same way a direct single-variant click does.
+   */
+  window.awProductCard = {
+    addToCart: addToCart,
+  };
 
-  function closeSizeSheet() {
-    if (!sheetEl) return;
-    sheetEl.classList.remove('is-open');
-    window.setTimeout(function () {
-      if (sheetEl && sheetEl.parentNode) sheetEl.parentNode.removeChild(sheetEl);
-      sheetEl = null;
-    }, 250);
-  }
+  function swapCardImage(swatchBtn) {
+    if (!swatchBtn.dataset.swapSrc) return;
+    var group = swatchBtn.closest('[data-aw-card-swatches]');
+    var card = swatchBtn.closest('.card-wrapper');
+    var img = card && card.querySelector('.card__media img.motion-reduce');
+    if (!img) return;
 
-  function openSizeSheet(button) {
-    closeSizeSheet();
-
-    var data;
-    try {
-      data = JSON.parse(button.dataset.variants || '[]');
-    } catch (error) {
-      data = [];
+    img.src = swatchBtn.dataset.swapSrc;
+    if (swatchBtn.dataset.swapSrcset) {
+      img.srcset = swatchBtn.dataset.swapSrcset;
     }
-    if (!data.length) return;
 
-    var wrap = document.createElement('div');
-    wrap.className = 'aw-size-sheet';
-    wrap.innerHTML =
-      '<div class="aw-size-sheet__backdrop" data-aw-size-sheet-close></div>' +
-      '<div class="aw-size-sheet__panel" role="dialog" aria-modal="true" aria-label="Choose a size">' +
-      '<p class="aw-size-sheet__title">' + (button.dataset.productTitle || 'Choose a size') + '</p>' +
-      '<div class="aw-size-sheet__options"></div>' +
-      '</div>';
-
-    var optionsHost = wrap.querySelector('.aw-size-sheet__options');
-    data.forEach(function (variant) {
-      var opt = document.createElement('button');
-      opt.type = 'button';
-      opt.className = 'aw-size-sheet__option';
-      opt.textContent = variant.label;
-      if (!variant.available) {
-        opt.disabled = true;
-        opt.classList.add('is-unavailable');
-      } else {
-        opt.addEventListener('click', function () {
-          closeSizeSheet();
-          addVariantToCart(variant.id, button);
-        });
-      }
-      optionsHost.appendChild(opt);
-    });
-
-    wrap.querySelectorAll('[data-aw-size-sheet-close]').forEach(function (el) {
-      el.addEventListener('click', closeSizeSheet);
-    });
-
-    document.body.appendChild(wrap);
-    sheetEl = wrap;
-    requestAnimationFrame(function () {
-      wrap.classList.add('is-open');
-    });
+    if (group) {
+      group.querySelectorAll('.aw-card-swatch').forEach(function (btn) {
+        var isActive = btn === swatchBtn;
+        btn.classList.toggle('is-active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+      });
+    }
   }
 
-  /* ---- click delegation: works for cards rendered later client-side too ---- */
   document.addEventListener('click', function (event) {
     var wishlistBtn = event.target.closest('[data-aw-wishlist-toggle]');
     if (wishlistBtn) {
       event.preventDefault();
-      var nowSaved = window.awWishlist.toggle(wishlistBtn.dataset.productId, wishlistBtn.dataset.productHandle);
-      wishlistBtn.classList.toggle('is-active', nowSaved);
-      wishlistBtn.setAttribute('aria-pressed', String(nowSaved));
+      toggleWishlist(wishlistBtn.dataset.productId, wishlistBtn.dataset.productHandle, wishlistBtn);
       return;
     }
 
-    var quickAddBtn = event.target.closest('[data-aw-quick-add]');
-    if (quickAddBtn) {
+    var cartBtn = event.target.closest('[data-aw-quick-add]');
+    if (cartBtn) {
       event.preventDefault();
-      if (quickAddBtn.disabled || quickAddBtn.classList.contains('is-loading')) return;
-      if (quickAddBtn.dataset.multiVariant === 'true') {
-        openSizeSheet(quickAddBtn);
-      } else {
-        addVariantToCart(quickAddBtn.dataset.variantId, quickAddBtn);
+      if (cartBtn.dataset.multiVariant === 'true') {
+        if (cartBtn.disabled) return;
+        var quickAddData = document.querySelector(
+          '[data-aw-quick-add-data="' + cartBtn.dataset.productId + '"]'
+        );
+        if (quickAddData && window.awQuickAdd) {
+          window.awQuickAdd.open(cartBtn, quickAddData);
+          return;
+        }
+        cartBtn.disabled = true;
+        cartBtn.classList.add('is-loading');
+        window.setTimeout(function () {
+          window.location.href = cartBtn.dataset.productUrl;
+        }, 320);
+        return;
       }
+      addToCart(cartBtn);
+      return;
+    }
+
+    var swatchBtn = event.target.closest('.aw-card-swatch');
+    if (swatchBtn) {
+      event.preventDefault();
+      swapCardImage(swatchBtn);
     }
   });
+
+  paintWishlistButtons();
 })();

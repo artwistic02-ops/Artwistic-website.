@@ -1,58 +1,143 @@
 /**
- * ARTWISTIC PRODUCT CARD — floating wishlist/quick-add buttons shared by
- * every product card, the product page, and the Wishlist Hub page's own
- * client-rendered cards. See assets/artwistic-product-card.js.
+ * ARTWISTIC PRODUCT CARD — restyles Dawn's real card-product markup
+ * (snippets/card-product.liquid) in place: rounded image frame, a
+ * real-data badge top-left, floating wishlist/add-to-cart buttons
+ * bottom-left over the image, two-line clamped title, price row.
+ * Shared by Best Sellers, New Arrivals, and (later) the Collections
+ * page — one card language site-wide, per the master task list.
  */
 
 .card__media {
   position: relative;
+  border-radius: var(--aw-radius-md, 1.4rem);
+  overflow: hidden;
 }
 
+/* --- Signature hover: slower, softer zoom than Dawn's flat 1.06/
+   700ms default, plus a faint warm vignette that settles in at the
+   same time — reads as a deliberate, boutique-style reveal rather
+   than a generic e-commerce hover. Overrides Dawn's own
+   component-card.css rule via one extra class in the selector path
+   (no !important needed). --- */
+@media screen and (min-width: 990px) {
+  .card-wrapper .card__media .media.media--hover-effect > img:first-child:only-child {
+    transition: transform 1100ms var(--aw-ease);
+  }
+
+  .card-wrapper:hover .card__media .media.media--hover-effect > img:first-child:only-child {
+    transform: scale(1.035);
+  }
+
+  .card-wrapper .card__media .media.media--hover-effect > img:first-child:not(:only-child),
+  .card-wrapper .card__media .media.media--hover-effect > img + img {
+    transition: transform 1100ms var(--aw-ease), opacity 550ms var(--aw-ease);
+  }
+
+  .card-wrapper:hover .card__media .media.media--hover-effect > img:first-child:not(:only-child) {
+    opacity: 0;
+  }
+
+  .card-wrapper:hover .card__media .media.media--hover-effect > img + img {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+}
+
+.card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(169, 124, 79, 0) 60%, rgba(23, 19, 15, 0.16) 100%);
+  opacity: 0;
+  transition: opacity 600ms var(--aw-ease);
+  z-index: 1;
+}
+
+.card-wrapper:hover .card__media::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-wrapper .card__media .media.media--hover-effect > img,
+  .card__media::after {
+    transition: none !important;
+  }
+
+  .card-wrapper:hover .card__media .media.media--hover-effect > img:first-child:only-child,
+  .card-wrapper:hover .card__media .media.media--hover-effect > img + img {
+    transform: none !important;
+  }
+}
+
+/* --- Badge (snippets/artwistic-card-badge.liquid) --- */
+.aw-card-badge {
+  position: absolute;
+  top: var(--aw-space-3);
+  left: var(--aw-space-3);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--aw-color-paper);
+  color: var(--aw-color-ink);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-2xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--aw-radius-xs, 2px);
+  box-shadow: 0 2px 8px rgba(23, 19, 15, 0.1);
+}
+
+.aw-card-badge svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: currentColor;
+}
+
+.aw-card-badge--offer {
+  background: var(--aw-color-sale, #b3441e);
+  color: #fff;
+}
+
+/* --- Floating quick actions (snippets/artwistic-card-actions.liquid) --- */
 .aw-card-actions {
   position: absolute;
-  top: var(--aw-space-2);
-  right: var(--aw-space-2);
-  z-index: 3;
+  left: var(--aw-space-3);
+  bottom: var(--aw-space-3);
+  z-index: 2;
   display: flex;
-  flex-direction: column;
   gap: var(--aw-space-2);
 }
 
 .aw-card-action {
+  position: relative;
   width: 3.6rem;
   height: 3.6rem;
-  border-radius: 50%;
-  border: none;
-  background: rgba(var(--color-background), 0.92);
+  border-radius: var(--aw-radius-full);
+  border: 1px solid rgba(33, 29, 26, 0.08);
+  background: rgba(251, 247, 241, 0.92);
   color: var(--aw-color-ink);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
   cursor: pointer;
-  transition: background-color var(--aw-duration-base) var(--aw-ease),
-    color var(--aw-duration-base) var(--aw-ease), transform var(--aw-duration-fast) var(--aw-ease);
+  padding: 0;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease), color var(--aw-duration-fast) var(--aw-ease),
+    transform var(--aw-duration-fast) var(--aw-ease);
 }
 
 .aw-card-action svg {
-  width: 1.7rem;
-  height: 1.7rem;
-  flex-shrink: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: currentColor;
 }
 
 .aw-card-action:hover {
-  transform: scale(1.06);
-}
-
-.aw-card-action:active {
-  transform: scale(0.95);
-}
-
-/* --- wishlist heart --- */
-.aw-card-action--wishlist svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+  transform: translateY(-2px);
 }
 
 .aw-card-action--wishlist.is-active {
@@ -62,185 +147,358 @@
 
 .aw-card-action--wishlist.is-active svg {
   fill: currentColor;
-  stroke: currentColor;
 }
 
-/* --- quick-add plus/spinner/check --- */
-.aw-card-action--cart {
-  position: relative;
+/* Wishlist: a bouncy overshoot pop on the icon itself the instant it's
+   saved, plus a brief expanding ring so the state change reads as a
+   real "saved" moment rather than a flat color swap. */
+.aw-card-action--wishlist svg {
+  transition: transform 350ms var(--aw-ease);
 }
 
-.aw-card-action-icon {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity var(--aw-duration-fast) var(--aw-ease), transform var(--aw-duration-fast) var(--aw-ease);
+.aw-card-action--wishlist.is-popping svg {
+  animation: aw-card-heart-pop 500ms var(--aw-ease);
 }
 
-.aw-card-action-icon--plus {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.aw-card-action--cart.is-loading .aw-card-action-icon--plus {
-  opacity: 0;
-  transform: scale(0.6);
-}
-
-.aw-card-action--cart.is-loading::after {
-  content: '';
-  position: absolute;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  border: 2px solid rgba(var(--color-foreground), 0.25);
-  border-top-color: var(--aw-color-ink);
-  animation: aw-card-action-spin 0.7s linear infinite;
-}
-
-.aw-card-action--cart.is-added {
-  background: var(--aw-color-success, #4b6a4f);
-  color: #fff;
-}
-
-.aw-card-action--cart.is-added .aw-card-action-icon--plus {
-  opacity: 0;
-  transform: scale(0.6);
-}
-
-.aw-card-action--cart.is-added .aw-card-action-icon--check {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.aw-card-action--cart[disabled] {
-  opacity: 0.4;
-  cursor: default;
-}
-
-@keyframes aw-card-action-spin {
-  to {
-    transform: rotate(360deg);
+@keyframes aw-card-heart-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.45);
+  }
+  60% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
-/* --- product page: large / inline heart variant --- */
-.aw-card-action--large {
-  position: static;
-  width: 4.6rem;
-  height: 4.6rem;
-  border: 1.5px solid rgba(var(--color-foreground), 0.2);
-  box-shadow: none;
+.aw-card-action--wishlist.is-popping::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--aw-color-sale, #b3441e);
+  animation: aw-card-heart-ring 550ms var(--aw-ease) forwards;
+  pointer-events: none;
 }
 
+@keyframes aw-card-heart-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+/* Add-to-cart: plus -> spinner -> check, same pattern used across
+   this build (Complete the Look, Reels). */
+.aw-card-action-icon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transform: scale(1);
+  transition: transform 350ms var(--aw-ease), opacity 350ms var(--aw-ease);
+}
+
+.aw-card-action-icon--plus {
+  display: flex;
+}
+
+.aw-card-action .loading__spinner {
+  display: none;
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.aw-card-action.is-loading .aw-card-action-icon--plus {
+  display: none;
+}
+
+.aw-card-action.is-loading .loading__spinner {
+  display: flex;
+}
+
+.aw-card-action.is-added {
+  background: var(--aw-color-success, #4b6a4f);
+  color: #fff;
+  animation: aw-card-cart-pop 450ms var(--aw-ease);
+}
+
+.aw-card-action.is-added .aw-card-action-icon--plus,
+.aw-card-action.is-added .loading__spinner {
+  display: none;
+}
+
+.aw-card-action.is-added .aw-card-action-icon--check {
+  display: flex;
+  animation: aw-card-check-in 400ms var(--aw-ease);
+}
+
+@keyframes aw-card-cart-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes aw-card-check-in {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.aw-card-action.is-added::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--aw-color-success, #4b6a4f);
+  animation: aw-card-heart-ring 550ms var(--aw-ease) forwards;
+  pointer-events: none;
+}
+
+.aw-card-action[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-card-action,
+  .aw-card-action--wishlist svg,
+  .aw-card-action-icon {
+    transition: none;
+  }
+
+  .aw-card-action--wishlist.is-popping svg,
+  .aw-card-action--wishlist.is-popping::after,
+  .aw-card-action.is-added,
+  .aw-card-action.is-added .aw-card-action-icon--check,
+  .aw-card-action.is-added::after {
+    animation: none;
+  }
+}
+
+/* --- Uniform left/right edge on Dawn's "peek" sliders ---
+   When a featured-collection uses enable_desktop_slider/swipe_on_mobile
+   (Best Sellers, New Arrivals — see templates/index.json), Dawn's own
+   left/right inset ends up inconsistent depending on whether a given
+   collection actually crosses the "enough products to need a slider"
+   threshold: the non-slider case gets .page-width-desktop, the slider
+   case gets none at all (Dawn's deliberate edge-to-edge "peek" bleed).
+   Fix this in exactly ONE place — the <slider-component> wrapper,
+   which is the common ancestor in both cases — instead of patching the
+   inner .product-grid separately per case, so there's a single source
+   of truth and no risk of the two disagreeing or double-applying. */
+slider-component.slider-mobile-gutter {
+  padding-left: clamp(1.25rem, 3vw, 3rem);
+  padding-right: clamp(1.25rem, 3vw, 3rem);
+  scroll-padding-left: clamp(1.25rem, 3vw, 3rem);
+}
+
+/* --- Fix real blank space inside every card: Dawn's own .grid is a
+   flex row with default align-items:stretch, so any card next to a
+   taller neighbor (e.g. a 2-line title, or one with swatches) gets
+   stretched to match it — and .card__content's stock rule
+   (grid-template-rows: minmax(0,1fr) max-content minmax(0,1fr)) then
+   deliberately centers the title/price block inside that extra height,
+   padding empty space above AND below it. No render call in this theme
+   ever passes extend_height:false, so every card everywhere is exposed
+   to this by default. Collapsing it to a flush top-aligned column and
+   letting rows go ragged (instead of stretched) matches a tight,
+   "short and to the point" card instead of a padded, centered one —
+   and since this stylesheet loads globally, it's a single fix that
+   reaches every card render site (Home rails, Collection, Search,
+   Wishlist, related products, cross-sell), not just one page. --- */
+.card-wrapper .card--extend-height,
+.card-wrapper .card--extend-height .card__inner {
+  height: auto;
+}
+
+.card-wrapper .card__content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--aw-space-3) 0 0;
+}
+
+.card-wrapper .card__information {
+  padding: 0;
+}
+
+/* Also stop the card ITSELF being stretched to match a taller row
+   neighbor in the first place — this is on the card wrapper (the
+   direct flex/grid item in every product-grid, home rail, search
+   results, related-products and wishlist container) rather than named
+   per grid-container class, so it works everywhere .card-wrapper is
+   used without having to track down and list every different grid
+   wrapper class site-wide. align-self works identically whether the
+   parent is a flex row (Dawn's .grid) or a CSS grid (e.g. the
+   Wishlist page's own .aw-wishlist-grid). */
+.card-wrapper {
+  align-self: flex-start;
+}
+
+/* --- Title: Dawn ships this as plain body-font text with a default
+   focus/hover outline — replaced with the site's heading serif and a
+   thin brass underline that draws in from the left on hover, instead
+   of a color-swap or underline-from-the-start. --- */
+.card__heading {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-base);
+  font-weight: 500;
+  line-height: 1.35;
+  margin-top: var(--aw-space-3);
+}
+
+.card__heading a {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  background-image: linear-gradient(var(--aw-color-brand-accent), var(--aw-color-brand-accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  padding-bottom: 1px;
+  transition: background-size 450ms var(--aw-ease);
+}
+
+.card-wrapper:hover .card__heading a {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card__heading a {
+    transition: none;
+  }
+}
+
+/* --- Price: Dawn's default is plain body-weight text with no real
+   hierarchy between a sale and regular price. Restyled to the site's
+   mono/accent numerals with a strike on the regular price and a
+   distinct sale color, tightened tracking for a more considered,
+   "priced by hand" feel rather than a generic total. --- */
+.price {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-sm);
+  letter-spacing: 0.01em;
+  margin-top: var(--aw-space-1);
+}
+
+.price .price-item--sale {
+  color: var(--aw-color-sale);
+  font-weight: 600;
+}
+
+.price span.price-item--regular:not(.price-item--sale) {
+  color: var(--aw-color-ink);
+  font-weight: 600;
+}
+
+.price s.price-item--regular {
+  color: var(--aw-color-muted);
+  font-weight: 400;
+  margin-right: 0.5rem;
+  text-decoration-color: var(--aw-color-muted);
+}
+
+/* --- Variant swatches (snippets/card-product.liquid, real Shopify
+   swatch data only) — small row under the price, click swaps the
+   card's displayed image via assets/artwistic-product-card.js. --- */
+.aw-card-swatches {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: var(--aw-space-2);
+}
+
+.aw-card-swatch {
+  appearance: none;
+  background: none;
+  padding: 2px;
+  border: 1px solid transparent;
+  border-radius: var(--aw-radius-full);
+  cursor: pointer;
+  display: inline-flex;
+  line-height: 0;
+  transition: border-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-card-swatch .swatch {
+  --swatch--size: 1.6rem;
+}
+
+.aw-card-swatch.is-active,
+.aw-card-swatch:hover {
+  border-color: var(--aw-color-border-strong);
+}
+
+/* --- Card-level lift: the whole card gains a soft shadow and rises
+   slightly on hover, on top of the image's own zoom/vignette, so the
+   card itself feels like a lifted object, not just its photo. --- */
+@media screen and (min-width: 990px) {
+  .card-wrapper {
+    transition: transform 350ms var(--aw-ease);
+  }
+
+  .card-wrapper:hover {
+    transform: translateY(-4px);
+  }
+
+  .card-wrapper .card__media {
+    transition: box-shadow 350ms var(--aw-ease);
+  }
+
+  .card-wrapper:hover .card__media {
+    box-shadow: 0 18px 34px rgba(23, 19, 15, 0.16);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-wrapper,
+  .card-wrapper .card__media {
+    transition: none;
+  }
+
+  .card-wrapper:hover {
+    transform: none;
+  }
+}
+
+/* --- Product page: static (non-floating), larger wishlist heart —
+   snippets/artwistic-card-actions.liquid heart_only mode. --- */
 .aw-product-media-wrapper {
   position: relative;
 }
 
 .aw-product-media-wrapper .aw-card-actions.aw-card-actions--product-page {
+  position: absolute;
   top: var(--aw-space-3);
   right: var(--aw-space-3);
+  left: auto;
+  bottom: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .aw-card-action,
-  .aw-card-action-icon,
-  .aw-card-action--cart.is-loading::after {
-    transition-duration: 0.001ms !important;
-    animation-duration: 0.001ms !important;
-  }
-}
-
-/* ---- size sheet (multi-variant quick-add) ---- */
-.aw-size-sheet {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--aw-duration-base) var(--aw-ease);
-}
-
-.aw-size-sheet.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.aw-size-sheet__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-}
-
-.aw-size-sheet__panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgb(var(--color-background));
-  border-radius: var(--aw-radius-md) var(--aw-radius-md) 0 0;
-  padding: var(--aw-space-5) var(--aw-space-4) var(--aw-space-6);
-  transform: translateY(100%);
-  transition: transform var(--aw-duration-base) var(--aw-ease);
-  max-width: 44rem;
-  margin: 0 auto;
-}
-
-.aw-size-sheet.is-open .aw-size-sheet__panel {
-  transform: translateY(0);
-}
-
-@media screen and (min-width: 750px) {
-  .aw-size-sheet__panel {
-    left: 50%;
-    bottom: auto;
-    top: 50%;
-    transform: translate(-50%, calc(-50% + 12px));
-    border-radius: var(--aw-radius-md);
-    width: 38rem;
-  }
-
-  .aw-size-sheet.is-open .aw-size-sheet__panel {
-    transform: translate(-50%, -50%);
-  }
-}
-
-.aw-size-sheet__title {
-  font-family: var(--aw-font-heading, inherit);
-  font-size: var(--aw-text-md);
-  margin: 0 0 var(--aw-space-4);
-}
-
-.aw-size-sheet__options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--aw-space-2);
-}
-
-.aw-size-sheet__option {
-  min-width: 5.2rem;
-  height: 4.4rem;
-  padding: 0 var(--aw-space-3);
-  border-radius: var(--aw-radius-sm);
-  border: 1.5px solid rgba(var(--color-foreground), 0.2);
-  background: none;
-  color: var(--aw-color-ink);
-  font-family: var(--aw-font-mono);
-  font-size: var(--aw-text-sm);
-  cursor: pointer;
-  transition: border-color var(--aw-duration-fast) var(--aw-ease), background-color var(--aw-duration-fast) var(--aw-ease);
-}
-
-.aw-size-sheet__option:hover {
-  border-color: var(--aw-color-brand-accent);
-}
-
-.aw-size-sheet__option.is-unavailable {
-  opacity: 0.35;
-  text-decoration: line-through;
-  cursor: default;
+.aw-card-action--large {
+  width: 4.6rem;
+  height: 4.6rem;
+  border: 1.5px solid rgba(33, 29, 26, 0.15);
 }

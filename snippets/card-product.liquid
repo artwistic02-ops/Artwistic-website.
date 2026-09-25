@@ -61,8 +61,6 @@
         >
           {%- if card_product.featured_media -%}
             <div class="card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
-              {%- comment -%} ARTWISTIC: wishlist + quick-add toggle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-              {%- render 'artwistic-card-actions', product: card_product -%}
               <div class="media media--transparent media--hover-effect">
                 {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
                 <img
@@ -108,6 +106,9 @@
                   >
                 {%- endif -%}
               </div>
+              {%- comment -%} ARTWISTIC: badge + wishlist/quick-add toggle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
+              {%- render 'artwistic-card-badge', card_product: card_product -%}
+              {%- render 'artwistic-card-actions', card_product: card_product -%}
             </div>
           {%- endif -%}
           <div class="card__content">
@@ -209,6 +210,58 @@
               {%- endif -%}
 
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+
+              {%- comment -%}
+                ARTWISTIC: variant swatches — only when the product has a
+                real Shopify-configured swatch option (color/image) with
+                more than one value. Clicking swaps the card's displayed
+                image to that variant's real featured image, client-side,
+                via assets/artwistic-product-card.js. Never fabricates an
+                option or a swatch color.
+              {%- endcomment -%}
+              {%- liquid
+                assign aw_swatch_option = null
+                for aw_opt in card_product.options_with_values
+                  assign aw_has_swatch = false
+                  for aw_val in aw_opt.values
+                    if aw_val.swatch.color or aw_val.swatch.image
+                      assign aw_has_swatch = true
+                    endif
+                  endfor
+                  if aw_has_swatch and aw_opt.values.size > 1 and aw_swatch_option == null
+                    assign aw_swatch_option = aw_opt
+                  endif
+                endfor
+              -%}
+              {%- if aw_swatch_option -%}
+                <div class="aw-card-swatches" data-aw-card-swatches>
+                  {%- for aw_val in aw_swatch_option.values -%}
+                    {%- assign aw_match_variant = null -%}
+                    {%- for aw_variant in card_product.variants -%}
+                      {%- if aw_swatch_option.position == 1 and aw_variant.option1 == aw_val
+                        or aw_swatch_option.position == 2 and aw_variant.option2 == aw_val
+                        or aw_swatch_option.position == 3 and aw_variant.option3 == aw_val
+                      -%}
+                        {%- assign aw_match_variant = aw_variant -%}
+                        {%- break -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                    <button
+                      type="button"
+                      class="aw-card-swatch{% if forloop.first %} is-active{% endif %}"
+                      aria-label="{{ aw_val | escape }}"
+                      aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                      {%- if aw_match_variant.featured_image %}
+                        data-swap-src="{{ aw_match_variant.featured_image | image_url: width: 533 }}"
+                        data-swap-srcset="{{ aw_match_variant.featured_image | image_url: width: 360 }} 360w, {{ aw_match_variant.featured_image | image_url: width: 533 }} 533w, {{ aw_match_variant.featured_image | image_url: width: 720 }} 720w"
+                      {%- endif %}
+                    >
+                      {%- render 'swatch', swatch: aw_val.swatch -%}
+                    </button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
               {%- if card_product.quantity_price_breaks_configured? -%}
                 {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                   {% liquid

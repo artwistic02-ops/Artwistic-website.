@@ -1,0 +1,26 @@
+{% comment %}
+  ARTWISTIC: card badge — real data only, never fabricated.
+  Priority: sold out > merchant free-text badge (metafield) >
+  sale % off (real compare_at math) > nothing.
+  Accepts: card_product
+{% endcomment %}
+{%- liquid
+  assign aw_badge_text = blank
+  assign aw_badge_style = 'plain'
+
+  if card_product.available == false
+    assign aw_badge_text = 'Sold out'
+  elsif card_product.metafields.custom.badge_text != blank
+    assign aw_badge_text = card_product.metafields.custom.badge_text
+  elsif card_product.compare_at_price > card_product.price and card_product.available
+    assign aw_off_pct = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price
+    assign aw_badge_text = '-' | append: aw_off_pct | append: '% OFF'
+    assign aw_badge_style = 'offer'
+  endif
+-%}
+{%- if aw_badge_text != blank -%}
+  <span class="aw-card-badge{% if aw_badge_style == 'offer' %} aw-card-badge--offer{% endif %}">
+    {{- aw_badge_text -}}
+  </span>
+{%- endif -%}
+

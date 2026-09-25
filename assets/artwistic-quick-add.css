@@ -1,54 +1,158 @@
 /**
- * ARTWISTIC QUICK ADD — editorial restyle of Dawn's existing quick-add
- * modal (a real mini product page with gallery + variant picker, not a
- * custom rebuild). Isolated from Dawn core; only visual treatment changes.
+ * ARTWISTIC: quick-add size picker sheet (assets/artwistic-quick-add.js)
+ * — dashed-border paper sheet in the same visual language already
+ * proven for the Reels lightbox's size sheet, restyled to the card's
+ * own tokens.
  */
 
-.quick-add-modal {
-  background: rgba(var(--color-foreground), 0.32);
-  transition: opacity var(--aw-duration-base) var(--aw-ease);
-}
-
-.quick-add-modal__content {
-  border-radius: var(--aw-radius-md);
-  box-shadow: var(--aw-shadow-md);
-  border: 1px solid var(--aw-color-border);
+.aw-quick-add-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(23, 19, 15, 0.5);
+  backdrop-filter: blur(4px);
   opacity: 0;
-  transform: translateY(1.2rem);
-  transition: opacity var(--aw-duration-base) var(--aw-ease), transform var(--aw-duration-base) var(--aw-ease);
+  transition: opacity 250ms var(--aw-ease);
 }
 
-.quick-add-modal[open] .quick-add-modal__content {
+.aw-quick-add-backdrop.is-open {
   opacity: 1;
+}
+
+@media screen and (min-width: 750px) {
+  .aw-quick-add-backdrop {
+    align-items: center;
+  }
+}
+
+.aw-quick-add-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 40rem;
+  background: var(--aw-color-paper);
+  border: 1px dashed var(--aw-color-border-strong);
+  border-radius: var(--aw-radius-md) var(--aw-radius-md) 0 0;
+  padding: var(--aw-space-5);
+  transform: translateY(16px);
+  transition: transform 300ms var(--aw-ease);
+}
+
+.aw-quick-add-backdrop.is-open .aw-quick-add-sheet {
   transform: translateY(0);
 }
 
-.quick-add-modal__toggle {
-  border-radius: var(--aw-radius-full);
-  transition: color var(--aw-duration-fast) var(--aw-ease), border-color var(--aw-duration-fast) var(--aw-ease);
+@media screen and (min-width: 750px) {
+  .aw-quick-add-sheet {
+    border-radius: var(--aw-radius-md);
+  }
 }
 
-.quick-add-modal__toggle:hover {
-  border-color: var(--aw-color-border-strong);
+.aw-quick-add-sheet__close {
+  position: absolute;
+  top: var(--aw-space-3);
+  right: var(--aw-space-3);
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  border: 1px solid var(--aw-color-border);
+  background: none;
+  color: var(--aw-color-ink);
 }
 
-/* "Choose options" / add-to-cart trigger on the card — same shape language
-   as .aw-btn (structured, non-pill) without renaming Dawn's button classes
-   sitewide, which is a larger migration tracked separately. */
-.quick-add__submit.button {
+.aw-quick-add-sheet__close::before,
+.aw-quick-add-sheet__close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.2rem;
+  height: 1.5px;
+  background: currentColor;
+}
+
+.aw-quick-add-sheet__close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.aw-quick-add-sheet__close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.aw-quick-add-sheet__head {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-4);
+  margin-bottom: var(--aw-space-5);
+  padding-right: var(--aw-space-6);
+}
+
+.aw-quick-add-sheet__image {
+  flex: 0 0 auto;
+  width: 6.4rem;
+  height: 6.4rem;
   border-radius: var(--aw-radius-sm);
-  font-size: var(--aw-text-sm);
-  letter-spacing: var(--aw-tracking-wide);
+  overflow: hidden;
+}
+
+.aw-quick-add-sheet__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aw-quick-add-sheet__title {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-md);
+  margin: 0 0 0.3rem;
+}
+
+.aw-quick-add-sheet__option-label {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  transition: background-color var(--aw-duration-base) var(--aw-ease), border-color var(--aw-duration-base) var(--aw-ease),
-    color var(--aw-duration-base) var(--aw-ease);
+  color: var(--aw-color-muted);
+  margin: 0;
+}
+
+.aw-quick-add-sheet__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--aw-space-2);
+}
+
+.aw-quick-add-sheet__option {
+  min-width: 5.2rem;
+  height: 4.4rem;
+  padding: 0 var(--aw-space-3);
+  border-radius: var(--aw-radius-sm);
+  border: 1px solid var(--aw-color-border-strong);
+  background: none;
+  color: var(--aw-color-ink);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-sm);
+  transition: border-color 150ms var(--aw-ease), background-color 150ms var(--aw-ease), color 150ms var(--aw-ease);
+}
+
+.aw-quick-add-sheet__option:hover:not(:disabled) {
+  border-color: var(--aw-color-ink);
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+}
+
+.aw-quick-add-sheet__option.is-unavailable {
+  color: var(--aw-color-muted);
+  border-style: dashed;
+  text-decoration: line-through;
+  cursor: not-allowed;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .quick-add-modal,
-  .quick-add-modal__content,
-  .quick-add-modal__toggle,
-  .quick-add__submit.button {
+  .aw-quick-add-backdrop,
+  .aw-quick-add-sheet {
     transition: none;
   }
 }
