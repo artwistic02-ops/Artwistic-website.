@@ -30,3 +30,46 @@
 .predictive-search__image {
   border-radius: var(--aw-radius-sm);
 }
+
+/* ==========================================================================
+   Dark mode — real scheme-4 dark colors (#17130F / #F5EFE6, the same dark
+   scheme already defined in Theme Settings), scoped to the search results
+   page only. Toggled by assets/artwistic-dark-mode.js via data-aw-theme
+   on <html>. See sections/main-search.liquid.
+   ========================================================================== */
+[data-aw-theme='dark'] .template-search {
+  --color-background: 23, 19, 15;
+  --color-foreground: 245, 239, 230;
+}
+
+[data-aw-theme='dark'] .template-search [class*='color-scheme-'] {
+  --color-background: 23, 19, 15 !important;
+  --color-foreground: 245, 239, 230 !important;
+}
+
+.aw-search-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--aw-space-3, 1.2rem);
+  position: relative;
+}
+
+.aw-search-header-row .aw-dark-toggle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@media screen and (max-width: 749px) {
+  .aw-search-header-row {
+    flex-direction: column;
+  }
+
+  .aw-search-header-row .aw-dark-toggle {
+    position: static;
+    transform: none;
+    margin-top: var(--aw-space-2, 0.8rem);
+  }
+}

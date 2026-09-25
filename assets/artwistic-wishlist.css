@@ -340,3 +340,26 @@
     transition: none;
   }
 }
+
+/* ==========================================================================
+   Dark mode — real scheme-4 dark colors (#17130F / #F5EFE6, the same dark
+   scheme already defined in Theme Settings), scoped to this page only.
+   Toggled by assets/artwistic-dark-mode.js via data-aw-theme on <html>.
+   ========================================================================== */
+[data-aw-theme='dark'] .aw-wishlist-page,
+[data-aw-theme='dark'] .aw-wishlist-summary,
+[data-aw-theme='dark'] #aw-wishlist-pair {
+  --color-background: 23, 19, 15;
+  --color-foreground: 245, 239, 230;
+}
+
+[data-aw-theme='dark'] .aw-wishlist-page [class*='color-scheme-'],
+[data-aw-theme='dark'] .aw-wishlist-summary [class*='color-scheme-'],
+[data-aw-theme='dark'] #aw-wishlist-pair [class*='color-scheme-'] {
+  --color-background: 23, 19, 15 !important;
+  --color-foreground: 245, 239, 230 !important;
+}
+
+.aw-wishlist-page__head {
+  flex-wrap: wrap;
+}

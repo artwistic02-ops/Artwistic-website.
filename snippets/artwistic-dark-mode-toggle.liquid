@@ -1,0 +1,26 @@
+{% comment %}
+  ARTWISTIC: shared dark-mode toggle button. Flips a real, existing
+  color scheme (scheme-4, the dark scheme already defined in Theme
+  Settings) in for the light scheme on whichever page renders this
+  button, persisted per visitor via localStorage (assets/artwistic-dark-mode.js).
+  No fabricated theme — it's the merchant's own dark color scheme.
+{% endcomment %}
+<button
+  type="button"
+  class="aw-dark-toggle"
+  data-aw-dark-toggle
+  aria-pressed="false"
+  aria-label="{{ 'general.dark_mode.toggle' | t }}"
+>
+  <span class="aw-dark-toggle__icon aw-dark-toggle__icon--sun" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4.2"></circle>
+      <path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"></path>
+    </svg>
+  </span>
+  <span class="aw-dark-toggle__icon aw-dark-toggle__icon--moon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.2 14.6A8.4 8.4 0 1 1 9.4 3.8a6.6 6.6 0 0 0 10.8 10.8z"></path>
+    </svg>
+  </span>
+</button>

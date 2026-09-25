@@ -1,0 +1,14 @@
+{% comment %}
+  ARTWISTIC: sets the dark-mode attribute synchronously, before first
+  paint, so a returning visitor who chose dark mode never sees a flash
+  of the light page. Paired with assets/artwistic-dark-mode.js.
+{% endcomment %}
+<script>
+  (function () {
+    try {
+      if (window.localStorage.getItem('aw_dark_mode') === 'dark') {
+        document.documentElement.setAttribute('data-aw-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>

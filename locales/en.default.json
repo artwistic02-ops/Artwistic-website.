@@ -48,6 +48,11 @@
       "moving_all_to_bag": "Adding…",
       "move_all_note": "Out-of-stock pieces stay saved, not added"
     },
+    "dark_mode": {
+      "toggle": "Toggle dark mode",
+      "on": "Dark mode on",
+      "off": "Dark mode off"
+    },
     "pagination": {
       "label": "Pagination",
       "page": "Page {{ number }}",

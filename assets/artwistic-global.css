@@ -483,3 +483,63 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   Dark-mode toggle — shared button, used on Wishlist + Search. Flips the
+   real scheme-4 dark color scheme in via assets/artwistic-dark-mode.js;
+   see the per-page stylesheet for the actual --color-background/
+   --color-foreground override scoped to that page.
+   ========================================================================== */
+.aw-dark-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  padding: 0;
+  border: 1px solid var(--aw-color-border-strong);
+  border-radius: 50%;
+  background: var(--aw-color-paper);
+  color: var(--aw-color-ink);
+  cursor: pointer;
+  transition: background-color 0.3s var(--aw-ease, ease), border-color 0.3s var(--aw-ease, ease), color 0.3s var(--aw-ease, ease);
+  flex-shrink: 0;
+}
+
+.aw-dark-toggle:hover {
+  border-color: var(--aw-color-brand-accent);
+  color: var(--aw-color-brand-accent);
+}
+
+.aw-dark-toggle__icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.5) rotate(-45deg);
+  transition: opacity 0.3s var(--aw-ease, ease), transform 0.3s var(--aw-ease, ease);
+}
+
+.aw-dark-toggle__icon svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  flex-shrink: 0;
+}
+
+.aw-dark-toggle__icon--sun {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+[data-aw-theme='dark'] .aw-dark-toggle__icon--sun {
+  opacity: 0;
+  transform: scale(0.5) rotate(45deg);
+}
+
+[data-aw-theme='dark'] .aw-dark-toggle__icon--moon {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}

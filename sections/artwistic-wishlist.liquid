@@ -7,11 +7,13 @@
   See ARTWISTIC_CHANGELOG.md and docs/FEATURE_REGISTER.md.
 {% endcomment %}
 
+{% render 'artwistic-dark-mode-init' %}
 {{ 'artwistic-wishlist.css' | asset_url | stylesheet_tag }}
 {% render 'artwistic-section-padding' %}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'artwistic-wishlist-page.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-dark-mode.js' | asset_url }}" defer="defer"></script>
 
 <div class="aw-container aw-wishlist-page color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
   <div class="aw-wishlist-page__head">
@@ -35,6 +37,7 @@
       {{- 'icon-share.svg' | inline_asset_content -}}
       <span data-aw-wishlist-share-label>{{ 'general.wishlist.share' | t }}</span>
     </button>
+    {% render 'artwistic-dark-mode-toggle' %}
   </div>
 
   <div data-aw-wishlist-empty class="aw-wishlist-page__empty">
