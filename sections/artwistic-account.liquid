@@ -1,0 +1,310 @@
+{% comment %}
+  ARTWISTIC: custom account page — real order history + saved addresses
+  for a signed-in shopper, built on Liquid's customer/order/address
+  objects (confirmed reachable on an ordinary page under New Customer
+  Accounts, see the account-test diagnostic). Sign-in itself still goes
+  through Shopify's real hosted flow (routes.account_login_url) — this
+  page is destination-only, for shoppers who are already signed in.
+  Address add/edit/delete reuses Dawn's own real, working
+  assets/customer.js + {% form 'customer_address' %} mechanism.
+{% endcomment %}
+
+{% render 'artwistic-dark-mode-init' %}
+{{ 'artwistic-account.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'customer.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-account.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-dark-mode.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: clamp(
+      {{ section.settings.padding_top | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_top | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_top }}px
+    );
+    padding-bottom: clamp(
+      {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_bottom | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_bottom }}px
+    );
+  }
+{%- endstyle -%}
+
+<div class="aw-container aw-account-page color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+  {%- if customer -%}
+    <div class="aw-account-page__head">
+      <div class="aw-account-page__titles">
+        <span class="aw-eyebrow">{{ 'customer.account.title' | t }}</span>
+        <h1 class="aw-account-page__heading">Welcome back, {{ customer.first_name | default: customer.name }}</h1>
+      </div>
+      <div class="aw-account-page__head-actions">
+        {% render 'artwistic-dark-mode-toggle' %}
+        <a href="{{ routes.account_logout_url }}" class="link aw-account-page__logout">{{ 'customer.log_out' | t }}</a>
+      </div>
+    </div>
+
+    <section class="aw-account-section" aria-labelledby="aw-account-orders-heading">
+      <h2 class="aw-account-section__heading" id="aw-account-orders-heading">{{ 'customer.orders.title' | t }}</h2>
+
+      {%- paginate customer.orders by 10 -%}
+        {%- if customer.orders.size == 0 -%}
+          <div class="aw-account-empty">
+            <p>{{ 'customer.orders.none' | t }}</p>
+            <a href="{{ routes.all_products_collection_url }}" class="button button--secondary">Continue shopping</a>
+          </div>
+        {%- else -%}
+          <div class="aw-account-orders">
+            {%- for order in customer.orders -%}
+              <details class="aw-order-stub">
+                <summary class="aw-order-stub__summary">
+                  <span class="aw-order-stub__number">{{ 'customer.orders.order_number_link' | t: number: order.name }}</span>
+                  <span class="aw-order-stub__date">{{ order.created_at | date: '%d %b %Y' }}</span>
+                  <span class="aw-order-stub__status aw-order-stub__status--{{ order.fulfillment_status | handle }}">
+                    {{ order.fulfillment_status | default: 'unfulfilled' | capitalize }}
+                  </span>
+                  <span class="aw-order-stub__total">{{ order.total_price | money }}</span>
+                  <span class="aw-order-stub__caret" aria-hidden="true">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+                </summary>
+
+                <div class="aw-order-stub__detail">
+                  {%- assign aw_tracker_step = 1 -%}
+                  {%- if order.fulfillment_status == 'fulfilled' -%}
+                    {%- assign aw_tracker_step = 3 -%}
+                  {%- elsif order.fulfillment_status == 'partial' -%}
+                    {%- assign aw_tracker_step = 2 -%}
+                  {%- endif -%}
+                  <ol class="aw-order-tracker" aria-label="Order progress">
+                    <li class="aw-order-tracker__step is-reached">Ordered</li>
+                    <li class="aw-order-tracker__step{% if aw_tracker_step >= 2 %} is-reached{% endif %}">Dispatched</li>
+                    <li class="aw-order-tracker__step{% if aw_tracker_step >= 3 %} is-reached{% endif %}">Delivered</li>
+                  </ol>
+
+                  <ul class="aw-order-stub__items" role="list">
+                    {%- for line_item in order.line_items -%}
+                      <li class="aw-order-stub__item">
+                        {%- if line_item.image -%}
+                          <img
+                            src="{{ line_item.image | image_url: width: 120 }}"
+                            alt="{{ line_item.image.alt | escape }}"
+                            width="60"
+                            height="60"
+                            loading="lazy"
+                          >
+                        {%- endif -%}
+                        <span class="aw-order-stub__item-title">{{ line_item.title }}</span>
+                        <span class="aw-order-stub__item-qty">× {{ line_item.quantity }}</span>
+                        <span class="aw-order-stub__item-price price">{{ line_item.final_line_price | money }}</span>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+
+                  {%- if order.fulfillments.size > 0 and order.fulfillments.first.tracking_url != blank -%}
+                    <a href="{{ order.fulfillments.first.tracking_url }}" class="link aw-order-stub__track" target="_blank" rel="noopener">
+                      {{ 'customer.order.track_shipment' | t }}
+                    </a>
+                  {%- endif -%}
+                </div>
+              </details>
+            {%- endfor -%}
+          </div>
+
+          {%- if paginate.pages > 1 -%}
+            {% render 'pagination', paginate: paginate %}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endpaginate -%}
+    </section>
+
+    <section class="aw-account-section" aria-labelledby="aw-account-addresses-heading" data-customer-addresses>
+      <h2 class="aw-account-section__heading" id="aw-account-addresses-heading">{{ 'customer.addresses.title' | t }}</h2>
+
+      <div class="aw-account-addresses">
+        {%- for address in customer.addresses -%}
+          <div class="aw-address-tag" data-address>
+            <div class="aw-address-tag__view">
+              {%- if address == customer.default_address -%}
+                <span class="aw-address-tag__badge">{{ 'customer.addresses.default' | t }}</span>
+              {%- endif -%}
+              <p class="aw-address-tag__name">{{ address.first_name }} {{ address.last_name }}</p>
+              <p>{{ address.address1 }}</p>
+              {%- if address.address2 != blank -%}<p>{{ address.address2 }}</p>{%- endif -%}
+              <p>{{ address.city }}{% if address.province != blank %}, {{ address.province }}{% endif %} {{ address.zip }}</p>
+              <p>{{ address.country }}</p>
+              {%- if address.phone != blank -%}<p>{{ address.phone }}</p>{%- endif -%}
+              <div class="aw-address-tag__actions">
+                <button type="button" class="link" aria-expanded="false" aria-controls="EditAddress_{{ address.id }}">
+                  {{ 'customer.addresses.edit' | t }}
+                </button>
+                <button
+                  type="button"
+                  class="link aw-address-tag__delete"
+                  data-confirm-message="{{ 'customer.addresses.delete_confirm' | t }}"
+                  data-target="{{ routes.account_addresses_url }}/{{ address.id }}"
+                >
+                  {{ 'customer.addresses.delete' | t }}
+                </button>
+              </div>
+            </div>
+
+            <div class="aw-account-address-form" id="EditAddress_{{ address.id }}">
+              {%- form 'customer_address', address -%}
+                <div class="aw-address-form__grid">
+                  <label for="AddressFirstName_{{ address.id }}">{{ 'customer.addresses.first_name' | t }}</label>
+                  <input type="text" id="AddressFirstName_{{ address.id }}" name="address[first_name]" value="{{ form.first_name }}">
+
+                  <label for="AddressLastName_{{ address.id }}">{{ 'customer.addresses.last_name' | t }}</label>
+                  <input type="text" id="AddressLastName_{{ address.id }}" name="address[last_name]" value="{{ form.last_name }}">
+
+                  <label for="AddressAddress1_{{ address.id }}">{{ 'customer.addresses.address1' | t }}</label>
+                  <input type="text" id="AddressAddress1_{{ address.id }}" name="address[address1]" value="{{ form.address1 }}">
+
+                  <label for="AddressAddress2_{{ address.id }}">{{ 'customer.addresses.address2' | t }}</label>
+                  <input type="text" id="AddressAddress2_{{ address.id }}" name="address[address2]" value="{{ form.address2 }}">
+
+                  <label for="AddressCity_{{ address.id }}">{{ 'customer.addresses.city' | t }}</label>
+                  <input type="text" id="AddressCity_{{ address.id }}" name="address[city]" value="{{ form.city }}">
+
+                  <label for="AddressCountry_{{ address.id }}">{{ 'customer.addresses.country' | t }}</label>
+                  <select
+                    id="AddressCountry_{{ address.id }}"
+                    name="address[country]"
+                    data-address-country-select
+                    data-form-id="{{ address.id }}"
+                  >
+                    {{ all_country_option_tags }}
+                  </select>
+
+                  <span id="AddressProvinceContainer_{{ address.id }}">
+                    <label for="AddressProvince_{{ address.id }}">{{ 'customer.addresses.province' | t }}</label>
+                    <select id="AddressProvince_{{ address.id }}" name="address[province]"></select>
+                  </span>
+
+                  <label for="AddressZip_{{ address.id }}">{{ 'customer.addresses.zip' | t }}</label>
+                  <input type="text" id="AddressZip_{{ address.id }}" name="address[zip]" value="{{ form.zip }}">
+
+                  <label for="AddressPhone_{{ address.id }}">{{ 'customer.addresses.phone' | t }}</label>
+                  <input type="tel" id="AddressPhone_{{ address.id }}" name="address[phone]" value="{{ form.phone }}">
+                </div>
+
+                <label class="aw-address-form__default">
+                  <input type="checkbox" name="address[default]" value="1"{% if address == customer.default_address %} checked{% endif %}>
+                  {{ 'customer.addresses.set_default' | t }}
+                </label>
+
+                <div class="aw-address-form__actions">
+                  <button type="submit" class="button">{{ 'customer.addresses.update' | t }}</button>
+                  <button type="reset" class="link">{{ 'customer.addresses.cancel' | t }}</button>
+                </div>
+              {%- endform -%}
+            </div>
+          </div>
+        {%- endfor -%}
+
+        <div class="aw-address-tag aw-address-tag--new">
+          <button type="button" class="button button--secondary" aria-expanded="false" aria-controls="AddressNewForm">
+            {{ 'customer.addresses.add_new' | t }}
+          </button>
+
+          <div class="aw-account-address-form" id="AddressNewForm">
+            {%- form 'customer_address', customer.new_address -%}
+              <div class="aw-address-form__grid">
+                <label for="AddressFirstNameNew">{{ 'customer.addresses.first_name' | t }}</label>
+                <input type="text" id="AddressFirstNameNew" name="address[first_name]" value="{{ form.first_name }}">
+
+                <label for="AddressLastNameNew">{{ 'customer.addresses.last_name' | t }}</label>
+                <input type="text" id="AddressLastNameNew" name="address[last_name]" value="{{ form.last_name }}">
+
+                <label for="AddressAddress1New">{{ 'customer.addresses.address1' | t }}</label>
+                <input type="text" id="AddressAddress1New" name="address[address1]" value="{{ form.address1 }}">
+
+                <label for="AddressAddress2New">{{ 'customer.addresses.address2' | t }}</label>
+                <input type="text" id="AddressAddress2New" name="address[address2]" value="{{ form.address2 }}">
+
+                <label for="AddressCityNew">{{ 'customer.addresses.city' | t }}</label>
+                <input type="text" id="AddressCityNew" name="address[city]" value="{{ form.city }}">
+
+                <label for="AddressCountryNew">{{ 'customer.addresses.country' | t }}</label>
+                <select id="AddressCountryNew" name="address[country]" data-address-country-select>
+                  {{ all_country_option_tags }}
+                </select>
+
+                <span id="AddressProvinceContainerNew">
+                  <label for="AddressProvinceNew">{{ 'customer.addresses.province' | t }}</label>
+                  <select id="AddressProvinceNew" name="address[province]"></select>
+                </span>
+
+                <label for="AddressZipNew">{{ 'customer.addresses.zip' | t }}</label>
+                <input type="text" id="AddressZipNew" name="address[zip]" value="{{ form.zip }}">
+
+                <label for="AddressPhoneNew">{{ 'customer.addresses.phone' | t }}</label>
+                <input type="tel" id="AddressPhoneNew" name="address[phone]" value="{{ form.phone }}">
+              </div>
+
+              <label class="aw-address-form__default">
+                <input type="checkbox" name="address[default]" value="1">
+                {{ 'customer.addresses.set_default' | t }}
+              </label>
+
+              <div class="aw-address-form__actions">
+                <button type="submit" class="button">{{ 'customer.addresses.add' | t }}</button>
+                <button type="reset" class="link">{{ 'customer.addresses.cancel' | t }}</button>
+              </div>
+            {%- endform -%}
+          </div>
+        </div>
+      </div>
+    </section>
+  {%- else -%}
+    <div class="aw-account-page__signed-out">
+      <span class="aw-eyebrow">{{ 'customer.account.title' | t }}</span>
+      <h1>Sign in to view your orders and addresses</h1>
+      <a href="{{ routes.account_login_url }}" class="button">{{ 'customer.log_in' | t }}</a>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Account",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Account"
+    }
+  ]
+}
+{% endschema %}

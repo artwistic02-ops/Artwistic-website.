@@ -1,0 +1,325 @@
+/**
+ * ARTWISTIC ACCOUNT — real order history (ticket-stub cards) + saved
+ * addresses (luggage-tag cards) for a signed-in shopper, built on
+ * Liquid's customer/order/address objects. See sections/artwistic-account.liquid,
+ * assets/artwistic-account.js, assets/customer.js.
+ */
+
+.aw-account-page__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--aw-space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--aw-space-6);
+}
+
+.aw-account-page__heading {
+  margin: 0.4rem 0 0;
+  font-family: var(--aw-font-heading);
+}
+
+.aw-account-page__head-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-4);
+}
+
+.aw-account-page__signed-out {
+  text-align: center;
+  padding: var(--aw-space-9) var(--aw-space-4);
+}
+
+.aw-account-page__signed-out h1 {
+  margin: var(--aw-space-3) 0 var(--aw-space-5);
+  font-family: var(--aw-font-heading);
+}
+
+/* --- Sections --- */
+
+.aw-account-section {
+  margin-bottom: var(--aw-space-8);
+}
+
+.aw-account-section__heading {
+  font-family: var(--aw-font-heading);
+  margin: 0 0 var(--aw-space-4);
+}
+
+.aw-account-empty {
+  border: 1px dashed var(--aw-color-border-strong);
+  border-radius: var(--aw-radius-md);
+  padding: var(--aw-space-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-space-3);
+  align-items: center;
+}
+
+/* --- Order stubs --- */
+
+.aw-account-orders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-space-3);
+}
+
+.aw-order-stub {
+  border: 1px solid var(--aw-color-border);
+  border-radius: var(--aw-radius-md);
+  background: var(--aw-color-paper);
+  overflow: hidden;
+}
+
+.aw-order-stub__summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-3);
+  padding: var(--aw-space-4);
+  flex-wrap: wrap;
+}
+
+.aw-order-stub__summary::-webkit-details-marker {
+  display: none;
+}
+
+.aw-order-stub__number {
+  font-family: var(--aw-font-mono);
+  font-weight: 600;
+}
+
+.aw-order-stub__date {
+  color: var(--aw-color-muted);
+  font-size: 1.3rem;
+}
+
+.aw-order-stub__status {
+  font-family: var(--aw-font-mono);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--aw-radius-full);
+  border: 1px solid var(--aw-color-border-strong);
+}
+
+.aw-order-stub__status--fulfilled {
+  border-color: var(--aw-color-success);
+  color: var(--aw-color-success);
+}
+
+.aw-order-stub__total {
+  margin-left: auto;
+  font-family: var(--aw-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.aw-order-stub__caret svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+  transition: transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-order-stub[open] .aw-order-stub__caret svg {
+  transform: rotate(180deg);
+}
+
+.aw-order-stub__detail {
+  padding: 0 var(--aw-space-4) var(--aw-space-4);
+  border-top: 1px dashed var(--aw-color-border-strong);
+}
+
+.aw-order-tracker {
+  display: flex;
+  list-style: none;
+  padding: var(--aw-space-4) 0;
+  margin: 0;
+  gap: var(--aw-space-2);
+}
+
+.aw-order-tracker__step {
+  flex: 1;
+  text-align: center;
+  font-family: var(--aw-font-mono);
+  font-size: 1.1rem;
+  color: var(--aw-color-muted);
+  border-top: 2px solid var(--aw-color-border-strong);
+  padding-top: var(--aw-space-2);
+  position: relative;
+}
+
+.aw-order-tracker__step.is-reached {
+  color: var(--aw-color-brand-accent);
+  border-top-color: var(--aw-color-brand-accent);
+}
+
+.aw-order-stub__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-space-2);
+}
+
+.aw-order-stub__item {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-3);
+}
+
+.aw-order-stub__item img {
+  width: 4.8rem;
+  height: 4.8rem;
+  object-fit: cover;
+  border-radius: var(--aw-radius-sm);
+  flex-shrink: 0;
+}
+
+.aw-order-stub__item-title {
+  flex: 1;
+}
+
+.aw-order-stub__item-qty {
+  color: var(--aw-color-muted);
+  font-family: var(--aw-font-mono);
+}
+
+.aw-order-stub__item-price {
+  font-family: var(--aw-font-mono);
+}
+
+.aw-order-stub__track {
+  display: inline-block;
+  margin-top: var(--aw-space-3);
+}
+
+/* --- Address tags --- */
+
+.aw-account-addresses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  gap: var(--aw-space-4);
+  align-items: start;
+}
+
+.aw-address-tag {
+  border: 1px solid var(--aw-color-border);
+  border-radius: var(--aw-radius-md);
+  background: var(--aw-color-paper);
+  padding: var(--aw-space-4);
+}
+
+.aw-address-tag--new {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.aw-address-tag__badge {
+  display: inline-block;
+  font-family: var(--aw-font-mono);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--aw-color-brand-accent);
+  border: 1px solid var(--aw-color-brand-accent);
+  border-radius: var(--aw-radius-full);
+  padding: 0.2rem 0.8rem;
+  margin-bottom: var(--aw-space-2);
+}
+
+.aw-address-tag__name {
+  font-weight: 600;
+}
+
+.aw-address-tag p {
+  margin: 0 0 0.2rem;
+}
+
+.aw-address-tag__actions {
+  display: flex;
+  gap: var(--aw-space-3);
+  margin-top: var(--aw-space-3);
+}
+
+.aw-address-tag__delete {
+  color: var(--aw-color-sale);
+}
+
+/* --- Address forms: hidden until their toggle button is expanded --- */
+
+.aw-account-address-form {
+  display: none;
+  margin-top: var(--aw-space-4);
+  padding-top: var(--aw-space-4);
+  border-top: 1px dashed var(--aw-color-border-strong);
+}
+
+.aw-address-tag:has([aria-expanded='true']) .aw-account-address-form {
+  display: block;
+}
+
+.aw-address-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--aw-space-3);
+  margin-bottom: var(--aw-space-3);
+}
+
+.aw-address-form__grid label {
+  font-size: 1.2rem;
+  color: var(--aw-color-muted);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.aw-address-form__grid input,
+.aw-address-form__grid select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--aw-color-border-strong);
+  border-radius: var(--aw-radius-sm);
+  background: var(--aw-color-paper);
+  color: var(--aw-color-ink);
+}
+
+.aw-address-form__default {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-2);
+  font-size: 1.3rem;
+  margin-bottom: var(--aw-space-3);
+}
+
+.aw-address-form__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-4);
+}
+
+@media screen and (max-width: 749px) {
+  .aw-address-form__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Dark mode — real scheme-4 dark colors (#17130F / #F5EFE6, the same dark
+   scheme already defined in Theme Settings), scoped to this page only.
+   Toggled by assets/artwistic-dark-mode.js via data-aw-theme on <html>.
+   ========================================================================== */
+[data-aw-theme='dark'] .aw-account-page {
+  --color-background: 23, 19, 15;
+  --color-foreground: 245, 239, 230;
+}
+
+[data-aw-theme='dark'] .aw-account-page [class*='color-scheme-'] {
+  --color-background: 23, 19, 15 !important;
+  --color-foreground: 245, 239, 230 !important;
+}
