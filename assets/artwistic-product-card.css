@@ -13,6 +13,21 @@
   overflow: hidden;
 }
 
+/* Real, confirmed fix for the wishlist/quick-add buttons being
+   unclickable: Dawn's own component-card.css sets
+   `.card .card__inner .card__media { z-index: 0; }`, which creates a
+   stacking context that traps our floating .aw-card-actions (z-index: 2)
+   inside it. Dawn's title-link click-through overlay
+   (.card__heading a::after, z-index: 1, no pointer-events: none) then
+   sits ABOVE that trapped context and silently swallows every click on
+   the buttons. Raising .card__media's own z-index past the overlay's
+   fixes this — the trade-off is that clicking the bare image (outside
+   the buttons) no longer click-through-navigates via that overlay; the
+   real title-text link is unaffected. */
+.card .card__inner .card__media {
+  z-index: 2;
+}
+
 /* --- Signature hover: slower, softer zoom than Dawn's flat 1.06/
    700ms default, plus a faint warm vignette that settles in at the
    same time — reads as a deliberate, boutique-style reveal rather
