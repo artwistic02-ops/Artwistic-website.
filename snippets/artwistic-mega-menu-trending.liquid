@@ -1,0 +1,53 @@
+{% comment %}
+  ARTWISTIC — "Trending now" strip inside a mega menu dropdown, spanning
+  the full width below the link columns + promo tile (see the marked
+  insertion point in snippets/header-mega-menu.liquid, right after the
+  columns' </ul> and outside it, so it isn't confined to one grid column).
+
+  Reads from the SAME real `mega_menu_feature` block as the promo tile
+  (snippets/artwistic-mega-menu-promo.liquid) — no metaobjects, no
+  separate setup. The merchant picks a real collection on that block's
+  "Trending collection" setting (see sections/header.liquid's block
+  schema); the first 5 AVAILABLE products from it show here with real
+  image + real price. Renders nothing if no collection is set, or it has
+  no available products — never fabricated placeholder items.
+
+  Usage:
+    {% render 'artwistic-mega-menu-trending', block: block %}
+{% endcomment %}
+
+{%- liquid
+  assign aw_trending_collection = block.settings.trending_collection
+  assign aw_trending_shown = 0
+-%}
+
+{%- if aw_trending_collection != blank -%}
+  {%- capture aw_trending_items -%}
+    {%- for aw_trending_product in aw_trending_collection.products limit: 12 -%}
+      {%- if aw_trending_product.available and aw_trending_shown < 5 -%}
+        {%- assign aw_trending_shown = aw_trending_shown | plus: 1 -%}
+        <li>
+          <a href="{{ aw_trending_product.url }}" class="aw-mega-menu-trending__item aw-focusable">
+            {%- if aw_trending_product.featured_image != blank -%}
+              {{
+                aw_trending_product.featured_image
+                | image_url: width: 200
+                | image_tag: loading: 'lazy', sizes: '6.4rem', widths: '100, 200', alt: aw_trending_product.title
+              }}
+            {%- endif -%}
+            <span class="aw-mega-menu-trending__price">{{ aw_trending_product.price | money }}</span>
+          </a>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+{%- endif -%}
+
+{%- if aw_trending_shown > 0 -%}
+  <div class="aw-mega-menu-trending">
+    <span class="aw-mega-menu-trending__label">Trending now</span>
+    <ul class="aw-mega-menu-trending__list" role="list">
+      {{ aw_trending_items }}
+    </ul>
+  </div>
+{%- endif -%}

@@ -1,0 +1,39 @@
+.bestsellers-tabs__heading {
+  text-align: center;
+  margin: 0 0 3rem;
+}
+
+.bestsellers-tabs__tablist {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.bestsellers-tabs__tab {
+  font-family: var(--font-body-family);
+  font-size: 1.4rem;
+  padding: 0.8rem 2rem;
+  border: 1px solid rgba(var(--color-foreground), 0.15);
+  border-radius: 100px;
+  background: transparent;
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+  transition: background var(--duration-short) ease, color var(--duration-short) ease;
+}
+
+.bestsellers-tabs__tab.is-active {
+  background: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+}
+
+.bestsellers-tabs__panel[hidden] {
+  display: none;
+}
+
+.bestsellers-tabs__empty {
+  text-align: center;
+  color: rgba(var(--color-foreground), 0.6);
+  padding: 4rem 0;
+}

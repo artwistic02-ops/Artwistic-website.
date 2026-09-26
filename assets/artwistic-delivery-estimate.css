@@ -11,27 +11,14 @@
   border-radius: var(--aw-radius-md);
 }
 
-.aw-delivery-estimate__label {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: var(--aw-text-sm);
-  font-weight: 600;
-}
-
-.aw-delivery-estimate__label svg {
-  width: 1.6rem;
-  height: 1.6rem;
-  color: var(--aw-color-accent);
-  flex-shrink: 0;
-}
-
 .aw-delivery-estimate__row {
-  margin-top: var(--aw-space-3);
+  display: flex;
+  gap: var(--aw-space-2);
 }
 
-.aw-delivery-estimate__select {
-  width: 100%;
+.aw-delivery-estimate__input {
+  flex: 1;
+  min-width: 0;
   padding: 0.9rem 1.1rem;
   border: 1px solid var(--aw-color-border);
   border-radius: var(--aw-radius-sm);
@@ -40,20 +27,29 @@
   font-size: var(--aw-text-sm);
 }
 
+.aw-delivery-estimate__check {
+  flex-shrink: 0;
+  padding: 0 var(--aw-space-4);
+  border: none;
+  border-radius: var(--aw-radius-sm);
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+  font-size: var(--aw-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.aw-delivery-estimate__error {
+  margin: var(--aw-space-2) 0 0;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-danger, #b3261e);
+}
+
 .aw-delivery-estimate__result {
   margin: 0;
   min-height: 1.8rem;
-}
-
-.aw-delivery-estimate__result:not(:empty) {
-  margin-top: var(--aw-space-3);
-  padding-top: var(--aw-space-3);
-  border-top: 1px solid var(--aw-color-border);
-  font-size: var(--aw-text-sm);
-  color: var(--aw-color-success);
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
 }
 
 /* --- 3-tier stepper: Order now / Dispatches / Delivered ---
@@ -115,8 +111,9 @@
   height: 1.7rem;
 }
 
-.aw-tier__icon--order {
-  color: var(--aw-color-brand-accent);
+.aw-tier.is-active .aw-tier__icon--order {
+  color: var(--aw-color-paper);
+  background: var(--aw-color-brand-accent);
   border-color: var(--aw-color-brand-accent);
 }
 
@@ -171,6 +168,24 @@
 }
 
 @media screen and (max-width: 749px) {
+  .aw-delivery-estimate {
+    padding: var(--aw-space-3);
+  }
+
+  .aw-delivery-estimate__check {
+    padding: 0 var(--aw-space-3);
+  }
+
+  .aw-tier__icon {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .aw-tier__icon svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
   .aw-tier__label,
   .aw-tier__date {
     font-size: 1rem;

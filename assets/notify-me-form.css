@@ -1,0 +1,41 @@
+.notify-me {
+  margin-top: 1rem;
+}
+
+.notify-me__intro {
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.75);
+  margin: 0 0 1rem;
+}
+
+.notify-me__row {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.notify-me__input {
+  flex: 1;
+  padding: 1rem 1.4rem;
+  border: 1px solid rgba(var(--color-foreground), 0.25);
+  border-radius: var(--inputs-radius, 0);
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font-family: var(--font-body-family);
+  font-size: 1.4rem;
+}
+
+.notify-me__submit {
+  white-space: nowrap;
+}
+
+.notify-me__success {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.notify-me__error {
+  color: #c0392b;
+  font-size: 1.2rem;
+  margin: 0.8rem 0 0;
+}

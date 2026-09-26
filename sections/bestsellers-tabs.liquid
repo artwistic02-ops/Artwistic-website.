@@ -1,0 +1,170 @@
+{% comment %}
+  Tabbed bestsellers grid. Each tab = one collection, set from Theme Editor.
+  All products are rendered upfront in plain Liquid (no fetch calls) —
+  the JS only toggles which tab's grid is visible, so it stays fast.
+{% endcomment %}
+
+<link rel="stylesheet" href="{{ 'bestsellers-tabs.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<div class="bestsellers-tabs color-{{ section.settings.color_scheme }} page-width section-{{ section.id }}-padding">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="bestsellers-tabs__heading {{ section.settings.heading_size }}">{{ section.settings.heading | escape }}</h2>
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="bestsellers-tabs__tablist" role="tablist">
+      {%- for block in section.blocks -%}
+        <button
+          type="button"
+          class="bestsellers-tabs__tab{% if forloop.first %} is-active{% endif %}"
+          role="tab"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          aria-controls="BestsellersPanel-{{ block.id }}"
+          id="BestsellersTab-{{ block.id }}"
+          {{ block.shopify_attributes }}
+        >
+          {{ block.settings.label | default: block.settings.collection.title | escape }}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    {%- for block in section.blocks -%}
+      <div
+        class="bestsellers-tabs__panel{% if forloop.first %} is-active{% endif %}"
+        id="BestsellersPanel-{{ block.id }}"
+        role="tabpanel"
+        aria-labelledby="BestsellersTab-{{ block.id }}"
+        {% unless forloop.first %}hidden{% endunless %}
+      >
+        {%- if block.settings.collection != blank and block.settings.collection.products.size > 0 -%}
+          <ul class="bestsellers-tabs__grid grid grid--4-col-desktop grid--2-col-tablet-down" role="list">
+            {%- for product in block.settings.collection.products limit: section.settings.products_to_show -%}
+              <li class="grid__item">
+                {%- render 'card-product', card_product: product, media_aspect_ratio: 'square', show_secondary_image: true, section_id: section.id -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <p class="bestsellers-tabs__empty">
+            Assign a collection to this tab from Theme Editor to show products here.
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  {%- else -%}
+    <p class="bestsellers-tabs__empty">Add a tab block and assign a collection to get started.</p>
+  {%- endif -%}
+</div>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<script src="{{ 'bestsellers-tabs.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Bestsellers (tabs)",
+  "class": "section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Bestsellers"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "h2", "label": "Small" },
+        { "value": "h1", "label": "Medium" },
+        { "value": "h0", "label": "Large" }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 8,
+      "label": "Products per tab"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36,
+      "label": "Top padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36,
+      "label": "Bottom padding"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab label",
+          "info": "Leave blank to use the collection's title",
+          "default": "All"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bestsellers (tabs)",
+      "blocks": [
+        { "type": "tab", "settings": { "label": "All" } },
+        { "type": "tab", "settings": { "label": "Earrings" } },
+        { "type": "tab", "settings": { "label": "Necklaces" } },
+        { "type": "tab", "settings": { "label": "Bracelets" } },
+        { "type": "tab", "settings": { "label": "Rings" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

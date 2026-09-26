@@ -7,9 +7,11 @@
 
 {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'artwistic-cart.css' | asset_url | stylesheet_tag }}
 
 <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-cart.js' | asset_url }}" defer="defer"></script>
 
 <style>
   .drawer {
@@ -21,7 +23,7 @@
   <div id="CartDrawer" class="cart-drawer">
     <div id="CartDrawer-Overlay" class="cart-drawer__overlay"></div>
     <div
-      class="drawer__inner gradient color-{{ settings.cart_color_scheme }}"
+      class="drawer__inner gradient color-{{ settings.cart_color_scheme }} aw-cart-page-bg"
       role="dialog"
       aria-modal="true"
       aria-label="{{ 'sections.cart.title' | t }}"
@@ -74,6 +76,17 @@
           </span>
         </button>
       </div>
+      {%- if settings.aw_cart_banner_text != blank -%}
+        <div class="aw-cart-banner">
+          {{- 'icon-discount.svg' | inline_asset_content -}}
+          {{ settings.aw_cart_banner_text | escape }}
+        </div>
+      {%- endif -%}
+      {%- if cart != empty -%}
+        <div class="drawer__contents">
+          {%- render 'artwistic-cart-progress' -%}
+        </div>
+      {%- endif -%}
       <cart-drawer-items
         view-event-payload="{{ cart | standard_event_data: 'view', context: 'dialog' | escape }}"
         view-event-trigger="manual"
@@ -90,37 +103,35 @@
           <div id="CartDrawer-CartItems" class="drawer__contents js-contents">
             {%- if cart != empty -%}
               <div class="drawer__cart-items-wrapper">
-                <table class="cart-items" role="table">
-                  <thead role="rowgroup">
-                    <tr role="row">
-                      <th id="CartDrawer-ColumnProductImage" role="columnheader">
+                <div class="cart-items" role="table">
+                  <div role="rowgroup">
+                    <div role="row">
+                      <div id="CartDrawer-ColumnProductImage" role="columnheader">
                         <span class="visually-hidden">{{ 'sections.cart.headings.image' | t }}</span>
-                      </th>
-                      <th
+                      </div>
+                      <div
                         id="CartDrawer-ColumnProduct"
                         class="caption-with-letter-spacing"
-                        scope="col"
                         role="columnheader"
                       >
                         {{ 'sections.cart.headings.product' | t }}
-                      </th>
-                      <th
+                      </div>
+                      <div
                         id="CartDrawer-ColumnTotal"
                         class="right caption-with-letter-spacing"
-                        scope="col"
                         role="columnheader"
                       >
                         {{ 'sections.cart.headings.total' | t }}
-                      </th>
-                      <th id="CartDrawer-ColumnQuantity" role="columnheader">
+                      </div>
+                      <div id="CartDrawer-ColumnQuantity" role="columnheader">
                         <span class="visually-hidden">{{ 'sections.cart.headings.quantity' | t }}</span>
-                      </th>
-                    </tr>
-                  </thead>
+                      </div>
+                    </div>
+                  </div>
 
-                  <tbody role="rowgroup">
+                  <div role="rowgroup">
                     {%- for item in cart.items -%}
-                      <tr
+                      <div
                         id="CartDrawer-Item-{{ item.index | plus: 1 }}"
                         class="cart-item{% if item.parent_relationship.parent != null %} cart-item__nested-line{% endif %}"
                         role="row"
@@ -128,7 +139,7 @@
                           aria-label="{{- 'products.product.nested_label' | t: title: item.product.title, parent_title: item.parent_relationship.parent.title | escape -}}"
                         {% endif %}
                       >
-                        <td
+                        <div
                           class="cart-item__media"
                           role="cell"
                           headers="CartDrawer-ColumnProductImage"
@@ -145,9 +156,9 @@
                               height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
                             >
                           {% endif %}
-                        </td>
+                        </div>
 
-                        <td class="cart-item__details" role="cell" headers="CartDrawer-ColumnProduct">
+                        <div class="cart-item__details" role="cell" headers="CartDrawer-ColumnProduct">
                           {%- if settings.show_vendor -%}
                             <p class="caption-with-letter-spacing light">{{ item.product.vendor }}</p>
                           {%- endif -%}
@@ -179,7 +190,7 @@
                               </strong>
                             </div>
                           {%- else -%}
-                            <div class="product-option">
+                            <div class="product-option cart-item__unit-price">
                               {{ item.original_price | money }}
                             </div>
                           {%- endif -%}
@@ -240,9 +251,9 @@
                               </li>
                             {%- endfor -%}
                           </ul>
-                        </td>
+                        </div>
 
-                        <td class="cart-item__totals right" role="cell" headers="CartDrawer-ColumnTotal">
+                        <div class="cart-item__totals right" role="cell" headers="CartDrawer-ColumnTotal">
                           {%- render 'loading-spinner' -%}
                           <div class="cart-item__price-wrapper">
                             {%- if item.original_line_price != item.final_line_price -%}
@@ -273,7 +284,7 @@
                               %}
                             {%- endif -%}
                           </div>
-                        </td>
+                        </div>
                         {%- liquid
                           assign has_qty_rules = false
                           if item.variant.quantity_rule.increment > 1 or item.variant.quantity_rule.min > 1 or item.variant.quantity_rule.max != null
@@ -285,7 +296,7 @@
                             assign has_vol_pricing = true
                           endif
                         -%}
-                        <td
+                        <div
                           class="cart-item__quantity {% if has_qty_rules or has_vol_pricing %} cart-item__quantity--info{% endif %}"
                           role="cell"
                           headers="CartDrawer-ColumnQuantity"
@@ -363,16 +374,14 @@
                               >
                                 <button
                                   type="button"
-                                  class="button button--tertiary cart-remove-button"
+                                  class="button button--tertiary cart-remove-button cart-item__remove-link"
                                   aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
                                   data-variant-id="{{ item.variant.id }}"
                                   {% if item.instructions and item.instructions.can_remove == false %}
                                     class="hidden"
                                   {% endif %}
                                 >
-                                  <span class="svg-wrapper">
-                                    {{- 'icon-remove.svg' | inline_asset_content -}}
-                                  </span>
+                                  <span class="cart-item__remove-text">Remove</span>
                                 </button>
                               </cart-remove-button>
                             </div>
@@ -472,11 +481,11 @@
                               </span>
                             </div>
                           </quantity-popover>
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     {%- endfor -%}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
               </div>
             {%- endif -%}
             <p id="CartDrawer-LiveRegionText" class="visually-hidden" role="status"></p>
@@ -487,6 +496,9 @@
           <div id="CartDrawer-CartErrors" role="alert"></div>
         </form>
       </cart-drawer-items>
+      {%- if cart != empty -%}
+        {%- render 'artwistic-cart-cross-sell' -%}
+      {%- endif -%}
       <div class="drawer__footer">
         {%- if settings.show_cart_note -%}
           <details id="Details-CartDrawer">
@@ -525,11 +537,6 @@
               </ul>
             {%- endif -%}
           </div>
-
-          {%- comment -%} ARTWISTIC: free-shipping progress, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-          {%- if cart != empty -%}
-            {%- render 'artwistic-shipping-progress' -%}
-          {%- endif -%}
 
           <div class="totals" role="status">
             <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>
@@ -578,6 +585,21 @@
         </div>
 
         <!-- CTAs -->
+
+        {%- if cart != empty -%}
+          <div class="aw-cart-coupon-block">
+            <form class="aw-cart-coupon" data-aw-coupon-form>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="7.5" cy="7.5" r="1.5"></circle>
+                <circle cx="16.5" cy="16.5" r="1.5"></circle>
+                <path d="M6 18L18 6"></path>
+                <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+              </svg>
+              <input type="text" data-aw-coupon-input placeholder="Enter coupon code" aria-label="Discount code">
+              <button type="submit">Apply</button>
+            </form>
+          </div>
+        {%- endif -%}
 
         <div class="cart__ctas" {{ block.shopify_attributes }}>
           <button

@@ -1,0 +1,60 @@
+{% comment %}
+  ARTWISTIC: cross-product "Finish" swatch selector — for stores where
+  each finish/colorway is a separate product rather than a Shopify
+  variant. Reads a real merchant-configured metafield
+  (namespace: custom, key: related-finish, type: "List of products")
+  linking this product to its sibling-finish products. Renders nothing
+  if the metafield is empty or not set up — never a fabricated swatch.
+
+  Each linked product's own featured image is used as its swatch
+  thumbnail (a real product photo, not an invented color swatch). The
+  product matching the current page is marked as the selected swatch.
+
+  This is independent of `variant_picker` — if the product also has
+  real Shopify variants (e.g. Size), that block keeps working unchanged
+  alongside this one.
+
+  Setup: create a "Related finish" metafield definition on Products
+  (namespace: custom, key: related-finish, type: List of products),
+  and on each finish's product, list every sibling product in that
+  finish family (including itself, so this snippet can mark it selected).
+
+  Usage:
+    {% render 'artwistic-related-finish', product: product %}
+{% endcomment %}
+
+{%- assign aw_finishes = product.metafields.custom['related-finish'].value -%}
+
+{%- if aw_finishes != blank -%}
+  {{ 'artwistic-product-page.css' | asset_url | stylesheet_tag }}
+  <div class="aw-related-finish">
+    <div class="aw-related-finish__label">
+      <span>Finish</span>
+      <span data-aw-related-finish-current>{{ product.title }}</span>
+    </div>
+    <div class="aw-related-finish__options">
+      {%- for finish_product in aw_finishes -%}
+        {%- assign aw_is_current = false -%}
+        {%- if finish_product.id == product.id -%}
+          {%- assign aw_is_current = true -%}
+        {%- endif -%}
+        <a
+          href="{{ finish_product.url }}"
+          class="aw-related-finish__option"
+          aria-pressed="{{ aw_is_current }}"
+          aria-label="{{ finish_product.title | escape }}"
+        >
+          <span class="aw-related-finish__thumb">
+            {%- if finish_product.featured_image != blank -%}
+              {{
+                finish_product.featured_image
+                | image_url: width: 200
+                | image_tag: loading: 'lazy', widths: '100,200', sizes: '6.6rem'
+              }}
+            {%- endif -%}
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

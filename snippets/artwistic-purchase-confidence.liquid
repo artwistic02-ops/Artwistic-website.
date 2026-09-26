@@ -1,38 +1,63 @@
 {% comment %}
-  ARTWISTIC: purchase confidence strip — a compact, glanceable line of
-  reassurance placed directly under Add to Cart, where hesitation
-  actually happens. Every claim here is merchant-written block text
-  (never a hardcoded assumption about the merchant's real policies) plus
-  the same per-product trust badges used elsewhere, so nothing shown is
-  unverifiable or copy-pasted from a template that doesn't match this
-  store's real policy.
+  ARTWISTIC: glanceable purchase-confidence strip placed right under Add
+  to Cart — matches the approved mockup's 4-icon trust row. Each line's
+  text defaults to the merchant-written block text (site-wide default,
+  same for every product) but is overridden per-product when the
+  matching product metafield (custom.dispatch_text / material_text /
+  policy_text / secure_text) is filled in — lets one specific product
+  say something different (e.g. a longer dispatch time) without
+  touching the site-wide default. Nothing is pre-filled with an
+  unverified claim either way. Each line's icon is a real merchant
+  choice (block setting, reusing Dawn's own icon-accordion icon set) so
+  it can actually match what the line says, instead of a fixed
+  hardcoded icon. Payment icons reuse Shopify's native
+  shop.enabled_payment_types / payment_type_svg_tag, so they always
+  reflect whichever payment methods are actually enabled in
+  Settings → Payments.
 
   Usage:
-    {% render 'artwistic-purchase-confidence', product: product, block: block %}
+    {% render 'artwistic-purchase-confidence', block: block %}
 {% endcomment %}
 
+{%- liquid
+  assign aw_dispatch_text = product.metafields.custom.dispatch_text | default: block.settings.dispatch_text
+  assign aw_material_text = product.metafields.custom.material_text | default: block.settings.material_text
+  assign aw_policy_text = product.metafields.custom.policy_text | default: block.settings.policy_text
+  assign aw_secure_text = product.metafields.custom.secure_text | default: block.settings.secure_text
+-%}
+
 <div class="aw-purchase-confidence" {{ block.shopify_attributes }}>
-  {%- if block.settings.show_trust_badges -%}
-    {%- render 'artwistic-trust-signals', product: product -%}
-  {%- endif -%}
   <ul class="aw-purchase-confidence__list">
-    {%- if block.settings.dispatch_text != blank -%}
+    {%- if aw_dispatch_text != blank -%}
       <li>
-        {{- 'icon-truck.svg' | inline_asset_content -}}
-        <span>{{ block.settings.dispatch_text }}</span>
+        {% render 'icon-accordion', icon: block.settings.dispatch_icon %}
+        <span>{{ aw_dispatch_text }}</span>
       </li>
     {%- endif -%}
-    {%- if block.settings.policy_text != blank -%}
+    {%- if aw_material_text != blank -%}
       <li>
-        {{- 'icon-price-tag.svg' | inline_asset_content -}}
-        <span>{{ block.settings.policy_text }}</span>
+        {% render 'icon-accordion', icon: block.settings.material_icon %}
+        <span>{{ aw_material_text }}</span>
       </li>
     {%- endif -%}
-    {%- if block.settings.secure_text != blank -%}
+    {%- if aw_policy_text != blank -%}
       <li>
-        {{- 'icon-lock.svg' | inline_asset_content -}}
-        <span>{{ block.settings.secure_text }}</span>
+        {% render 'icon-accordion', icon: block.settings.policy_icon %}
+        <span>{{ aw_policy_text }}</span>
+      </li>
+    {%- endif -%}
+    {%- if aw_secure_text != blank -%}
+      <li>
+        {% render 'icon-accordion', icon: block.settings.secure_icon %}
+        <span>{{ aw_secure_text }}</span>
       </li>
     {%- endif -%}
   </ul>
+  {%- if block.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+    <ul class="aw-payment-icons list-payment">
+      {%- for type in shop.enabled_payment_types -%}
+        <li class="list-payment__item">{{ type | payment_type_svg_tag: class: 'icon' }}</li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
 </div>

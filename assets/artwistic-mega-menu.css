@@ -1,9 +1,19 @@
 /**
- * ARTWISTIC MEGA MENU — visual refinement + promo tile layered on top of
- * Dawn's stock mega menu (snippets/header-mega-menu.liquid,
- * assets/component-mega-menu.css). Dawn's structure, accessibility
- * (native <details>/<summary>, header-menu custom element) and grid are
- * reused as-is; this file only adds editorial polish and the promo column.
+ * ARTWISTIC MEGA MENU — visual refinement layered on top of Dawn's real,
+ * already-working mega menu (snippets/header-mega-menu.liquid,
+ * assets/component-mega-menu.css, menu_type_desktop: "mega" in
+ * sections/header-group.json) and the real `mega_menu_feature` block
+ * (sections/header.liquid schema) rendered via
+ * snippets/artwistic-mega-menu-promo.liquid /
+ * snippets/artwistic-mega-menu-trending.liquid. Dawn's grid, structure
+ * and accessibility (native <details>/<summary>, header-menu custom
+ * element) are reused as-is — this file only adds editorial polish.
+ *
+ * Note: this store's `mega-menu-featured.css` (Dawn's original file for
+ * the featured tile) never actually contained real CSS — it was a
+ * duplicate copy of the Liquid markup by mistake, so the tile has never
+ * had real styling. The rules below are genuinely new, not a restyle of
+ * something that worked before.
  */
 
 .header__menu-item.list-menu__item--link {
@@ -46,10 +56,16 @@
   padding-block: var(--aw-space-1);
 }
 
-/* --- Promo tile: renders inside the mega menu's content area alongside
-   the stock link columns (see snippets/artwistic-mega-menu-promo.liquid
-   and the marked insertion point in snippets/header-mega-menu.liquid). --- */
-.aw-mega-menu-promo {
+/* --- Promo tile ---
+   The real .mega-menu__featured <li> (rendered from a real
+   mega_menu_feature block by snippets/artwistic-mega-menu-promo.liquid)
+   sits as one column in Dawn's own .mega-menu__list grid — no layout
+   override needed there, this only styles the tile's own content. */
+.mega-menu__featured {
+  list-style: none;
+}
+
+.aw-mega-menu-promo__link {
   display: block;
   text-decoration: none;
   color: inherit;
@@ -63,47 +79,270 @@
   background: rgba(var(--color-foreground), 0.04);
 }
 
-.aw-mega-menu-promo__media img {
+.aw-mega-menu-promo__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   transition: transform var(--aw-duration-slow) var(--aw-ease);
 }
 
-.aw-mega-menu-promo:hover .aw-mega-menu-promo__media img {
+.aw-mega-menu-promo__link:hover .aw-mega-menu-promo__image {
   transform: scale(1.04);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aw-mega-menu-promo__media img {
+  .aw-mega-menu-promo__image {
     transition: none;
   }
 
-  .aw-mega-menu-promo:hover .aw-mega-menu-promo__media img {
+  .aw-mega-menu-promo__link:hover .aw-mega-menu-promo__image {
     transform: none;
   }
 }
 
-.aw-mega-menu-promo__title {
-  margin-top: var(--aw-space-3);
+.aw-mega-menu-promo__heading {
+  margin: var(--aw-space-3) 0 0;
+  font-family: var(--aw-font-heading);
   font-size: var(--aw-text-sm);
   font-weight: 600;
 }
 
-.aw-mega-menu-promo__subtitle {
-  margin-top: var(--aw-space-1);
+.aw-mega-menu-promo__subtext {
+  margin: var(--aw-space-1) 0 0;
   font-size: var(--aw-text-xs);
   color: var(--aw-color-muted);
 }
 
-/* Give the promo tile its own column and keep the link grid from
-   collapsing awkwardly around it. */
-.mega-menu__list--has-promo {
-  grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(20rem, 1fr);
+/* --- "Trending now" strip ---
+   Real merchant-picked products (see snippets/artwistic-mega-menu-
+   trending.liquid), rendered as a plain block below the link/promo
+   column list — full width of the mega menu panel, no grid trickery
+   needed since it lives outside the columns' <ul>. */
+.aw-mega-menu-trending {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-4);
+  padding-top: var(--aw-space-5);
+  margin-top: var(--aw-space-5);
+  border-top: 1px solid var(--aw-color-border);
 }
 
-@media screen and (max-width: 1279px) {
-  .mega-menu__list--has-promo {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(18rem, 1fr);
+.aw-mega-menu-trending__label {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-2xs);
+  letter-spacing: var(--aw-tracking-wider);
+  text-transform: uppercase;
+  color: var(--aw-color-muted);
+  white-space: nowrap;
+}
+
+.aw-mega-menu-trending__list {
+  display: flex;
+  gap: var(--aw-space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.aw-mega-menu-trending__item {
+  position: relative;
+  display: block;
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: var(--aw-radius-sm);
+  overflow: hidden;
+  background: rgba(var(--color-foreground), 0.04);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-mega-menu-trending__item:hover {
+  transform: translateY(-2px);
+}
+
+.aw-mega-menu-trending__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aw-mega-menu-trending__price {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.4rem;
+  font-family: var(--aw-font-mono);
+  font-size: 1rem;
+  color: var(--aw-color-ink);
+  background: rgba(var(--color-background), 0.9);
+  padding: 0.1rem 0.5rem;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-mega-menu-trending__item {
+    transition: none;
+  }
+}
+
+/* --- Floating panel container ---
+   Dawn's stock .mega-menu__content (assets/component-mega-menu.css) is
+   `left: 0; right: 0; border-radius: 0;` — full page width, flush
+   against the header, square corners. That reads as a plain dropdown
+   bar, not a self-contained "posh" panel. Overridden here (never
+   editing Dawn's own file) to float as a centered, rounded, shadowed
+   card with a visible gap below the header.
+
+   Dawn also drives the open/close animation entirely through the
+   `transform` property (translateY, toggled by [open] via
+   .js/.mega-menu[open] selectors) — since transform can't be set from
+   two separate rules at once, the horizontal-centering translateX has
+   to be combined into the SAME transform declarations Dawn already
+   uses for its closed/open states, not a new standalone rule. */
+.mega-menu__content {
+  left: 50% !important;
+  right: auto !important;
+  top: calc(100% + 1rem) !important;
+  max-width: 116rem;
+  width: calc(100vw - var(--aw-space-6) * 2);
+  border-radius: 1.8rem !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  padding-left: 3.6rem;
+  padding-right: 3.6rem;
+}
+
+.js .mega-menu__content {
+  transform: translateX(-50%) translateY(-1.5rem);
+}
+
+.mega-menu[open] .mega-menu__content {
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .mega-menu__content,
+  .mega-menu[open] .mega-menu__content {
+    transform: translateX(-50%);
+  }
+}
+
+/* --- "View all" link, bottom of each column ---
+   Real data only: points to the exact same URL as that column's own
+   heading link (see snippets/header-mega-menu.liquid) — never a
+   placeholder. */
+.aw-mega-menu-view-all {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-1);
+  margin-top: var(--aw-space-1);
+  font-weight: 600;
+  color: rgb(var(--color-foreground)) !important;
+}
+
+.aw-mega-menu-view-all svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  transition: transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-mega-menu-view-all:hover svg {
+  transform: translateX(0.3rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-mega-menu-view-all:hover svg {
+    transform: none;
+  }
+}
+
+/* =====================================================================
+   Mobile drawer — tap-to-swap category tabs
+   (snippets/header-drawer.liquid, assets/artwistic-mobile-mega-menu.js)
+   Same idea as the desktop mega menu's columns, tap instead of hover:
+   a horizontal tab strip up top, one content panel per tab, only the
+   active one visible. Lives inside Dawn's own full-screen drawer panel
+   — untouched here, this only styles the tabs/panels within it.
+   ===================================================================== */
+
+.aw-mobile-menu {
+  padding-top: var(--aw-space-2);
+}
+
+.aw-mobile-menu__tabs {
+  display: flex;
+  gap: var(--aw-space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 var(--aw-space-3);
+  margin-bottom: var(--aw-space-3);
+  border-bottom: 1px solid var(--aw-color-border);
+}
+
+.aw-mobile-menu__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.aw-mobile-menu__tab {
+  flex: 0 0 auto;
+  padding: var(--aw-space-2) var(--aw-space-4);
+  border: 1.5px solid var(--aw-color-border-strong);
+  border-radius: var(--aw-radius-full);
+  background: transparent;
+  color: var(--aw-color-muted);
+  font-family: var(--aw-font-body);
+  font-size: var(--aw-text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease), color var(--aw-duration-fast) var(--aw-ease),
+    border-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-mobile-menu__tab.is-active {
+  background: var(--aw-color-ink);
+  border-color: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+}
+
+.aw-mobile-menu__panel[hidden] {
+  display: none;
+}
+
+.aw-mobile-menu__image-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 22rem;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--aw-radius-md);
+  overflow: hidden;
+  margin-bottom: var(--aw-space-3);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.aw-mobile-menu__image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aw-mobile-menu__count {
+  position: absolute;
+  left: var(--aw-space-2);
+  bottom: var(--aw-space-2);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-2xs);
+  color: var(--aw-color-ink);
+  background: rgba(var(--color-background), 0.9);
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--aw-radius-full);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-mobile-menu__tab {
+    transition: none;
   }
 }

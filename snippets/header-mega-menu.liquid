@@ -5,6 +5,9 @@
   {% render 'header-mega-menu' %}
 {% endcomment %}
 
+{{ 'artwistic-mega-menu.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-mega-menu.js' | asset_url }}" defer="defer"></script>
+
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
@@ -25,25 +28,13 @@
                 </span>
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </summary>
-              {%- comment -%} ARTWISTIC: look up an optional promo tile for this menu column, see docs/METAOBJECTS.md {%- endcomment -%}
-              {%- liquid
-                assign aw_has_promo = false
-                assign aw_promo = null
-                for aw_entry in shop.metaobjects.artwistic_menu_promo.values
-                  if aw_entry.menu_handle.value == link.handle
-                    assign aw_has_promo = true
-                    assign aw_promo = aw_entry
-                    break
-                  endif
-                endfor
-              -%}
               <div
                 id="MegaMenu-Content-{{ forloop.index }}"
                 class="mega-menu__content color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
                 tabindex="-1"
               >
                 <ul
-                  class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}{% if aw_has_promo %} mega-menu__list--has-promo{% endif %}"
+                  class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
                   role="list"
                 >
                   {%- for childlink in link.links -%}
@@ -74,17 +65,33 @@
                               </a>
                             </li>
                           {%- endfor -%}
+                          {%- comment -%} ARTWISTIC: real "View all" link, same URL as this column's own heading above — never a placeholder {%- endcomment -%}
+                          <li>
+                            <a
+                              href="{{ childlink.url }}"
+                              class="mega-menu__link link aw-mega-menu-view-all"
+                            >
+                              {{- 'sections.collection_list.view_all' | t -}}
+                              {{- 'icon-arrow.svg' | inline_asset_content -}}
+                            </a>
+                          </li>
                         </ul>
                       {%- endif -%}
                     </li>
                   {%- endfor -%}
-                  {%- comment -%} ARTWISTIC: optional editorial promo tile, see docs/METAOBJECTS.md {%- endcomment -%}
-                  {%- if aw_has_promo -%}
-                    <li>
-                      {%- render 'artwistic-mega-menu-promo', promo: aw_promo -%}
-                    </li>
-                  {%- endif -%}
+                  {%- comment -%} ARTWISTIC: editorial image tile + real "Trending now" picks, set up per menu item in Theme Editor (same real block/setting mechanism as Dawn's stock mega_menu_feature — just restyled + extended, not replaced) {%- endcomment -%}
+                  {%- for block in section.blocks -%}
+                    {%- if block.type == 'mega_menu_feature' and block.settings.menu_handle == link.handle -%}
+                      {%- render 'artwistic-mega-menu-promo', block: block -%}
+                    {%- endif -%}
+                  {%- endfor -%}
                 </ul>
+                {%- comment -%} ARTWISTIC: real "Trending now" strip, full width below the columns — same matching block as the promo tile above, see snippets/artwistic-mega-menu-trending.liquid {%- endcomment -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'mega_menu_feature' and block.settings.menu_handle == link.handle -%}
+                    {%- render 'artwistic-mega-menu-trending', block: block -%}
+                  {%- endif -%}
+                {%- endfor -%}
               </div>
             </details>
           </header-menu>

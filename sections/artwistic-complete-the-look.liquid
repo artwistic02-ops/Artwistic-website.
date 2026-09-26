@@ -1,0 +1,149 @@
+{% comment %}
+  ARTWISTIC: COMPLETE THE LOOK — a merchant-curated set of products that
+  pair with the one being viewed (e.g. jewelry to match a lehenga),
+  replacing Dawn's stock "complementary" block (which only pulled
+  automatic algorithmic recommendations, with no way to hand-pick which
+  products show for a given product).
+
+  Curated via a real Product metafield instead: custom.complete_the_look
+  (type: list of products), editable directly on each product's own
+  admin edit page — no theme-editor block juggling required. If a
+  product has none selected, this section renders nothing at all.
+
+  Real add-to-cart per card (assets/artwistic-complete-the-look.js) using
+  each product's own selected_or_first_available_variant — no size
+  picker, matching the simple single-tap "+" in the approved mockup.
+{% endcomment %}
+
+{%- assign aw_look_products = product.metafields.custom.complete_the_look.value -%}
+
+{%- if aw_look_products != blank -%}
+  {{ 'artwistic-complete-the-look.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'artwistic-complete-the-look.js' | asset_url }}" defer="defer"></script>
+
+  {%- style -%}
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    }
+  {%- endstyle -%}
+
+  <div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+    <div class="aw-container">
+      <div class="aw-look__head">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="aw-eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 class="aw-look__heading">{{ section.settings.heading | default: 'Complete the look' }}</h2>
+      </div>
+
+      <ul class="aw-look__grid" role="list">
+        {%- for look_product in aw_look_products -%}
+          {%- assign aw_variant = look_product.selected_or_first_available_variant -%}
+          <li class="aw-look__card">
+            <div class="aw-look__polaroid">
+              <a href="{{ look_product.url }}" class="aw-look__photo-link" aria-label="{{ look_product.title | escape }}">
+                {%- if look_product.featured_image != blank -%}
+                  <img
+                    class="aw-look__photo"
+                    src="{{ look_product.featured_image | image_url: width: 600 }}"
+                    alt="{{ look_product.featured_image.alt | default: look_product.title | escape }}"
+                    width="600"
+                    height="{{ 600 | divided_by: look_product.featured_image.aspect_ratio | default: 600 }}"
+                    loading="lazy"
+                  >
+                {%- endif -%}
+              </a>
+              <button
+                type="button"
+                class="aw-look__add"
+                data-aw-look-add
+                data-variant-id="{{ aw_variant.id }}"
+                data-available="{{ aw_variant.available | default: false }}"
+                data-add-label="Add {{ look_product.title | escape }} to cart"
+                data-remove-label="Remove {{ look_product.title | escape }} from cart"
+                aria-label="Add {{ look_product.title | escape }} to cart"
+              >
+                <span class="aw-look__add-icons">
+                  <svg class="aw-look__add-icon aw-look__add-icon-plus is-active" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+                  <svg class="aw-look__add-icon aw-look__add-icon-spinner" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" opacity="0.25"></circle>
+                    <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+                  </svg>
+                  <svg class="aw-look__add-icon aw-look__add-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"></path></svg>
+                </span>
+                <span class="aw-look__add-label" data-aw-look-add-label>Added</span>
+              </button>
+            </div>
+            <a href="{{ look_product.url }}" class="aw-look__name">{{ look_product.title }}</a>
+            <p class="aw-look__price">{{ look_product.price | money }}</p>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Complete Look",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows only when the current product has items picked in its \"Complete the Look\" metafield — set that directly on each product's own admin edit page (scroll to Metafields), not here. This section adds no products of its own."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Featured in a look"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Complete the look"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Complete Look"
+    }
+  ]
+}
+{% endschema %}

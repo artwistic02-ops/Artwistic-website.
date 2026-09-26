@@ -9,6 +9,9 @@
   {% render 'header-drawer', show_language_selector: true %}
 {% enddoc %}
 
+{{ 'artwistic-mega-menu.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-mobile-mega-menu.js' | asset_url }}" defer="defer"></script>
+
 <header-drawer data-breakpoint="{% if section.settings.menu_type_desktop == 'drawer' %}desktop{% else %}tablet{% endif %}">
   <details id="Details-menu-drawer-container" class="menu-drawer-container">
     <summary
@@ -53,52 +56,93 @@
                             </span>
                             {{ link.title | escape }}
                           </button>
-                          <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
-                            {%- for childlink in link.links -%}
-                              <li>
-                                {%- if childlink.links == blank -%}
-                                  <a
-                                    id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
-                                    href="{{ childlink.url }}"
-                                    class="menu-drawer__menu-item link link--text list-menu__item focus-inset{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
-                                    {% if childlink.current %}
-                                      aria-current="page"
-                                    {% endif %}
+                          {%- comment -%}
+                            ARTWISTIC: if any of this top-level item's
+                            columns have their own sub-links, replace
+                            Dawn's native drill-down (tapping a column
+                            would slide in ANOTHER full-screen panel
+                            covering this one) with an in-place tab
+                            strip — tapping a column swaps the content
+                            below it on this SAME screen instead. This
+                            mirrors the desktop mega menu's hover-to-
+                            reveal columns (tap instead of hover). The
+                            outer full-screen takeover itself (this
+                            <details>/header-drawer engine) is untouched.
+                            If nothing has sub-links, Dawn's original
+                            flat link list renders unchanged — tabs
+                            would add nothing there.
+                          {%- endcomment -%}
+                          {%- liquid
+                            assign aw_has_subcategories = false
+                            for childlink in link.links
+                              if childlink.links != blank
+                                assign aw_has_subcategories = true
+                                break
+                              endif
+                            endfor
+                          -%}
+                          {%- if aw_has_subcategories -%}
+                            <div class="aw-mobile-menu" data-aw-mobile-menu>
+                              <div class="aw-mobile-menu__tabs" role="tablist" aria-label="{{ link.title | escape }}">
+                                {%- for childlink in link.links -%}
+                                  <button
+                                    type="button"
+                                    class="aw-mobile-menu__tab{% if forloop.first %} is-active{% endif %}"
+                                    role="tab"
+                                    id="AwMobileTab-{{ link.handle }}-{{ childlink.handle }}"
+                                    aria-controls="AwMobilePanel-{{ link.handle }}-{{ childlink.handle }}"
+                                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                                    data-aw-mobile-tab
                                   >
                                     {{ childlink.title | escape }}
-                                  </a>
-                                {%- else -%}
-                                  <details id="Details-menu-drawer-{{ link.handle }}-{{ childlink.handle }}">
-                                    <summary
-                                      id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
-                                      class="menu-drawer__menu-item link link--text list-menu__item focus-inset"
-                                    >
-                                      {{ childlink.title | escape }}
-                                      <span class="svg-wrapper">
-                                        {{- 'icon-arrow.svg' | inline_asset_content -}}
-                                      </span>
-                                      <span class="svg-wrapper">
-                                        {{- 'icon-caret.svg' | inline_asset_content -}}
-                                      </span>
-                                    </summary>
-                                    <div
-                                      id="childlink-{{ childlink.handle | escape }}"
-                                      class="menu-drawer__submenu has-submenu gradient motion-reduce"
-                                    >
-                                      <button
-                                        class="menu-drawer__close-button link link--text focus-inset"
-                                        aria-expanded="true"
-                                      >
-                                        <span class="svg-wrapper">
-                                          {{- 'icon-arrow.svg' | inline_asset_content -}}
-                                        </span>
-                                        {{ childlink.title | escape }}
-                                      </button>
-                                      <ul
-                                        class="menu-drawer__menu list-menu"
-                                        role="list"
-                                        tabindex="-1"
-                                      >
+                                  </button>
+                                {%- endfor -%}
+                              </div>
+
+                              {%- comment -%} ARTWISTIC: promo tile stays fixed regardless of active tab — same real block as desktop, see snippets/artwistic-mega-menu-promo.liquid {%- endcomment -%}
+                              {%- for block in section.blocks -%}
+                                {%- if block.type == 'mega_menu_feature' and block.settings.menu_handle == link.handle -%}
+                                  {%- render 'artwistic-mega-menu-promo', block: block -%}
+                                {%- endif -%}
+                              {%- endfor -%}
+
+                              <div class="aw-mobile-menu__panels">
+                                {%- for childlink in link.links -%}
+                                  {%- comment -%}
+                                    Real collection image + live product count,
+                                    parsed from this category's own real URL —
+                                    same lookup pattern used elsewhere in this
+                                    build, never fabricated. Renders nothing if
+                                    the URL isn't a real /collections/<handle>
+                                    link or that collection has no image.
+                                  {%- endcomment -%}
+                                  {%- assign aw_tab_collection = null -%}
+                                  {%- if childlink.url contains '/collections/' -%}
+                                    {%- assign aw_handle_part = childlink.url | split: '/collections/' | last | split: '?' | first | split: '/' | first -%}
+                                    {%- assign aw_tab_collection = collections[aw_handle_part] -%}
+                                  {%- endif -%}
+                                  <div
+                                    class="aw-mobile-menu__panel{% if forloop.first %} is-active{% endif %}"
+                                    id="AwMobilePanel-{{ link.handle }}-{{ childlink.handle }}"
+                                    role="tabpanel"
+                                    aria-labelledby="AwMobileTab-{{ link.handle }}-{{ childlink.handle }}"
+                                    {% unless forloop.first %}hidden{% endunless %}
+                                  >
+                                    {%- if aw_tab_collection != blank and aw_tab_collection.featured_image != blank -%}
+                                      <div class="aw-mobile-menu__image-wrap">
+                                        {{
+                                          aw_tab_collection.featured_image
+                                          | image_url: width: 400
+                                          | image_tag: loading: 'lazy', sizes: '40vw', widths: '200, 400', alt: childlink.title
+                                        }}
+                                        {%- if aw_tab_collection.products_count -%}
+                                          <span class="aw-mobile-menu__count">{{ aw_tab_collection.products_count }} items</span>
+                                        {%- endif -%}
+                                      </div>
+                                    {%- endif -%}
+
+                                    {%- if childlink.links != blank -%}
+                                      <ul class="menu-drawer__menu list-menu" role="list">
                                         {%- for grandchildlink in childlink.links -%}
                                           <li>
                                             <a
@@ -114,12 +158,34 @@
                                           </li>
                                         {%- endfor -%}
                                       </ul>
-                                    </div>
-                                  </details>
-                                {%- endif -%}
-                              </li>
-                            {%- endfor -%}
-                          </ul>
+                                    {%- endif -%}
+
+                                    <a href="{{ childlink.url }}" class="menu-drawer__menu-item link link--text aw-mega-menu-view-all">
+                                      {{- 'sections.collection_list.view_all' | t -}}
+                                      {{- 'icon-arrow.svg' | inline_asset_content -}}
+                                    </a>
+                                  </div>
+                                {%- endfor -%}
+                              </div>
+                            </div>
+                          {%- else -%}
+                            <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
+                              {%- for childlink in link.links -%}
+                                <li>
+                                  <a
+                                    id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
+                                    href="{{ childlink.url }}"
+                                    class="menu-drawer__menu-item link link--text list-menu__item focus-inset{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
+                                    {% if childlink.current %}
+                                      aria-current="page"
+                                    {% endif %}
+                                  >
+                                    {{ childlink.title | escape }}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
                         </div>
                       </div>
                     </details>

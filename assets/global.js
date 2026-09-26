@@ -1438,3 +1438,33 @@ class CartPerformance {
     );
   }
 }
+
+/* --- Elegance/polish: subtle fade-up reveal for every section as it scrolls into view ---
+   Fully automatic — tags top-level section wrappers itself, so no section files
+   need editing and it keeps working as Shopify adds/reorders/reloads sections. */
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+  );
+
+  function tagAndObserve(root) {
+    root.querySelectorAll('.shopify-section:not([data-scroll-reveal])').forEach((section) => {
+      section.setAttribute('data-scroll-reveal', '');
+      revealObserver.observe(section);
+    });
+  }
+
+  tagAndObserve(document);
+
+  document.addEventListener('shopify:section:load', (event) => tagAndObserve(event.target));
+})();

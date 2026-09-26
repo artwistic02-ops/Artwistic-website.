@@ -1,0 +1,13 @@
+{% comment %}
+  Mobile sticky Add to Bag bar. Appears once the real buy-buttons area
+  scrolls out of view. It doesn't re-implement variant/availability logic —
+  it just mirrors the live price + button text from the real buy box and
+  forwards clicks to the real submit button, so it can never fall out of sync.
+{% endcomment %}
+
+<div class="sticky-atc" id="StickyATC-{{ section_id }}" hidden>
+  <span class="sticky-atc__price" id="StickyATCPrice-{{ section_id }}"></span>
+  <button type="button" class="sticky-atc__button button button--primary" id="StickyATCButton-{{ section_id }}">
+    Add to Bag
+  </button>
+</div>

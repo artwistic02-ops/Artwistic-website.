@@ -1,0 +1,257 @@
+/**
+ * ARTWISTIC HERO — additive polish on top of Dawn's stock slideshow
+ * section (sections/slideshow.liquid). Dawn's own slide markup, ambient
+ * Ken Burns animation (already correctly gated behind
+ * `prefers-reduced-motion: no-preference` in assets/base.css — nothing
+ * to add there), autoplay, and accessibility are untouched.
+ */
+
+/* Eyebrow — default to the scheme's own ink color. On mobile (and
+   whenever "show text below" is on) the text box sits in its own solid
+   color-scheme block BELOW the image, not on top of it, so a
+   hardcoded light color here was reading as near-invisible dots
+   against that light box (the actual bug reported from a live phone
+   preview). Light/white only applies where the box is genuinely
+   transparent and floating over the image itself — Dawn only ever
+   does that on desktop, via .banner--desktop-transparent. */
+.aw-hero-eyebrow {
+  color: var(--aw-color-ink);
+  margin: 0 0 var(--aw-space-2);
+}
+
+@media screen and (min-width: 750px) {
+  .banner--desktop-transparent .aw-hero-eyebrow {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* Constrain the text column so it reads as a deliberate block
+     bottom-left, not stretched across the whole banner width. */
+  .banner--desktop-transparent .slideshow__text {
+    max-width: 56rem;
+  }
+
+  .banner--desktop-transparent .banner__heading {
+    text-wrap: balance;
+  }
+}
+
+/* --- Hero CTA row: two real buttons (solid + ghost), styled to read
+   clearly over a dark image on both desktop and mobile, since Dawn's
+   own default button colors (ink-on-transparent for the secondary
+   style) go near-invisible over a dark photo — same class of contrast
+   bug already fixed once on the eyebrow. --- */
+.aw-hero-buttons {
+  display: flex;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+}
+
+.slideshow__text .aw-hero-buttons .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.8rem;
+  padding: 0 2.4rem;
+  border-radius: var(--aw-radius-sm, 6px);
+  font-family: var(--aw-font-body);
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: background-color var(--aw-duration-base) var(--aw-ease), color var(--aw-duration-base) var(--aw-ease),
+    border-color var(--aw-duration-base) var(--aw-ease);
+}
+
+.slideshow__text .aw-hero-buttons .button--primary {
+  background: #fff;
+  color: var(--aw-color-ink);
+  border-color: #fff;
+}
+
+.slideshow__text .aw-hero-buttons .button--primary:hover {
+  background: transparent;
+  color: #fff;
+  border-color: #fff;
+}
+
+.slideshow__text .aw-hero-buttons .button--secondary {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.slideshow__text .aw-hero-buttons .button--secondary:hover {
+  border-color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slideshow__text .aw-hero-buttons .button {
+    transition: none;
+  }
+}
+
+/* Mobile / desktop hero image split — only relevant when a merchant
+   sets a separate "Mobile image" on the slide block; slideshow.liquid
+   then renders a real <picture><source media="(max-width:749px)">
+   element instead of a single <img>, so the browser itself picks the
+   right image at load time (no CSS show/hide involved — a class-based
+   display toggle between two <img> elements turned out to be
+   unreliable inside the Theme Editor's own preview iframe). Dawn's own
+   `.media > img` rule (assets/base.css) only targets a DIRECT <img>
+   child, so wrapping it in <picture> needs this equivalent restated
+   one level deeper. */
+.media > picture {
+  display: block;
+}
+
+.media > picture > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* ----------------------------------------------------------------
+   Mobile hero — text-on-image overlay (not "image, then text below")
+   ----------------------------------------------------------------
+   Pure CSS re-presentation of Dawn's own "banner--mobile-bottom"
+   markup/settings — no Liquid, schema, or setting changes, so every
+   slide's real content/settings stay exactly as the merchant entered
+   them. This only overrides how that same markup is LAID OUT on a
+   phone: instead of the image and text stacking as two blocks, the
+   text box is pinned over the image (same idea as the existing
+   desktop "transparent box floating on the image" treatment,
+   extended to mobile), using the already-existing .aw-hero-scrim for
+   legibility. Scoped entirely to max-width:749px; desktop is
+   untouched. */
+@media screen and (max-width: 749px) {
+  .banner--mobile-bottom .slideshow__slide {
+    position: relative;
+    display: block;
+  }
+
+  /* Deliberately left in normal document flow with Dawn's own native
+     height (set by .banner--{size}.banner--mobile-bottom .banner__media
+     in section-image-banner.css, e.g. 39rem for "large") — taking this
+     out of flow via position:absolute with no explicit height on the
+     slide collapses the whole hero to 0px (the exact bug this comment
+     replaces: the slide had no set height of its own, so an absolutely
+     positioned media element left nothing behind to give it height).
+     The slide's height now comes from this element sitting in flow;
+     the text below is what gets pulled out to overlay on top of it. */
+  .banner--mobile-bottom .slideshow__media {
+    will-change: transform;
+  }
+
+  .banner--mobile-bottom .slideshow__text-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 var(--aw-space-4) var(--aw-space-6);
+    min-height: 0 !important;
+    transition: opacity var(--aw-duration-base, 0.3s) var(--aw-ease, ease);
+  }
+
+  .banner--mobile-bottom .slideshow__text {
+    width: 100%;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0;
+  }
+
+  .banner--mobile-bottom .aw-hero-eyebrow {
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: 0.08em;
+  }
+
+  .banner--mobile-bottom .banner__heading,
+  .banner--mobile-bottom .banner__text {
+    color: #fff;
+  }
+
+  /* Two buttons side by side (matching desktop), not stacked/stretched
+     — wraps to a second line only if a real, long label needs it. */
+  .banner--mobile-bottom .banner__buttons {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+  }
+
+  .banner--mobile-bottom .banner__buttons .button {
+    flex: 0 1 auto;
+  }
+
+  .banner--mobile-bottom .banner__buttons .button--secondary {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.85);
+    color: #fff;
+  }
+
+  /* A touch more scrim on mobile than desktop, since the text sits
+     lower and needs a bigger legible zone behind it. */
+  .banner--mobile-bottom .aw-hero-scrim {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0) 55%);
+  }
+
+  /* Slide counter/dots overlay the image directly — add a soft shadow
+     for contrast against a bright real product photo. */
+  .slideshow__controls--top .slider-counter,
+  .slideshow__controls--top .slider-button {
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+  }
+}
+
+/* Entrance animation — eyebrow/heading/button rise in with a short
+   stagger. Gated behind prefers-reduced-motion: no-preference, same
+   convention as the rest of this theme's motion. */
+@media screen and (max-width: 749px) and (prefers-reduced-motion: no-preference) {
+  @keyframes aw-hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.4rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .banner--mobile-bottom .aw-hero-eyebrow,
+  .banner--mobile-bottom .banner__heading,
+  .banner--mobile-bottom .banner__text,
+  .banner--mobile-bottom .banner__buttons {
+    animation: aw-hero-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .banner--mobile-bottom .aw-hero-eyebrow {
+    animation-delay: 0.05s;
+  }
+  .banner--mobile-bottom .banner__heading {
+    animation-delay: 0.15s;
+  }
+  .banner--mobile-bottom .banner__text {
+    animation-delay: 0.25s;
+  }
+  .banner--mobile-bottom .banner__buttons {
+    animation-delay: 0.35s;
+  }
+}
+
+/* Always-on legibility scrim — a real element (see slideshow.liquid)
+   since Dawn's own ::before/::after on this element are already used
+   for the adapt-image aspect-ratio spacer and the merchant's own
+   overlay-opacity setting respectively. Sits above the image, below
+   the text content, and never toggles — this is about legibility, not
+   a design choice a merchant should be able to turn off. */
+.aw-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 45%);
+}

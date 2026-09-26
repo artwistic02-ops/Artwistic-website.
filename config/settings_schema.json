@@ -1381,6 +1381,17 @@
         "default": false,
         "label": "t:settings_schema.search_input.settings.predictive_search_show_price.label",
         "info": "t:settings_schema.search_input.settings.predictive_search_show_price.info"
+      },
+      {
+        "type": "header",
+        "content": "ARTWISTIC: Search prompt animation"
+      },
+      {
+        "type": "text",
+        "id": "aw_search_prompts",
+        "label": "Rotating search prompts",
+        "info": "Comma-separated. Shown one at a time as an animated placeholder while the search field is empty.",
+        "default": "Search necklaces, Search earrings, Search rings, Search bracelets"
       }
     ]
   },
@@ -1433,6 +1444,52 @@
         "id": "show_cart_note",
         "label": "t:settings_schema.cart.settings.show_cart_note.label",
         "default": false
+      },
+      {
+        "type": "header",
+        "content": "ARTWISTIC: Milestone progress bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "aw_cart_milestones_enable",
+        "label": "Enable milestone progress bar",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "aw_free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "In your store's currency, no symbol (e.g. 1499). Leave blank to disable this milestone.",
+        "default": 1499
+      },
+      {
+        "type": "number",
+        "id": "aw_free_gift_threshold",
+        "label": "Free gift threshold",
+        "info": "In your store's currency, no symbol. Leave blank to disable this milestone.",
+        "default": 2999
+      },
+      {
+        "type": "text",
+        "id": "aw_free_gift_label",
+        "label": "Free gift label",
+        "default": "Free gift"
+      },
+      {
+        "type": "header",
+        "content": "ARTWISTIC: Offer banner & cross-sell"
+      },
+      {
+        "type": "text",
+        "id": "aw_cart_banner_text",
+        "label": "Offer banner text",
+        "info": "Real store policy/offer copy shown as a strip above the cart items. Leave blank to hide it entirely."
+      },
+      {
+        "type": "collection",
+        "id": "aw_cart_cross_sell_collection",
+        "label": "\"Pair it with\" collection",
+        "info": "A real collection of products to suggest below the cart items. Leave blank to hide this row."
       },
       {
         "type": "header",

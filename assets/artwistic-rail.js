@@ -1,59 +1,38 @@
 /**
- * ARTWISTIC RAIL — shared arrow controls for any horizontally-scrolling
- * rail marked up with the .aw-rail-shell / [data-aw-rail] / [data-aw-rail-prev]
- * / [data-aw-rail-next] pattern (see assets/artwistic-global.css). Scrolls
- * by ~85% of the visible width per click and hides/shows arrows at the
- * scroll extremes. Re-runs on demand via window.ArtwisticRail.init() for
- * rails injected after page load (e.g. cart recommendations fetched
- * asynchronously), and safe to call more than once — already-wired rails
- * are skipped.
+ * ARTWISTIC RAIL — shared prev/next-arrow wiring for any horizontally
+ * scrolling `.aw-rail-shell` (Reels, Reviews, and any future module using
+ * the same markup pattern from artwistic-global.css). Purely scrolls the
+ * real DOM list; no virtual carousel state.
  */
 (function () {
   'use strict';
 
-  function wireShell(shell) {
-    if (shell.dataset.awRailWired) return;
-    shell.dataset.awRailWired = 'true';
-
+  document.querySelectorAll('.aw-rail-shell').forEach(function (shell) {
     var rail = shell.querySelector('[data-aw-rail]');
-    var prevBtn = shell.querySelector('[data-aw-rail-prev]');
-    var nextBtn = shell.querySelector('[data-aw-rail-next]');
+    var prevButton = shell.querySelector('[data-aw-rail-prev]');
+    var nextButton = shell.querySelector('[data-aw-rail-next]');
     if (!rail) return;
 
-    if (prevBtn) {
-      prevBtn.addEventListener('click', function () {
+    if (prevButton) {
+      prevButton.addEventListener('click', function () {
         rail.scrollBy({ left: -rail.clientWidth * 0.85, behavior: 'smooth' });
       });
     }
-    if (nextBtn) {
-      nextBtn.addEventListener('click', function () {
+    if (nextButton) {
+      nextButton.addEventListener('click', function () {
         rail.scrollBy({ left: rail.clientWidth * 0.85, behavior: 'smooth' });
       });
     }
 
-    function update() {
+    function updateArrows() {
       var atStart = rail.scrollLeft <= 4;
       var atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
-      if (prevBtn) prevBtn.disabled = atStart;
-      if (nextBtn) nextBtn.disabled = atEnd;
+      if (prevButton) prevButton.disabled = atStart;
+      if (nextButton) nextButton.disabled = atEnd;
     }
 
-    rail.addEventListener('scroll', update);
-    window.addEventListener('resize', update);
-    update();
-  }
-
-  function init(root) {
-    (root || document).querySelectorAll('.aw-rail-shell').forEach(wireShell);
-  }
-
-  window.ArtwisticRail = { init: init };
-
-  if (document.readyState !== 'loading') {
-    init();
-  } else {
-    document.addEventListener('DOMContentLoaded', function () {
-      init();
-    });
-  }
+    rail.addEventListener('scroll', updateArrows);
+    window.addEventListener('resize', updateArrows);
+    updateArrows();
+  });
 })();

@@ -1,0 +1,33 @@
+{% comment %}
+  Renders one editorial "featured" tile inside a mega menu dropdown —
+  an image, a heading and a link (e.g. "New In", "Bestsellers", a promo).
+  This is NOT native to Dawn's mega menu, which is text-only columns.
+
+  Usage:
+  {% render 'mega-menu-featured', block: block %}
+{% endcomment %}
+
+<li class="mega-menu__featured" {{ block.shopify_attributes }}>
+  <a href="{{ block.settings.link | default: '#' }}" class="mega-menu__featured-link">
+    {%- if block.settings.image != blank -%}
+      <div class="mega-menu__featured-image-wrapper">
+        {{
+          block.settings.image
+          | image_url: width: 600
+          | image_tag:
+            class: 'mega-menu__featured-image',
+            widths: '300, 450, 600',
+            sizes: '300px',
+            loading: 'lazy',
+            alt: block.settings.image.alt | default: block.settings.heading
+        }}
+      </div>
+    {%- endif -%}
+    {%- if block.settings.heading != blank -%}
+      <p class="mega-menu__featured-heading">{{ block.settings.heading | escape }}</p>
+    {%- endif -%}
+    {%- if block.settings.subtext != blank -%}
+      <p class="mega-menu__featured-subtext">{{ block.settings.subtext | escape }}</p>
+    {%- endif -%}
+  </a>
+</li>

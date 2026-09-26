@@ -1,0 +1,60 @@
+/**
+ * ARTWISTIC CARE & CRAFT — education grid, single column on very
+ * narrow screens, up to 3-up on wide ones. No rail — meant to be
+ * read, not swiped. Uses a genuinely fluid CSS Grid pattern (no fixed
+ * breakpoint) so it naturally resolves to 1, 2, or 3 columns from
+ * real available width instead of snapping at one hardcoded cutoff.
+ */
+
+.aw-care-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+  gap: var(--aw-space-5);
+}
+
+.aw-care-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-space-3);
+  text-decoration: none;
+  color: var(--aw-color-ink);
+}
+
+.aw-care-card__frame {
+  display: block;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--aw-radius-md, 1.4rem);
+  background: var(--aw-color-border);
+  overflow: hidden;
+}
+
+.aw-care-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aw-care-card__eyebrow {
+  display: block;
+}
+
+.aw-care-card__title {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-lg);
+  margin: 0.2rem 0;
+  font-weight: 500;
+}
+
+.aw-care-card__desc {
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.aw-care-card__more {
+  font-size: var(--aw-text-xs);
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}

@@ -1,93 +1,204 @@
 {% comment %}
-  ARTWISTIC: Reels — a horizontal rail of real, merchant-uploaded
-  portrait videos, matching the homepage mockup's "Reels" module. Uses
-  Shopify's native video upload (video_tag/deferred-media, same pattern
-  as sections/video.liquid) — no third-party embed. Each block can
-  optionally link a real product; the mockup's fake per-reel like counts
-  are intentionally not reproduced (no real engagement data exists to
-  show), replaced with the real wishlist-heart toggle on the linked
-  product when one is set.
+  ARTWISTIC: a horizontal rail of real, merchant-uploaded portrait
+  videos, matching the approved mockup's "Shop the Reels" filmstrip.
+  Uses Shopify's native video file block setting (real upload) — no
+  third-party embed, no metaobject. The mockup's fabricated per-reel
+  view counts (e.g. "2.1k") are intentionally not reproduced, since no
+  real engagement data exists to show.
+
+  Every reel shows on every product page (no per-product filtering) —
+  each reel block's "Linked product" setting (block.settings.product)
+  only controls which product that reel's story-lightbox pill sells.
+
+  Click-to-expand story lightbox: clicking a reel opens a full-screen,
+  swipeable story view (spring-physics slide navigation, sound toggle,
+  progress bar, auto-advance) with a "shop this" pill that reveals the
+  linked product's photo/name/price/Add to Cart after a short delay —
+  real product data read straight from block.settings.product, real
+  add-to-cart via Shopify's own cart API (assets/artwistic-reels.js),
+  no third-party cart/size-picker dependency.
 {% endcomment %}
 
 {{ 'artwistic-reels.css' | asset_url | stylesheet_tag }}
 {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
-{% render 'artwistic-section-padding' %}
-<script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-reels.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
 
 <div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
   <div class="aw-container aw-reels__head">
-    <h2 class="aw-reels__heading">{{ section.settings.heading | default: 'Reels' }}</h2>
-    {%- if section.settings.view_all_url != blank -%}
-      <a href="{{ section.settings.view_all_url }}" class="aw-reels__view-all link">
-        {{ section.settings.view_all_label | default: 'Watch all' }}
-      </a>
-    {%- endif -%}
+    <div>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="aw-eyebrow aw-reels__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="aw-reels__heading">{{ section.settings.heading | default: 'Shop the Reels' }}</h2>
+    </div>
   </div>
 
-  <div class="aw-rail-shell">
-    <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
-      {{- 'icon-caret.svg' | inline_asset_content -}}
-    </button>
-    <ul class="aw-reels__rail" role="list" data-aw-rail>
-      {%- for block in section.blocks -%}
-        {%- liquid
-          assign reel_video_id = block.settings.video.id
-          assign reel_poster = block.settings.video.preview_image | default: block.settings.poster
-        -%}
-        <li class="aw-reels__card" {{ block.shopify_attributes }}>
-          {%- if block.settings.video != blank -%}
-            <deferred-media class="aw-reels__media deferred-media" data-media-id="{{ reel_video_id }}">
-              <button
-                id="Deferred-Poster-Reel-{{ section.id }}-{{ forloop.index }}"
-                class="aw-reels__poster deferred-media__poster"
-                type="button"
-                aria-label="{{ 'sections.video.load_video' | t: description: block.settings.caption | escape }}"
-              >
-                {%- if reel_poster != null -%}
-                  {{ reel_poster | image_url: width: 700 | image_tag: sizes: '(min-width: 750px) 17rem, 13rem', widths: '260, 350, 520, 700' }}
-                {%- endif -%}
-                <span class="aw-reels__play motion-reduce">
-                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
-                </span>
-              </button>
-              <template>
+  {%- if section.blocks.size > 0 -%}
+    <div class="aw-rail-shell">
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4l-8 8 8 8"></path></svg>
+      </button>
+      <ul class="aw-reels__rail" data-aw-rail role="list">
+        {%- assign aw_render_index = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- assign aw_reel_product = block.settings.product -%}
+          {%- assign aw_size_option_index = -1 -%}
+          {%- if aw_reel_product != blank -%}
+            {%- for option_name in aw_reel_product.options -%}
+              {%- assign aw_option_downcase = option_name | downcase -%}
+              {%- if aw_option_downcase contains 'size' -%}
+                {%- assign aw_size_option_index = forloop.index0 -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+          <li
+            class="aw-reels__card"
+            {{ block.shopify_attributes }}
+            {%- if block.settings.video != blank and aw_reel_product != blank -%}
+              data-aw-reel-card
+              data-index="{{ aw_render_index }}"
+              data-pimg="{{ aw_reel_product.featured_image | image_url: width: 400 }}"
+              data-pname="{{ aw_reel_product.title | escape }}"
+              data-pprice="{{ aw_reel_product.price | money }}"
+              data-purl="{{ aw_reel_product.url }}"
+              data-phandle="{{ aw_reel_product.handle }}"
+              data-available="{{ aw_reel_product.available }}"
+              data-size-idx="{{ aw_size_option_index }}"
+              data-size-values='{% if aw_size_option_index >= 0 %}{{ aw_reel_product.options_with_values[aw_size_option_index].values | json }}{% else %}null{% endif %}'
+              data-variants='{{ aw_reel_product.variants | json }}'
+            {%- endif -%}
+          >
+            {%- if block.settings.video != blank -%}
+              <div class="aw-reels__media" data-aw-reel>
                 {{
                   block.settings.video
                   | video_tag:
-                    image_size: '700x',
-                    autoplay: true,
+                    image_size: '400x',
+                    autoplay: false,
                     loop: true,
-                    controls: true,
-                    muted: false
+                    controls: false,
+                    muted: true,
+                    class: 'aw-reels__video aw-reels__video--source'
                 }}
-              </template>
-            </deferred-media>
-          {%- else -%}
-            <div class="aw-reels__media aw-reels__media--empty">
-              {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
-            </div>
-          {%- endif -%}
-
-          {%- if block.settings.caption != blank or block.settings.product != blank -%}
-            <div class="aw-reels__cap">
-              {%- if block.settings.product != blank -%}
-                {%- render 'artwistic-wishlist-button', product: block.settings.product -%}
-                <a href="{{ block.settings.product.url }}" class="aw-reels__cap-link">
-                  {{- block.settings.caption | default: block.settings.product.title -}}
-                </a>
-              {%- else -%}
-                <span>{{ block.settings.caption }}</span>
+                {%- if aw_reel_product != blank -%}
+                  <div class="aw-reels__play" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+                  </div>
+                {%- endif -%}
+              </div>
+              {%- if block.settings.caption != blank -%}
+                <p class="aw-reels__caption">{{ block.settings.caption }}</p>
               {%- endif -%}
-            </div>
+              {%- if aw_reel_product != blank -%}
+                <a href="{{ aw_reel_product.url }}" class="aw-reels__link">
+                  {{ aw_reel_product.title }}
+                </a>
+              {%- endif -%}
+            {%- else -%}
+              <div class="aw-reels__media aw-reels__media--empty">
+                <span class="aw-eyebrow">Add a video</span>
+              </div>
+            {%- endif -%}
+          </li>
+          {%- if block.settings.video != blank and aw_reel_product != blank -%}
+            {%- assign aw_render_index = aw_render_index | plus: 1 -%}
           {%- endif -%}
-        </li>
-      {%- endfor -%}
-    </ul>
-    <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
-      {{- 'icon-caret.svg' | inline_asset_content -}}
+        {%- endfor -%}
+      </ul>
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4l8 8-8 8"></path></svg>
+      </button>
+    </div>
+
+    {%- if section.settings.instagram_url != blank -%}
+      <div class="aw-reels__follow">
+        <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" class="aw-reels__follow-btn">
+          {{ section.settings.instagram_label | default: 'Follow on Instagram' }}
+        </a>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{%- comment -%}
+  Story lightbox — one shared instance per section (not per-card). Two
+  permanent video "slots" are swapped by assets/artwistic-reels.js using
+  a spring-physics transform (no CSS transition on the slots themselves —
+  see artwistic-reels.css for why). Populated entirely from the clicked
+  card's own data-* attributes; nothing here is server-rendered per reel.
+{%- endcomment -%}
+{%- if section.blocks.size > 0 -%}
+  <div class="aw-reel-lightbox" data-aw-reel-lightbox aria-modal="true" role="dialog" hidden>
+    <div class="aw-reel-lightbox__backdrop" data-aw-reel-close></div>
+
+    <button type="button" class="aw-reel-lightbox__close" data-aw-reel-close aria-label="{{ 'accessibility.close' | t }}">
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </button>
+
+    <div class="aw-reel-progress"><div class="aw-reel-progress__fill" data-aw-reel-progress></div></div>
+    <div class="aw-reel-counter" data-aw-reel-counter></div>
+
+    <button type="button" class="aw-reel-lightbox__nav aw-reel-lightbox__nav--prev" data-aw-reel-nav="-1" aria-label="Previous reel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"></path></svg>
+    </button>
+
+    <div class="aw-reel-stage" data-aw-reel-stage>
+      <div class="aw-reel-slot" data-aw-reel-slot="0"><video class="aw-reel-slot__video" playsinline preload="metadata"></video></div>
+      <div class="aw-reel-slot" data-aw-reel-slot="1"><video class="aw-reel-slot__video" playsinline preload="metadata"></video></div>
+
+      <button type="button" class="aw-reel-sound" data-aw-reel-sound aria-label="Toggle sound">
+        <svg data-aw-reel-sound-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </button>
+
+      <div class="aw-reel-pill" data-aw-reel-pill role="button" tabindex="0" data-aw-reel-pill-link>
+        <span class="aw-reel-pill__thumbwrap">
+          <img class="aw-reel-pill__img" data-aw-reel-pill-img alt="" width="68" height="68">
+        </span>
+        <span class="aw-reel-pill__body">
+          <span class="aw-reel-pill__info">
+            <span class="aw-reel-pill__name" data-aw-reel-pill-name></span>
+            <span class="aw-reel-pill__price" data-aw-reel-pill-price></span>
+          </span>
+          <button type="button" class="aw-reel-pill__cart" data-aw-reel-pill-cart>Add to Cart</button>
+        </span>
+      </div>
+    </div>
+
+    <button type="button" class="aw-reel-lightbox__nav aw-reel-lightbox__nav--next" data-aw-reel-nav="1" aria-label="Next reel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18l6-6-6-6"></path></svg>
     </button>
   </div>
-</div>
+
+  {%- comment -%} Size-picker sheet — shown only when the linked product has a real size option with more than one value. {%- endcomment -%}
+  <div class="aw-reel-sizes" data-aw-reel-sizes hidden>
+    <div class="aw-reel-sizes__backdrop" data-aw-reel-sizes-close></div>
+    <div class="aw-reel-sizes__sheet" role="dialog" aria-modal="true" aria-label="Choose a size">
+      <p class="aw-reel-sizes__title" data-aw-reel-sizes-title></p>
+      <div class="aw-reel-sizes__grid" data-aw-reel-sizes-grid></div>
+      <button type="button" class="aw-reel-sizes__cancel" data-aw-reel-sizes-close>Cancel</button>
+    </div>
+  </div>
+{%- endif -%}
 
 {% schema %}
 {
@@ -96,32 +207,38 @@
   "class": "section",
   "settings": [
     {
+      "type": "paragraph",
+      "content": "Add one \"Reel\" block per video below. Every reel shows on every product page. Set each block's \"Linked product\" to the product that reel is showing off — clicking the reel opens a full-screen story view with that product's photo, price, and Add to Cart button built in."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "As worn, not staged"
+    },
+    {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Reels"
-    },
-    {
-      "type": "url",
-      "id": "view_all_url",
-      "label": "\"Watch all\" link",
-      "info": "Optional. Leave blank to hide the link."
-    },
-    {
-      "type": "text",
-      "id": "view_all_label",
-      "label": "\"Watch all\" label",
-      "default": "Watch all"
+      "default": "Shop the Reels"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
-      "default": "scheme-1"
+      "default": "scheme-4"
     },
     {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram follow link",
+      "info": "Leave blank to hide the follow button under the reels."
+    },
+    {
+      "type": "text",
+      "id": "instagram_label",
+      "label": "Instagram button text",
+      "default": "Follow on Instagram"
     },
     {
       "type": "range",
@@ -131,7 +248,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_top",
-      "default": 36
+      "default": 56
     },
     {
       "type": "range",
@@ -141,7 +258,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
+      "default": 56
     }
   ],
   "blocks": [
@@ -155,22 +272,15 @@
           "label": "Video"
         },
         {
-          "type": "image_picker",
-          "id": "poster",
-          "label": "Poster image",
-          "info": "Used only if the video has no thumbnail yet."
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
         },
         {
           "type": "product",
           "id": "product",
           "label": "Linked product",
-          "info": "Optional. Shows a wishlist heart and a link to the product."
-        },
-        {
-          "type": "text",
-          "id": "caption",
-          "label": "Caption",
-          "info": "Defaults to the linked product's title."
+          "info": "The product this reel's story lightbox sells (photo, price, Add to Cart). Leave blank to show this reel with no shoppable pill."
         }
       ]
     }
@@ -178,7 +288,11 @@
   "presets": [
     {
       "name": "ARTWISTIC: Reels",
-      "blocks": [{ "type": "reel" }, { "type": "reel" }, { "type": "reel" }]
+      "blocks": [
+        { "type": "reel" },
+        { "type": "reel" },
+        { "type": "reel" }
+      ]
     }
   ]
 }

@@ -1,124 +1,113 @@
-if (!customElements.get('quick-add-modal')) {
-  customElements.define(
-    'quick-add-modal',
-    class QuickAddModal extends ModalDialog {
-      constructor() {
-        super();
-        this.modalContent = this.querySelector('[id^="QuickAddInfo-"]');
+/**
+ * ARTWISTIC: quick-add size picker — for a product card's "+" button
+ * on a product with exactly one real option (almost always Size).
+ * Data comes from a real JSON blob already embedded on the page by
+ * snippets/artwistic-card-actions.liquid (card_product.variants), so
+ * no network round-trip is needed to open the sheet. Picking an
+ * available value resolves a real variant id and reuses the exact
+ * same /cart/add.js flow as a direct single-variant add
+ * (window.awProductCard.addToCart), so there is exactly one add-to-
+ * cart code path on the whole site, not two.
+ */
+(function () {
+  'use strict';
 
-        this.addEventListener('product-info:loaded', ({ target }) => {
-          target.addPreProcessCallback(this.preprocessHTML.bind(this));
-        });
-      }
+  var backdrop, sheet, titleEl, imageEl, optionLabelEl, optionsEl;
+  var activeButton = null;
 
-      hide(preventFocus = false) {
-        const cartNotification = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
-        if (cartNotification) cartNotification.setActiveElement(this.openedBy);
-        this.modalContent.innerHTML = '';
+  function build() {
+    backdrop = document.createElement('div');
+    backdrop.className = 'aw-quick-add-backdrop';
+    backdrop.setAttribute('hidden', '');
 
-        if (preventFocus) this.openedBy = null;
-        super.hide();
-      }
+    sheet = document.createElement('div');
+    sheet.className = 'aw-quick-add-sheet';
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.innerHTML =
+      '<button type="button" class="aw-quick-add-sheet__close" data-aw-quick-add-close aria-label="Close"></button>' +
+      '<div class="aw-quick-add-sheet__head">' +
+      '<div class="aw-quick-add-sheet__image"></div>' +
+      '<div>' +
+      '<p class="aw-quick-add-sheet__title"></p>' +
+      '<p class="aw-quick-add-sheet__option-label"></p>' +
+      '</div>' +
+      '</div>' +
+      '<div class="aw-quick-add-sheet__options"></div>';
 
-      show(opener) {
-        opener.setAttribute('aria-disabled', true);
-        opener.classList.add('loading');
-        opener.querySelector('.loading__spinner').classList.remove('hidden');
+    backdrop.appendChild(sheet);
+    document.body.appendChild(backdrop);
 
-        fetch(opener.getAttribute('data-product-url'))
-          .then((response) => response.text())
-          .then((responseText) => {
-            const responseHTML = new DOMParser().parseFromString(responseText, 'text/html');
-            const productElement = responseHTML.querySelector('product-info');
+    imageEl = sheet.querySelector('.aw-quick-add-sheet__image');
+    titleEl = sheet.querySelector('.aw-quick-add-sheet__title');
+    optionLabelEl = sheet.querySelector('.aw-quick-add-sheet__option-label');
+    optionsEl = sheet.querySelector('.aw-quick-add-sheet__options');
 
-            this.preprocessHTML(productElement);
-            HTMLUpdateUtility.setInnerHTML(this.modalContent, productElement.outerHTML);
+    backdrop.addEventListener('click', function (event) {
+      if (event.target === backdrop) close();
+    });
+    sheet.querySelector('[data-aw-quick-add-close]').addEventListener('click', close);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !backdrop.hidden) close();
+    });
+  }
 
-            if (window.Shopify && Shopify.PaymentButton) {
-              Shopify.PaymentButton.init();
-            }
-            if (window.ProductModel) window.ProductModel.loadShopifyXR();
+  function open(button, dataScript) {
+    if (!backdrop) build();
 
-            this.modalContent.querySelector('product-component')?.dispatchViewEvent?.();
-
-            super.show(opener);
-          })
-          .finally(() => {
-            opener.removeAttribute('aria-disabled');
-            opener.classList.remove('loading');
-            opener.querySelector('.loading__spinner').classList.add('hidden');
-          });
-      }
-
-      preprocessHTML(productElement) {
-        productElement.classList.forEach((classApplied) => {
-          if (classApplied.startsWith('color-') || classApplied === 'gradient')
-            this.modalContent.classList.add(classApplied);
-        });
-        this.preventDuplicatedIDs(productElement);
-        this.removeDOMElements(productElement);
-        this.removeGalleryListSemantic(productElement);
-        this.updateImageSizes(productElement);
-        this.preventVariantURLSwitching(productElement);
-      }
-
-      preventVariantURLSwitching(productElement) {
-        productElement.setAttribute('data-update-url', 'false');
-      }
-
-      removeDOMElements(productElement) {
-        const pickupAvailability = productElement.querySelector('pickup-availability');
-        if (pickupAvailability) pickupAvailability.remove();
-
-        const productModal = productElement.querySelector('product-modal');
-        if (productModal) productModal.remove();
-
-        const modalDialog = productElement.querySelectorAll('modal-dialog');
-        if (modalDialog) modalDialog.forEach((modal) => modal.remove());
-      }
-
-      preventDuplicatedIDs(productElement) {
-        const sectionId = productElement.dataset.section;
-
-        const oldId = sectionId;
-        const newId = `quickadd-${sectionId}`;
-        productElement.innerHTML = productElement.innerHTML.replaceAll(oldId, newId);
-        Array.from(productElement.attributes).forEach((attribute) => {
-          if (attribute.value.includes(oldId)) {
-            productElement.setAttribute(attribute.name, attribute.value.replace(oldId, newId));
-          }
-        });
-
-        productElement.dataset.originalSection = sectionId;
-      }
-
-      removeGalleryListSemantic(productElement) {
-        const galleryList = productElement.querySelector('[id^="Slider-Gallery"]');
-        if (!galleryList) return;
-
-        galleryList.setAttribute('role', 'presentation');
-        galleryList.querySelectorAll('[id^="Slide-"]').forEach((li) => li.setAttribute('role', 'presentation'));
-      }
-
-      updateImageSizes(productElement) {
-        const product = productElement.querySelector('.product');
-        const desktopColumns = product?.classList.contains('product--columns');
-        if (!desktopColumns) return;
-
-        const mediaImages = product.querySelectorAll('.product__media img');
-        if (!mediaImages.length) return;
-
-        let mediaImageSizes =
-          '(min-width: 1000px) 715px, (min-width: 750px) calc((100vw - 11.5rem) / 2), calc(100vw - 4rem)';
-
-        if (product.classList.contains('product--medium')) {
-          mediaImageSizes = mediaImageSizes.replace('715px', '605px');
-        } else if (product.classList.contains('product--small')) {
-          mediaImageSizes = mediaImageSizes.replace('715px', '495px');
-        }
-
-        mediaImages.forEach((img) => img.setAttribute('sizes', mediaImageSizes));
-      }
+    var data;
+    try {
+      data = JSON.parse(dataScript.textContent);
+    } catch (e) {
+      return;
     }
-  );
-}
+
+    activeButton = button;
+    titleEl.textContent = data.title;
+    optionLabelEl.textContent = 'Select ' + data.optionName;
+    imageEl.innerHTML = data.image ? '<img src="' + data.image + '" alt="">' : '';
+
+    optionsEl.innerHTML = '';
+    data.values.forEach(function (value) {
+      var optionButton = document.createElement('button');
+      optionButton.type = 'button';
+      optionButton.className = 'aw-quick-add-sheet__option';
+      optionButton.textContent = value.label;
+      if (!value.available || !value.variantId) {
+        optionButton.disabled = true;
+        optionButton.classList.add('is-unavailable');
+      } else {
+        optionButton.addEventListener('click', function () {
+          selectVariant(value.variantId);
+        });
+      }
+      optionsEl.appendChild(optionButton);
+    });
+
+    backdrop.hidden = false;
+    requestAnimationFrame(function () {
+      backdrop.classList.add('is-open');
+    });
+  }
+
+  function selectVariant(variantId) {
+    if (!activeButton) return;
+    activeButton.dataset.variantId = variantId;
+    var button = activeButton;
+    close();
+    if (window.awProductCard) {
+      window.awProductCard.addToCart(button);
+    }
+  }
+
+  function close() {
+    if (!backdrop) return;
+    backdrop.classList.remove('is-open');
+    window.setTimeout(function () {
+      backdrop.hidden = true;
+    }, 250);
+    activeButton = null;
+  }
+
+  window.awQuickAdd = { open: open };
+})();

@@ -1,0 +1,172 @@
+{% comment %}
+  ARTWISTIC: Shop by Categories — a merchant-curated rail of category
+  tiles (real collection image/link, or an optional custom image).
+  Always a rail (arrows on both mobile and desktop), never a grid.
+{% endcomment %}
+
+{{ 'artwistic-categories.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  /* Continuous fluid padding instead of a single 750px jump between
+     two fixed values — scales smoothly with viewport width the whole
+     way, clamped between the mobile floor and the merchant's set
+     desktop value. */
+  .section-{{ section.id }}-padding {
+    padding-top: clamp(
+      {{ section.settings.padding_top | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_top | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_top }}px
+    );
+    padding-bottom: clamp(
+      {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_bottom | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_bottom }}px
+    );
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+    <div class="aw-container">
+      <div class="aw-section-head">
+        <h2 class="aw-section-head__title">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.view_all_link != blank -%}
+          <a href="{{ section.settings.view_all_link }}" class="aw-section-head__link">
+            {{ 'sections.collection_list.view_all' | t }}
+            {{- 'icon-arrow.svg' | inline_asset_content -}}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="aw-categories aw-rail-shell">
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4l-8 8 8 8"></path></svg>
+      </button>
+      <ul class="aw-categories__rail" data-aw-rail role="list">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign aw_cat_image = block.settings.image
+            if aw_cat_image == blank and block.settings.collection != blank
+              assign aw_cat_image = block.settings.collection.image
+            endif
+            assign aw_cat_url = block.settings.link
+            if aw_cat_url == blank and block.settings.collection != blank
+              assign aw_cat_url = block.settings.collection.url
+            endif
+          -%}
+          <li class="aw-category-tile" {{ block.shopify_attributes }}>
+            <a href="{{ aw_cat_url | default: '#' }}" class="aw-category-tile__link">
+              <span class="aw-category-tile__frame">
+                {%- if aw_cat_image != blank -%}
+                  {{
+                    aw_cat_image
+                    | image_url: width: 700
+                    | image_tag: loading: 'lazy', sizes: '(min-width: 750px) 19rem, 13.6rem', widths: '270, 400, 560, 700', class: 'aw-category-tile__img'
+                  }}
+                {%- endif -%}
+              </span>
+              <span class="aw-category-tile__name">{{ block.settings.title | escape }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4l8 8-8 8"></path></svg>
+      </button>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Categories",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by Categories"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "\"View all\" link",
+      "default": "/collections/all",
+      "info": "Points to your full collections/products list by default — change or clear it if you'd rather link somewhere else."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Used for the tile's image (unless a custom image is set below) and link (unless a custom link is set below)."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Optional. Overrides the collection's own image."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Custom link",
+          "info": "Optional. Overrides the collection's own link."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Category"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Categories",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Necklaces" } },
+        { "type": "category", "settings": { "title": "Earrings" } },
+        { "type": "category", "settings": { "title": "Rings" } },
+        { "type": "category", "settings": { "title": "Bracelets" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

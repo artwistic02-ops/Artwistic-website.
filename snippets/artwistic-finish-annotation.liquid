@@ -1,16 +1,15 @@
 {% comment %}
-  ARTWISTIC: italic annotation line under the variant picker, tied to
-  the currently selected option value — matching the finalized design.
-  Sourced from a real merchant-configured JSON metafield
-  (product.metafields.custom.option_notes, e.g.
-  {"Sterling Silver": "silver's the one that never leaves rotation"}),
+  ARTWISTIC: italic hand-drawn-arrow annotation line under the variant
+  picker, tied to the currently selected option value — matching the
+  approved product-page mockup. Sourced from a real merchant-configured
+  JSON metafield (product.metafields.custom.option_notes, e.g.
+  {"Sterling Silver": "silver's the one that never leaves rotation"}) —
   never a fabricated per-product sentence. Renders nothing if the
   metafield doesn't exist or has no entry for the current value.
 
-  Requires: a "Option notes" metafield definition on Products
-  (namespace: custom, key: option_notes, type: JSON) — see
-  docs/SHOPIFY_ADMIN_SETUP.md. Updates live on variant change via
-  assets/artwistic-finish-annotation.js.
+  Setup: create a "Option notes" metafield definition on Products
+  (namespace: custom, key: option_notes, type: JSON). Updates live on
+  variant change via assets/artwistic-finish-annotation.js.
 
   Usage:
     {% render 'artwistic-finish-annotation', product: product %}

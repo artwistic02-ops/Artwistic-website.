@@ -1,15 +1,14 @@
 /**
- * ARTWISTIC PRODUCT PAGE — layout rhythm and the purchase-confidence
- * strip. This file governs spacing/hierarchy of the info column (title →
- * rating → price → buy → confidence), not any individual component's
- * own internals (those live in artwistic-trust.css, artwistic-reviews.css,
- * etc.) — kept separate so this file stays about "how the page reads
- * top to bottom," per the file-per-feature isolation rule.
+ * ARTWISTIC PRODUCT PAGE — layout rhythm, price tag, purchase-confidence
+ * strip, accordions, finish swatches, quantity stepper, sticky ATC, and
+ * the two related-products rails ("Complete the look" / "You might also
+ * like"). CSS-only restyling of Dawn's real components — no markup or
+ * JS logic touched beyond the small marked additions in
+ * sections/main-product.liquid and templates/product.json.
  */
 
-/* Add to Bag + the inline wishlist toggle sit in one row, matching the
-   finalized design — the button takes remaining width, the heart is a
-   fixed-size square beside it. */
+/* --- Above-the-fold rhythm --- */
+
 .product-form__buttons {
   display: flex;
   align-items: stretch;
@@ -20,11 +19,6 @@
   flex: 1;
 }
 
-/* Tighter, more deliberate rhythm between the above-the-fold elements —
-   Dawn's defaults leave generous gaps between every block; a jewellery
-   PDP reads more confidently when title/rating/price sit close together
-   as one visual unit, with clearer air only where it earns it (before
-   the CTA). */
 .product__info-container > .product__title {
   margin-bottom: 0;
 }
@@ -37,21 +31,21 @@
   margin-top: var(--aw-space-3);
 }
 
-/* Price tag — a torn-ticket treatment around the real Dawn price
-   component, matching the finalized design: dashed border, a punched
-   "hole" on the left edge, a slight rotation. Purely decorative; the
-   real price/compare-at/badge markup inside is untouched. */
+/* --- Price tag: torn-ticket treatment around Dawn's real price
+   component (dashed border, punched "hole", slight rotation). Purely
+   decorative; the real price/compare-at/badge markup inside is untouched. --- */
+
 .aw-price-tag {
   display: inline-flex;
   position: relative;
   align-items: center;
   gap: var(--aw-space-3);
+  flex-wrap: wrap;
   border: 1.5px dashed var(--aw-color-border-strong);
   border-radius: 0.3rem 1.2rem 1.2rem 0.3rem;
   padding: var(--aw-space-2) var(--aw-space-3) var(--aw-space-2) var(--aw-space-5);
-  background: rgb(var(--color-background));
+  background: var(--aw-color-paper);
   transform: rotate(-0.8deg);
-  flex-wrap: wrap;
 }
 
 .aw-price-tag::before {
@@ -63,7 +57,7 @@
   width: 0.8rem;
   height: 0.8rem;
   border-radius: 50%;
-  background: rgb(var(--color-background));
+  background: var(--aw-color-paper);
   box-shadow: 0 0 0 1.5px var(--aw-color-border-strong);
 }
 
@@ -83,25 +77,14 @@
 .aw-purchase-confidence {
   margin-top: var(--aw-space-4);
   padding-top: var(--aw-space-4);
-  border-top: 1px solid var(--aw-color-border);
-  display: flex;
-  flex-direction: column;
-  gap: var(--aw-space-3);
 }
 
-.aw-purchase-confidence .aw-trust-badges {
-  margin: 0;
-}
-
-/* Dashed trust-row grid, matching the finalized product-page design:
-   each claim stacks icon-over-label instead of running inline, framed
-   top and bottom by a dashed rule. */
 .aw-purchase-confidence__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-  gap: var(--aw-space-3);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--aw-space-2);
   margin: 0;
-  padding: var(--aw-space-3) 0;
+  padding: var(--aw-space-4) 0;
   list-style: none;
   border-top: 1.5px dashed var(--aw-color-border-strong);
   border-bottom: 1.5px dashed var(--aw-color-border-strong);
@@ -112,193 +95,82 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.6rem;
-  font-size: var(--aw-text-2xs);
+  gap: 0.7rem;
+  font-size: 1.1rem;
+  line-height: 1.35;
   color: var(--aw-color-muted);
 }
 
 .aw-purchase-confidence__list svg {
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2rem;
+  height: 2rem;
   flex-shrink: 0;
   color: var(--aw-color-brand-accent);
 }
 
 @media screen and (max-width: 749px) {
+  /* 2x2 on mobile — tablet and up stay the 4x1 row above. */
   .aw-purchase-confidence__list {
-    gap: var(--aw-space-2) var(--aw-space-4);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--aw-space-3) var(--aw-space-2);
+    padding: var(--aw-space-3) 0;
+  }
+
+  .aw-purchase-confidence__list li {
+    gap: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .aw-purchase-confidence__list svg {
+    width: 1.9rem;
+    height: 1.9rem;
   }
 }
 
-/* --- Payment icons --- */
+@media screen and (max-width: 359px) {
+  .aw-purchase-confidence__list li {
+    font-size: 0.85rem;
+  }
+
+  .aw-purchase-confidence__list svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
 
 .aw-payment-icons {
   margin-top: var(--aw-space-3);
 }
 
-.aw-payment-icons .list-payment {
-  margin: 0;
-}
-
-/* --- Contact link --- */
-
-.aw-contact-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
+.aw-payment-icons.list-payment {
   margin-top: var(--aw-space-3);
-  font-size: var(--aw-text-sm);
-  color: var(--aw-color-ink);
-  text-decoration: none;
-  border-bottom: 1px solid var(--aw-color-border-strong);
-  padding-bottom: 0.1rem;
+  margin-bottom: 0;
 }
 
-.aw-contact-link svg {
-  width: 1.8rem;
-  height: 1.8rem;
-  color: var(--aw-color-accent);
-  flex-shrink: 0;
+/* --- Accordions: Fraunces summary + dashed dividers, matching the
+   mockup. Reuses Dawn's real <details>/<summary> markup and its
+   existing open/close + caret-rotation behavior — restyled only. --- */
+
+.accordion {
+  border-bottom: none;
+  border-top: 1.5px dashed var(--aw-color-border-strong);
 }
 
-/* --- Low stock indicator --- */
-
-.aw-stock-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: var(--aw-space-2) 0 0;
-  font-size: var(--aw-text-xs);
-  color: var(--aw-color-sale);
+.accordion:last-of-type {
+  border-bottom: 1.5px dashed var(--aw-color-border-strong);
 }
 
-.aw-stock-indicator svg {
-  width: 1.4rem;
-  height: 1.4rem;
-  flex-shrink: 0;
-}
-
-/* --- Gift option --- */
-
-.aw-gift-option {
-  margin-top: var(--aw-space-4);
-  padding: var(--aw-space-3) var(--aw-space-4);
-  border: 1px solid var(--aw-color-border);
-  border-radius: var(--aw-radius-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--aw-space-2);
-}
-
-.aw-gift-option__checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  font-size: var(--aw-text-sm);
-  cursor: pointer;
-}
-
-.aw-gift-option__note {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: var(--aw-text-xs);
-  color: var(--aw-color-muted);
-}
-
-.aw-gift-option__note textarea {
-  resize: vertical;
-  padding: var(--aw-space-2);
-  border: 1px solid var(--aw-color-border);
-  border-radius: var(--aw-radius-sm);
-  background: var(--aw-color-paper);
-  color: var(--aw-color-ink);
-  font-family: inherit;
-  font-size: var(--aw-text-sm);
-}
-
-/* --- Complete the look --- */
-
-.aw-complete-the-look {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-top: var(--aw-space-4);
-  font-size: var(--aw-text-sm);
-  color: var(--aw-color-muted);
-  text-decoration: none;
-}
-
-.aw-complete-the-look svg {
-  width: 1.6rem;
-  height: 1.6rem;
-  flex-shrink: 0;
-  color: var(--aw-color-accent);
-}
-
-/* --- "Complete the look" product grid (related-products, renamed) ---
-   A tilted, propped-on-white-card treatment instead of Dawn's flat
-   grid cards, matching the finalized design. Scoped to .related-products
-   only, using real Shopify product recommendations — no separate
-   section or fabricated picks. */
-
-.related-products .grid__item:nth-child(3n+1) .card__inner {
-  transform: rotate(-1deg);
-}
-
-.related-products .grid__item:nth-child(3n+2) .card__inner {
-  transform: rotate(0.8deg);
-}
-
-.related-products .grid__item:nth-child(3n+3) .card__inner {
-  transform: rotate(-0.4deg);
-}
-
-.related-products .card__inner {
-  background: rgb(var(--color-background));
-  padding: 0.8rem 0.8rem 1.8rem;
-  box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, 0.16);
-  transition: transform var(--aw-duration-base) var(--aw-ease);
-}
-
-.related-products .card__inner:hover {
-  transform: rotate(0deg) translateY(-2px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .related-products .card__inner {
-    transition: none;
-  }
-}
-
-/* --- "You might also like" — the second related-products instance
-   (templates/product.json), a wider real-recommendation rail below
-   "Complete the look" and Reviews, matching the mockup. Shares all of
-   the card styling above via the same .related-products class; this
-   only adds a perforated top divider so the two rails read as
-   distinct bands instead of running together. */
-
-[data-section-id='you-might-also-like'] {
-  position: relative;
-}
-
-[data-section-id='you-might-also-like']::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: var(--aw-container-pad);
-  right: var(--aw-container-pad);
-  height: 2px;
-  background-image: repeating-linear-gradient(90deg, var(--aw-color-border-strong) 0 7px, transparent 7px 14px);
+.accordion__title {
+  font-family: var(--aw-font-heading);
 }
 
 /* --- Finish swatches ---
    Restyles Dawn's native swatch-input component (component-swatch.css /
-   component-swatch-input.css) to match the mockup's larger thumbnail +
-   underline-dot "finish option" look. Uses Dawn's own --swatch-input--size
-   / --swatch-input--border-radius custom properties rather than
-   overriding its structure, so real merchant-configured variant swatch
-   images/colors keep working unchanged. */
+   component-swatch-input.css) to the mockup's larger thumbnail +
+   underline-dot look, via Dawn's own --swatch-input--size /
+   --swatch-input--border-radius custom properties — no markup touched,
+   so real merchant-configured variant swatch images/colors keep working
+   unchanged. --- */
 
 .product-form__input--swatch {
   --swatch-input--size: 6.6rem;
@@ -351,8 +223,161 @@
   background: var(--aw-color-ink);
 }
 
-.product-form__input--swatch .swatch-input__input:hover + .swatch-input__label,
-.product-form__input--swatch .swatch-input__input:focus-visible + .swatch-input__label {
-  outline: none;
-  box-shadow: none;
+@media (prefers-reduced-motion: reduce) {
+  .product-form__input--swatch .swatch-input__input + .swatch-input__label .swatch,
+  .product-form__input--swatch .swatch-input__input + .swatch-input__label::after {
+    transition: none;
+  }
+}
+
+/* --- Quantity stepper: bold border, hard-offset shadow, matching the
+   mockup. Reused everywhere Dawn renders this component (product page,
+   cart, quick-add) — no markup/JS touched. --- */
+
+.quantity {
+  background: var(--aw-color-paper);
+  border: 2px solid var(--aw-color-ink);
+  border-radius: var(--aw-radius-sm);
+  box-shadow: 2px 2px 0 var(--aw-color-border-strong);
+}
+
+.quantity::after,
+.quantity::before {
+  content: none;
+}
+
+.quantity__input {
+  font-family: var(--aw-font-mono);
+}
+
+/* --- Sticky mobile Add to Bag bar (Dawn's own native sticky-atc). --- */
+
+.sticky-atc {
+  border-top: 2px solid var(--aw-color-ink);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.sticky-atc__price {
+  font-family: var(--aw-font-mono);
+}
+
+/* --- "You might also like" (Dawn's stock related-products section) —
+   a tilted, propped-on-white-card treatment instead of Dawn's flat grid
+   cards, matching the approved mockup. Dawn's own "complementary" block
+   (rendered in-column, near Buy Buttons — see templates/product.json)
+   already covers the mockup's smaller "Complete the look" rail using
+   real cross-sell recommendations, so it wasn't duplicated here. --- */
+
+.related-products .grid__item:nth-child(3n+1) .card__inner {
+  transform: rotate(-1deg);
+}
+
+.related-products .grid__item:nth-child(3n+2) .card__inner {
+  transform: rotate(0.8deg);
+}
+
+.related-products .grid__item:nth-child(3n+3) .card__inner {
+  transform: rotate(-0.4deg);
+}
+
+.related-products .card__inner {
+  background: var(--aw-color-paper);
+  padding: 0.8rem 0.8rem 1.8rem;
+  box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, 0.16);
+  transition: transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.related-products .card__inner:hover {
+  transform: rotate(0deg) translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .related-products .card__inner {
+    transition: none;
+  }
+}
+
+/* Perforated top divider so the "You might also like" rail reads as its
+   own band rather than running straight into the Reviews/disclosures
+   content above it. */
+
+.related-products {
+  position: relative;
+}
+
+.related-products::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--aw-container-pad);
+  right: var(--aw-container-pad);
+  height: 2px;
+  background-image: repeating-linear-gradient(90deg, var(--aw-color-border-strong) 0 7px, transparent 7px 14px);
+}
+
+/* --- Cross-product "Finish" swatches (snippets/artwistic-related-finish.liquid) —
+   each swatch links to a real sibling product via the custom.related-finish
+   metafield, distinct from Dawn's native variant swatches used by real
+   variant options like Size. --- */
+
+.aw-related-finish {
+  margin-bottom: var(--aw-space-4);
+}
+
+.aw-related-finish__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--aw-text-xs);
+  font-weight: 600;
+  margin-bottom: var(--aw-space-2);
+}
+
+.aw-related-finish__label span:last-child {
+  font-weight: 400;
+  color: var(--aw-color-muted);
+}
+
+.aw-related-finish__options {
+  display: flex;
+  gap: var(--aw-space-3);
+  flex-wrap: wrap;
+}
+
+.aw-related-finish__option {
+  display: block;
+  text-decoration: none;
+  transition: transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-related-finish__option:hover {
+  transform: translateY(-2px);
+}
+
+.aw-related-finish__thumb {
+  display: block;
+  width: 6.6rem;
+  height: 6.6rem;
+  border-radius: var(--aw-radius-sm);
+  overflow: hidden;
+  border: 2.5px solid var(--aw-color-border-strong);
+  box-shadow: 2px 2px 0 var(--aw-color-border-strong);
+  transition: border-color var(--aw-duration-fast) var(--aw-ease), box-shadow var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-related-finish__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aw-related-finish__option[aria-pressed='true'] .aw-related-finish__thumb {
+  border-color: var(--aw-color-ink);
+  box-shadow: 2px 2px 0 var(--aw-color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-related-finish__option {
+    transition: none;
+  }
 }

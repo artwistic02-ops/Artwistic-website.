@@ -1,0 +1,169 @@
+/**
+ * ARTWISTIC UGC MARQUEE — desktop asymmetric collage, mobile two-row
+ * "living wall" scrolling in opposite directions. Pure CSS marquee
+ * (transform: translateX via @keyframes), paused on hover/focus and
+ * disabled under prefers-reduced-motion. See artwistic-ugc.js for the
+ * one enhancement CSS can't do: tuning animation duration to the
+ * real, rendered track width.
+ */
+
+.aw-ugc-section {
+  overflow: hidden;
+}
+
+.aw-ugc-track-shell {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%);
+}
+
+.aw-ugc-track {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-5);
+  width: max-content;
+  padding: var(--aw-space-4) 0;
+  animation: aw-ugc-scroll 34s linear infinite;
+}
+
+.aw-ugc-track-shell:hover .aw-ugc-track,
+.aw-ugc-track-shell:focus-within .aw-ugc-track {
+  animation-play-state: paused;
+}
+
+/* Track content is always rendered as 3 identical repeated copies
+   (see artwistic-ugc.liquid) — translating by exactly one third moves
+   past one full copy and loops back seamlessly, for both desktop
+   (collage units) and mobile (two independent rows). */
+@keyframes aw-ugc-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.3334%);
+  }
+}
+
+@keyframes aw-ugc-scroll-reverse {
+  from {
+    transform: translateX(-33.3334%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.aw-ugc-tile {
+  display: block;
+  position: relative;
+  border-radius: var(--aw-radius-md, 1.4rem);
+  background: var(--aw-color-border);
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.aw-ugc-tile__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aw-ugc-tile__handle {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  max-width: calc(100% - 2rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--aw-font-mono);
+  font-size: 1.05rem;
+  color: #fff;
+  background: rgba(23, 19, 15, 0.45);
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--aw-radius-xs, 2px);
+  backdrop-filter: blur(2px);
+}
+
+/* --- Desktop: asymmetric collage --- */
+.aw-ugc-mobile {
+  display: none;
+}
+
+.aw-ugc-collage {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 26rem 13rem 19rem 15rem;
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--aw-space-4);
+  height: 34rem;
+}
+
+.aw-ugc-tile--a {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+.aw-ugc-tile--b {
+  grid-column: 2;
+  grid-row: 1;
+}
+.aw-ugc-tile--c {
+  grid-column: 2;
+  grid-row: 2;
+}
+.aw-ugc-tile--d {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+.aw-ugc-tile--e {
+  grid-column: 4;
+  grid-row: 1;
+}
+.aw-ugc-tile--f {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+/* --- Mobile: two-row living wall, uniform square tiles --- */
+@media screen and (max-width: 749px) {
+  .aw-ugc-desktop {
+    display: none;
+  }
+
+  .aw-ugc-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aw-space-3);
+  }
+
+  .aw-ugc-mobile .aw-ugc-tile {
+    flex: 0 0 auto;
+    width: 11.6rem;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--aw-radius-sm, 6px);
+  }
+
+  .aw-ugc-mobile .aw-ugc-track {
+    padding: var(--aw-space-2) 0;
+    animation-duration: 22s;
+    gap: var(--aw-space-3);
+  }
+
+  .aw-ugc-track--row1 {
+    animation-name: aw-ugc-scroll-reverse;
+    animation-duration: 26s;
+  }
+
+  .aw-ugc-mobile .aw-ugc-tile__handle {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-ugc-track {
+    animation: none;
+  }
+}

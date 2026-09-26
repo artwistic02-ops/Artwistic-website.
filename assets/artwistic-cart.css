@@ -1,167 +1,967 @@
 /**
- * ARTWISTIC CART — editorial restyle layered over Dawn's existing,
- * fully-functional cart drawer AND full cart page (snippets/cart-drawer.liquid,
- * sections/main-cart-items.liquid, sections/main-cart-footer.liquid).
- * CSS only — no markup, JS, or AJAX-cart logic changes, so Dawn's cart
- * handling is entirely untouched. `.cart-drawer` and `.aw-cart-page` share
- * the same rules wherever Dawn reuses the same underlying classes.
+ * ARTWISTIC: Cart — restyles Dawn's real cart page + drawer markup in
+ * place (line items, quantity stepper, checkout CTA), plus the new
+ * milestone progress bar / celebration effect / coupon row. Real
+ * Dawn cart AJAX (assets/cart.js) is untouched — CSS/markup only.
+ *
+ * Two-tone background system (fixed hex tokens, same pattern already
+ * used for --aw-color-brand-accent — not a theme setting): a warm
+ * sand page behind everything, bright raised-white on every
+ * card-like surface. Without this, every card was the exact same
+ * color as the page it sat on (both resolving to --aw-color-paper),
+ * which is why the progress bar/line items/coupon row/cross-sell
+ * tiles all read as flat instead of as distinct floating cards.
  */
-
-.cart-drawer .drawer__header,
-.aw-cart-page .title-wrapper-with-link {
-  border-bottom: 1px solid var(--aw-color-border);
+:root {
+  --aw-cart-bg: #f1e8dc;
+  --aw-cart-card-bg: #ffffff;
+  --aw-cart-card-gap: 1.2rem;
+  --aw-cart-card-pad: 1.6rem;
+  --aw-cart-card-radius: var(--aw-radius-md);
 }
 
-.cart-drawer .drawer__heading,
-.aw-cart-page .title--primary {
+.aw-cart-page-bg {
+  background: var(--aw-cart-bg);
+}
+
+/* --- Milestone progress bar (snippets/artwistic-cart-progress.liquid) --- */
+.aw-cart-progress {
+  margin-bottom: var(--aw-space-5);
+  padding: var(--aw-space-5) var(--aw-space-4);
+  background: var(--aw-cart-card-bg);
+  border-radius: var(--aw-cart-card-radius);
+  box-shadow: 0 2px 10px rgba(23, 19, 15, 0.06);
+}
+
+
+.aw-cart-progress__message {
+  margin: 0 0 var(--aw-space-6);
+  text-align: center;
   font-family: var(--aw-font-heading);
   font-size: var(--aw-text-lg);
-  letter-spacing: 0.01em;
   font-weight: 500;
+  color: #17130f;
 }
 
-.aw-cart-page__titles {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+.aw-cart-progress__message .accent {
+  color: var(--aw-color-brand-accent);
+  font-style: italic;
 }
 
-.aw-cart-page__count {
-  font-family: var(--aw-font-mono);
-  font-size: var(--aw-text-sm);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--aw-color-muted);
+.aw-cart-progress__message.is-announcing {
+  animation: aw-cart-msg-pop 500ms var(--aw-ease);
 }
 
-.aw-cart-page__count::before {
-  content: ' (';
+@keyframes aw-cart-msg-pop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.3;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.aw-cart-page__count::after {
-  content: ')';
+.aw-cart-progress__track-row {
+  position: relative;
+  padding: 0 2.2rem;
 }
 
-.cart-drawer .drawer__footer,
-.aw-cart-page .cart__footer {
-  border-top: 1px solid var(--aw-color-border);
-}
-
-.cart-drawer .cart-item__name,
-.aw-cart-page .cart-item__name {
-  font-family: var(--aw-font-heading);
-  font-size: var(--aw-text-sm);
-}
-
-.aw-cart-page .cart-item__details .product-option {
-  font-family: var(--aw-font-mono);
-  font-size: var(--aw-text-2xs);
-  color: var(--aw-color-muted);
-}
-
-.cart-drawer .cart-item__price-wrapper,
-.aw-cart-page .cart-item__price-wrapper {
-  font-size: var(--aw-text-xs);
-}
-
-.cart-drawer .totals__total-value,
-.aw-cart-page .totals__total-value {
-  font-family: var(--aw-font-heading);
-  font-size: var(--aw-text-md);
-}
-
-.cart-drawer-checkout,
-.cart-drawer .cart__checkout-button,
-.aw-cart-page .cart__checkout-button {
-  border-radius: var(--aw-radius-sm);
-  font-size: var(--aw-text-sm);
-  letter-spacing: var(--aw-tracking-wide);
-}
-
-/* --- Full cart page: rows, spacing, remove/quantity controls --- */
-
-.aw-cart-page .cart-item {
-  border-bottom-color: var(--aw-color-border);
-}
-
-.aw-cart-page .cart-items__heading--wide,
-.aw-cart-page th {
-  font-size: var(--aw-text-2xs);
-  letter-spacing: var(--aw-tracking-wide);
-  color: var(--aw-color-muted);
-}
-
-.aw-cart-page .cart-item__image-container {
-  border-radius: var(--aw-radius-sm);
-  overflow: hidden;
-}
-
-.aw-cart-page .cart-remove-button {
+.aw-cart-progress__track {
+  position: relative;
+  height: 0.8rem;
   border-radius: var(--aw-radius-full);
+  background: rgba(23, 19, 15, 0.16);
+  border: 1px solid rgba(23, 19, 15, 0.1);
+  overflow: visible;
+  margin: 1.8rem 0;
+  box-shadow: inset 0 1px 3px rgba(23, 19, 15, 0.15);
 }
 
-/* --- Empty state: a real editorial moment instead of Dawn's bare
-   heading + button. --- */
-
-.aw-cart-page.is-empty .cart__warnings {
-  max-width: 46rem;
-  margin: var(--aw-space-7) auto;
-  text-align: center;
-  padding-inline: var(--aw-space-4);
+.aw-cart-progress__fill {
+  position: relative;
+  height: 100%;
+  border-radius: var(--aw-radius-full);
+  background: var(--aw-color-brand-accent);
+  box-shadow: 0 0 10px rgba(169, 124, 79, 0.5);
+  transition: width var(--aw-duration-slow) var(--aw-ease);
 }
 
-.aw-cart-page.is-empty .cart__empty-text {
-  font-family: var(--aw-font-heading);
-  font-size: var(--aw-text-2xl);
-  font-weight: 500;
-  margin-bottom: var(--aw-space-3);
+/* "You are here" marker — a real, moving indicator sitting at the
+   fill's leading edge, tracking the cart's actual current value on
+   the track (distinct from the fixed start/milestone nodes). Sits
+   above the track and fill (higher z-index) with a small pointer
+   tail so it reads as a pin/flag marking a live position, not a
+   static decoration. Its left% and transitions are driven in lockstep
+   with the fill bar in assets/artwistic-cart.js. */
+.aw-cart-progress__marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--aw-color-brand-accent);
+  border: 3px solid var(--aw-cart-card-bg);
+  box-shadow: 0 2px 8px rgba(169, 124, 79, 0.55);
+  z-index: 3;
+  transition: left var(--aw-duration-slow) var(--aw-ease);
+  pointer-events: none;
 }
 
-.aw-cart-page.is-empty .cart__warnings > .button {
-  display: inline-flex;
+.aw-cart-progress__marker::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 0.4rem solid transparent;
+  border-right: 0.4rem solid transparent;
+  border-top: 0.5rem solid var(--aw-color-brand-accent);
+}
+
+.aw-cart-progress__node {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background: var(--aw-cart-card-bg);
+  border: 2px solid rgba(23, 19, 15, 0.16);
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 4.8rem;
-  padding: 0 var(--aw-space-5);
-  border-radius: var(--aw-radius-sm);
-  font-size: var(--aw-text-sm);
-  letter-spacing: var(--aw-tracking-wide);
+  color: rgba(23, 19, 15, 0.55);
+  box-shadow: 0 3px 8px rgba(23, 19, 15, 0.1);
+  transition: color 400ms var(--aw-ease), border-color 400ms var(--aw-ease), background 400ms var(--aw-ease),
+    box-shadow 400ms var(--aw-ease);
+  z-index: 1;
+}
+
+.aw-cart-progress__node svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: currentColor;
+  position: relative;
+  z-index: 2;
+}
+
+.aw-cart-progress__node.is-reached {
+  background: var(--aw-color-brand-accent);
+  border-color: var(--aw-color-brand-accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(169, 124, 79, 0.55);
+}
+
+.aw-cart-progress__node::before,
+.aw-cart-progress__node::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2.5px solid var(--aw-color-brand-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aw-cart-progress__node.is-pulsing {
+  animation: aw-cart-node-pop 550ms var(--aw-ease);
+}
+
+@keyframes aw-cart-node-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  35% {
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.aw-cart-progress__node.is-pulsing::before {
+  animation: aw-cart-ring-shock 900ms var(--aw-ease);
+}
+
+.aw-cart-progress__node.is-pulsing::after {
+  animation: aw-cart-ring-shock 900ms var(--aw-ease) 150ms;
+}
+
+@keyframes aw-cart-ring-shock {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+.aw-cart-progress__node.is-glowing {
+  animation: aw-cart-node-glow 1.8s ease-in-out 3;
+}
+
+@keyframes aw-cart-node-glow {
+  0%,
+  100% {
+    box-shadow: 0 4px 14px rgba(169, 124, 79, 0.55);
+  }
+  50% {
+    box-shadow: 0 4px 14px rgba(169, 124, 79, 0.55), 0 0 0 8px rgba(169, 124, 79, 0.22);
+  }
+}
+
+.aw-cart-progress.is-flashing {
+  animation: aw-cart-card-flash 900ms var(--aw-ease);
+}
+
+@keyframes aw-cart-card-flash {
+  0% {
+    background-color: rgba(169, 124, 79, 0);
+  }
+  30% {
+    background-color: rgba(169, 124, 79, 0.16);
+  }
+  100% {
+    background-color: rgba(169, 124, 79, 0);
+  }
+}
+
+.aw-cart-progress__labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-2xs);
+  color: rgba(23, 19, 15, 0.65);
   text-transform: uppercase;
-  background-color: var(--aw-color-brand-accent);
-  color: var(--aw-color-ink);
-  transition: background-color var(--aw-duration-base) var(--aw-ease);
+  letter-spacing: 0.04em;
+  padding: 0 0.2rem;
+  line-height: 1.5;
 }
 
-.aw-cart-page.is-empty .cart__warnings > .button:hover {
-  background-color: var(--aw-color-ink);
-  color: var(--aw-color-paper);
+.aw-cart-progress__labels b {
+  color: #17130f;
+  font-weight: 600;
 }
 
-.aw-cart-page.is-empty .cart__login-title,
-.aw-cart-page.is-empty .cart__login-paragraph {
-  margin-top: var(--aw-space-5);
-  color: var(--aw-color-muted);
-  font-size: var(--aw-text-sm);
+/* --- Celebration: spark burst fired from the node that just unlocked --- */
+.aw-cart-spark {
+  position: fixed;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999;
+  animation: aw-cart-spark-fly 800ms cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
+}
+
+@keyframes aw-cart-spark-fly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--aw-spark-dx), var(--aw-spark-dy)) scale(0);
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aw-cart-page.is-empty .cart__warnings > .button {
+  .aw-cart-progress__fill,
+  .aw-cart-progress__marker,
+  .aw-cart-progress__node {
+    transition: none;
+  }
+
+  .aw-cart-progress__node.is-pulsing,
+  .aw-cart-progress__node.is-pulsing::before,
+  .aw-cart-progress__node.is-pulsing::after,
+  .aw-cart-progress__node.is-glowing,
+  .aw-cart-progress.is-flashing,
+  .aw-cart-progress__message.is-announcing {
+    animation: none;
+  }
+}
+
+/* --- Coupon row (redirects to checkout with ?discount=, since the
+   AJAX cart API can't apply a code) + "View offers" drawer, styled as
+   one bordered row matching the mockup's .coupon-row. --- */
+.aw-cart-coupon-block {
+  margin-top: var(--aw-space-5);
+  padding-top: var(--aw-space-5);
+  border-top: 1px solid var(--aw-color-border);
+}
+
+.aw-cart-coupon {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-2);
+  background: var(--aw-cart-card-bg);
+  border-radius: var(--aw-cart-card-radius);
+  box-shadow: 0 2px 10px rgba(23, 19, 15, 0.06);
+  border: 1.5px solid transparent;
+  padding: 0 0.6rem 0 var(--aw-space-4);
+  transition: border-color 200ms var(--aw-ease);
+}
+
+.aw-cart-coupon:focus-within {
+  border-color: var(--aw-color-brand-accent);
+}
+
+.aw-cart-coupon svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  color: var(--aw-color-brand-accent);
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+}
+
+.aw-cart-coupon input {
+  flex: 1;
+  border: none;
+  height: 5.2rem;
+  padding: 0 var(--aw-space-2);
+  background: transparent;
+  color: #17130f;
+  font-size: var(--aw-text-sm);
+}
+
+.aw-cart-coupon input:focus {
+  outline: none;
+}
+
+.aw-cart-coupon button {
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--aw-radius-xs, 2px);
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+  padding: 0 var(--aw-space-4);
+  height: 3.8rem;
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-cart-coupon button:hover {
+  background: var(--aw-color-brand-accent);
+}
+
+/* --- Line items: rounded image frame, tidy spacing --- */
+.cart-items .cart-item__image-container,
+.cart-items .cart-item__image {
+  border-radius: var(--aw-radius-md);
+}
+
+.cart-item__name {
+  font-family: var(--aw-font-heading);
+  color: #17130f;
+}
+
+/* --- Quantity stepper: slim pill treatment. Dawn's stock buttons are
+   heavy/boxy with visible internal dividers; this reduces it to a thin
+   single outer border with no internal lines, matching the mockup's
+   light-weight control. --- */
+.quantity.cart-quantity {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(23, 19, 15, 0.15);
+  border-radius: var(--aw-radius-full);
+  overflow: hidden;
+  background: var(--aw-cart-card-bg);
+  min-height: 0;
+}
+
+/* Dawn draws its own input border/shadow via these two pseudo-elements
+   on every .quantity (a box-shadow trick, not a real border) — without
+   turning them off, they render underneath/around the flat 1px border
+   above and show up as a mismatched double border at the pill's edges. */
+.quantity.cart-quantity::before,
+.quantity.cart-quantity::after {
+  content: none;
+  display: none;
+}
+
+.quantity.cart-quantity .quantity__button {
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  background: none;
+  color: #17130f;
+}
+
+.quantity.cart-quantity .quantity__button .svg-wrapper svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.quantity.cart-quantity .quantity__input {
+  border: none;
+  background: none;
+  color: #17130f;
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-sm);
+  text-align: center;
+  width: 3.2rem;
+  padding: 0;
+}
+
+/* --- Sticky summary/pay bar (sections/main-cart-footer.liquid) —
+   matches the mockup's .summary being pinned to the viewport bottom
+   with an upward shadow, instead of scrolling away with the page. --- */
+.aw-cart-summary {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  width: 100%;
+  border-top: 1px solid rgba(23, 19, 15, 0.1);
+  background: var(--aw-cart-card-bg);
+  box-shadow: 0 -12px 32px rgba(23, 19, 15, 0.12);
+}
+
+.aw-cart-summary.is-empty {
+  position: static;
+  box-shadow: none;
+}
+
+/* Mobile: "sticky" only stays pinned while the viewport is scrolling
+   through the bar's own (short) parent container, then releases and
+   scrolls away with the rest of the page — not what "always in thumb's
+   reach" means. `fixed` pins it to the real viewport regardless of
+   scroll depth. Desktop keeps `sticky` above (no need for a permanently
+   fixed bar once the user isn't scrolling one-handed, and it would
+   otherwise cover content on a tall screen the whole time). */
+@media screen and (max-width: 749px) {
+  .aw-cart-summary {
+    position: fixed;
+  }
+
+  .aw-cart-summary.is-empty {
+    position: static;
+  }
+
+  /* `fixed` removes the bar from normal flow entirely, so reserve real
+     space at the end of the scrollable content — otherwise the last
+     line item / cross-sell card ends up hidden underneath it. */
+  cart-items .page-width {
+    padding-bottom: 12rem;
+  }
+}
+
+/* Dawn's stock desktop rule (component-cart.css) turns .cart__footer
+   into a flex row with `justify-content: space-between` and forces
+   every direct child to a fixed 35rem width — meant for a two-slot
+   footer (a cart note + the blocks column). This theme doesn't use
+   the cart note, so .cart__blocks is the ONLY child, and
+   space-between has nothing to space against a single item — it just
+   sits pinned to the left in its own narrow 35rem box, with a large
+   empty gap to its right. That's the "checkout button off to the
+   side" bug. Fix: cancel Dawn's two-column intent and keep the same
+   full-width, stacked layout the mobile view already gets right. */
+@media screen and (min-width: 750px) {
+  .aw-cart-summary .cart__footer {
+    display: block;
+  }
+
+  .aw-cart-summary .cart__footer > * {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .aw-cart-summary .totals {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .aw-cart-summary .tax-note {
+    text-align: left;
+    margin: 0.4rem 0 1.6rem;
+  }
+
+  .aw-cart-summary .cart__checkout-button {
+    max-width: none;
+  }
+}
+
+/* --- Checkout CTA: animated gradient + a diagonal light sheen that
+   sweeps across on hover — no fabricated payment logos, just premium
+   button chrome, per the standing decision to only show real payment
+   methods at Shopify's own checkout. --- */
+.cart__checkout-button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, #8a6238, var(--aw-color-brand-accent) 45%, #c79a6b 70%, var(--aw-color-brand-accent));
+  background-size: 220% 220%;
+  border-color: transparent;
+  border-radius: var(--aw-radius-sm);
+  min-height: 6rem;
+  box-shadow: 0 10px 24px rgba(169, 124, 79, 0.35);
+  transition: box-shadow 250ms var(--aw-ease), transform 150ms var(--aw-ease), background-position 400ms var(--aw-ease);
+}
+
+.cart__checkout-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.35) 48%, transparent 66%);
+  background-size: 250% 250%;
+  background-position: 120% 0;
+  transition: background-position 600ms var(--aw-ease);
+  pointer-events: none;
+}
+
+.cart__checkout-button-label {
+  position: relative;
+  z-index: 1;
+}
+
+.cart__checkout-button:hover {
+  background-position: 60% 40%;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(169, 124, 79, 0.45);
+}
+
+.cart__checkout-button:hover::before {
+  background-position: -20% 100%;
+}
+
+.cart__checkout-button:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart__checkout-button,
+  .cart__checkout-button::before {
     transition: none;
   }
 }
 
-/* --- Payment icons next to checkout --- */
-/* Same rule as artwistic-product-page.css's .aw-payment-icons — duplicated
-   here (small, two rules) rather than shared, since this file loads
-   globally and the cart footer/drawer render the icons independently of
-   the product page. */
-
-.cart__ctas .aw-payment-icons {
-  margin-top: var(--aw-space-3);
-  text-align: center;
+/* --- Totals --- */
+.totals__total-value {
+  font-family: var(--aw-font-mono);
 }
 
-.cart__ctas .aw-payment-icons .list-payment {
-  margin: 0;
+/* --- Offer banner (real merchant text only, renders nothing if unset) --- */
+.aw-cart-banner {
+  background: linear-gradient(120deg, #17130f 0%, #2a2420 50%, #3a2c1c 100%);
+  color: var(--aw-color-paper, #fbf7f1);
+  text-align: center;
+  padding: var(--aw-space-3) var(--aw-space-4);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: var(--aw-space-2);
+  margin-bottom: var(--aw-space-4);
+  border-radius: var(--aw-radius-sm);
+}
+
+.aw-cart-banner svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--aw-color-brand-accent);
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+/* --- Cart header polish --- */
+.aw-cart-head {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-4);
+  margin-bottom: var(--aw-space-4);
+}
+
+.aw-cart-head__back {
+  flex-shrink: 0;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--aw-cart-card-bg);
+  box-shadow: 0 2px 8px rgba(23, 19, 15, 0.06);
+  border: 1.5px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #17130f;
+  transition: border-color 200ms var(--aw-ease), transform 150ms var(--aw-ease);
+}
+
+.aw-cart-head__back:hover {
+  border-color: var(--aw-color-brand-accent);
+  transform: translateX(-2px);
+}
+
+.aw-cart-head .title-wrapper-with-link {
+  flex: 1;
+}
+
+.aw-cart-head__back svg {
+  width: 1.7rem;
+  height: 1.7rem;
+  fill: currentColor;
+  transform: rotate(180deg);
+}
+
+.aw-cart-head__eyebrow {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.aw-cart-head__count {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-md);
+  color: var(--aw-color-muted);
+  font-weight: 500;
+}
+
+/* --- Line items: floating shadowed cards instead of a flat table row,
+   div-based (real markup change, not a CSS-only table restyle — a
+   <table> layout could not produce the mockup's independently
+   elevated, rounded rows). `role="table"/"rowgroup"/"row"/"cell"`
+   keep the same semantics for screen readers; every id/data-*
+   attribute Dawn's real AJAX (assets/cart.js) depends on is
+   unchanged, since it targets elements by id/class, never table
+   tag names. --- */
+.cart-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-items__head {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.cart-items__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--aw-cart-card-gap);
+}
+
+/* --- Compact 2-column card: image pinned as a left column spanning
+   the full card height, with a tight 2-row content block beside it
+   (row 1: title/subtitle, row 2: qty stepper left / price right) —
+   matches the mockup instead of the previous flex-wrap layout, which
+   dropped qty+price to a full-width second row on mobile and showed
+   two separate prices. Markup is untouched (still the same divs Dawn's
+   real AJAX cart.js targets by id/class) — this is a pure restructure
+   of how those same elements are laid out. --- */
+.cart-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  column-gap: var(--aw-space-4);
+  align-items: start;
+  padding: var(--aw-cart-card-pad);
+  background: var(--aw-cart-card-bg);
+  box-shadow: 0 2px 10px rgba(23, 19, 15, 0.06);
+  border-radius: var(--aw-cart-card-radius);
+  transition: box-shadow 250ms var(--aw-ease), transform 250ms var(--aw-ease);
+}
+
+.cart-item:hover {
+  box-shadow: 0 8px 22px rgba(23, 19, 15, 0.1);
+  transform: translateY(-1px);
+}
+
+.cart-item__media {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  width: 7.2rem;
+  align-self: start;
+  overflow: hidden;
+  border-radius: var(--aw-radius-md);
+}
+
+.cart-item__media:empty {
+  display: none;
+}
+
+/* Dawn's stock <img class="cart-item__image"> keeps its own, wider
+   max-width (component-cart-items.css) — without forcing it down to
+   100% of this now-smaller container, the photo visually overflows to
+   the right and covers the start of the title/price text next to it. */
+.cart-item__image-container,
+.cart-item__image-container .cart-item__image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.cart-item__details {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  min-width: 0;
+}
+
+/* Only the item's own price line is duplicated (cart-item__totals is
+   the authoritative one, shown below) — hidden via its own dedicated
+   classes (added in the Liquid) rather than the shared .product-option
+   class, since a selling-plan name line also uses .product-option as a
+   direct child of .cart-item__details and must stay visible. */
+.cart-item__unit-price,
+.cart-item__details > .cart-item__discounted-prices {
+  display: none;
+}
+
+.cart-item__quantity {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+  align-self: start;
+  margin-top: var(--aw-space-2);
+}
+
+.cart-item__totals {
+  grid-column: 3;
+  grid-row: 2;
+  justify-self: end;
+  align-self: center;
+  margin-top: var(--aw-space-2);
+}
+
+/* <cart-remove-button> lives nested inside .cart-item__quantity
+   (inside .quantity-popover-wrapper, alongside the qty stepper), not
+   as a direct grid child of .cart-item — so it's re-stacked here
+   within its real parent instead of via grid-row placement. Dawn's
+   stock wrapper is a plain row flex (stepper + remove side by side);
+   this switches it to a column so "Remove" sits under the stepper,
+   matching the mockup, with no markup/AJAX-targeting change needed. */
+.cart-item .quantity-popover-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--aw-space-2);
+}
+
+/* "Remove" text link (sections/main-cart-items.liquid,
+   snippets/cart-drawer.liquid) — plain underlined text under the qty
+   stepper, matching the mockup exactly (no icon in that slot there). */
+.cart-item__remove-link {
+  display: inline-flex;
+}
+
+.cart-item__remove-text {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted, rgba(23, 19, 15, 0.6));
+  text-decoration: underline;
+}
+
+.cart-item__remove-link:hover .cart-item__remove-text {
+  color: var(--aw-color-sale, #b3441e);
+}
+
+@media screen and (max-width: 749px) {
+  .cart-item {
+    padding: 1.2rem;
+    column-gap: var(--aw-space-3);
+  }
+}
+
+/* --- Cross-sell rail (snippets/artwistic-cart-cross-sell.liquid) --- */
+.aw-cart-cross-sell {
+  margin-top: var(--aw-space-6);
+  padding-top: var(--aw-space-5);
+  border-top: 1px solid rgba(23, 19, 15, 0.1);
+}
+
+.aw-cart-cross-sell__head {
+  margin-bottom: var(--aw-space-4);
+}
+
+.aw-cart-cross-sell__head h2 {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-lg);
+  margin: 0.2rem 0 0;
+  color: #17130f;
+}
+
+.aw-cart-cross-sell-card {
+  flex: 0 0 auto;
+  width: 18rem;
+  scroll-snap-align: start;
+  background: var(--aw-cart-card-bg);
+  box-shadow: 0 2px 10px rgba(23, 19, 15, 0.06);
+  border-radius: var(--aw-cart-card-radius);
+  padding: var(--aw-cart-card-pad);
+}
+
+/* This is an <a> tag — inline by default, and aspect-ratio/overflow
+   have no effect on inline elements. Without display:block here, the
+   image rendered at its own natural (portrait) proportions instead of
+   the intended square crop, which is why the card looked stretched
+   and narrow instead of matching the mockup's proportions. */
+/* These are portrait fashion photos, not square product shots —
+   aspect-ratio:1/1 + object-fit:cover was cropping the top/bottom off
+   every image to force it into a square. 3/4 matches a real portrait
+   photo's natural proportions far more closely, so cover crops little
+   to nothing and the whole photo reads as intact. */
+.aw-cart-cross-sell-card__img {
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--aw-radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--aw-space-3);
+  background: rgba(23, 19, 15, 0.04);
+}
+
+.aw-cart-cross-sell-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.aw-cart-cross-sell-card__name {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-sm);
+  font-weight: 500;
+  margin: 0 0 0.4rem;
+  line-height: 1.3;
+  color: #17130f;
+}
+
+.aw-cart-cross-sell-card__price {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-sm);
+  font-weight: 600;
+  margin: 0 0 var(--aw-space-3);
+  color: #17130f;
+}
+
+.aw-cart-cross-sell-card__add {
+  width: 100%;
+  height: 4rem;
+  border-radius: var(--aw-radius-full);
+  border: 1.5px solid var(--aw-color-ink);
+  background: none;
+  color: var(--aw-color-ink);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 200ms var(--aw-ease), color 200ms var(--aw-ease);
+}
+
+/* icon-plus.svg has no width/height of its own — without constraining
+   it here, the browser falls back to its default replaced-element
+   size (much larger than the button), stretching the "+" strokes into
+   a long line across the whole pill instead of a small icon. */
+.aw-cart-cross-sell-card__add svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+.aw-cart-cross-sell-card__add:hover {
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+}
+
+.aw-cart-cross-sell-card__add.is-added {
+  background: var(--aw-color-success);
+  border-color: var(--aw-color-success);
+  color: #fff;
+}
+
+/* --- "View offers" expandable drawer (real merchant codes only) --- */
+.aw-cart-offers-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: var(--aw-space-3);
+  background: none;
+  border: none;
+  font-size: var(--aw-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--aw-color-ink);
+}
+
+.aw-cart-offers-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  transition: transform 250ms var(--aw-ease);
+}
+
+.aw-cart-offers-toggle.is-open svg {
+  transform: rotate(90deg);
+}
+
+.aw-cart-offers-drawer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 350ms var(--aw-ease);
+}
+
+.aw-cart-offer-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--aw-space-3);
+  background: var(--aw-cart-card-bg);
+  box-shadow: 0 2px 8px rgba(23, 19, 15, 0.05);
+  border-left: 3px solid var(--aw-color-brand-accent);
+  border-radius: 0 var(--aw-radius-sm) var(--aw-radius-sm) 0;
+  padding: var(--aw-space-3) var(--aw-space-4);
+  margin-top: var(--aw-space-3);
+  font-size: var(--aw-text-xs);
+  color: #17130f;
+}
+
+.aw-cart-offer-chip code {
+  font-family: var(--aw-font-mono);
+  font-weight: 700;
+  background: rgba(169, 124, 79, 0.14);
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--aw-radius-xs, 2px);
+}
+
+.aw-cart-offer-chip button {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+  font-size: var(--aw-text-xs);
+  font-weight: 600;
+  color: var(--aw-color-ink);
+  flex-shrink: 0;
 }

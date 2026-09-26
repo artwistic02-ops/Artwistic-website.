@@ -1,0 +1,26 @@
+{% comment %}
+  ARTWISTIC: reviewer name + optional location, shared by the review
+  pull-quote and the review-card rail (kept out of main-product.liquid
+  to avoid duplicating the same branch in two places there).
+
+  `layout: 'inline'` renders name + location as one span (pull-quote);
+  any other value renders them as two separate spans with
+  aw-review-card__name / aw-review-card__loc classes (review-card rail).
+
+  Usage:
+    {% render 'artwistic-review-attribution', name: block.settings.reviewer_name, location: block.settings.reviewer_location, layout: 'inline' %}
+{% endcomment %}
+
+{%- if layout == 'inline' -%}
+  <span>
+    {{- name -}}
+    {%- if location != blank -%}
+      &mdash; {{ location }}
+    {%- endif -%}
+  </span>
+{%- else -%}
+  <span class="aw-review-card__name">{{ name }}</span>
+  {%- if location != blank -%}
+    <span class="aw-review-card__loc">{{ location }}</span>
+  {%- endif -%}
+{%- endif -%}

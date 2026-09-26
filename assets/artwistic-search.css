@@ -1,75 +1,89 @@
 /**
- * ARTWISTIC PREDICTIVE SEARCH — editorial restyle layered over Dawn's
- * existing, fully-functional predictive search (sections/predictive-search.liquid,
- * assets/predictive-search.js, component-search.css). CSS only — no
- * markup, JS, or data-flow changes, so Dawn's search request/render
- * pipeline is untouched.
+ * ARTWISTIC: Search — typing-animation overlay (sits over Dawn's real
+ * search input, assets/artwistic-search.js) + a restyle pass on the
+ * search modal, results page and predictive-search dropdown. Real
+ * Dawn search plumbing (predictive search, search.results, facets) is
+ * untouched — CSS/overlay markup only.
  */
 
-.predictive-search__heading {
-  font-size: var(--aw-text-xs);
-  letter-spacing: var(--aw-tracking-wide);
-}
-
-.predictive-search__item {
-  border-radius: var(--aw-radius-sm);
-  transition: background var(--aw-duration-fast) var(--aw-ease);
-}
-
-.predictive-search__item:hover,
-.predictive-search__item:focus {
-  background: rgba(var(--color-foreground), 0.04);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .predictive-search__item {
-    transition: none;
-  }
-}
-
-.predictive-search__image {
-  border-radius: var(--aw-radius-sm);
-}
-
-/* ==========================================================================
-   Dark mode — real scheme-4 dark colors (#17130F / #F5EFE6, the same dark
-   scheme already defined in Theme Settings), scoped to the search results
-   page only. Toggled by assets/artwistic-dark-mode.js via data-aw-theme
-   on <html>. See sections/main-search.liquid.
-   ========================================================================== */
-[data-aw-theme='dark'] .template-search {
-  --color-background: 23, 19, 15;
-  --color-foreground: 245, 239, 230;
-}
-
-[data-aw-theme='dark'] .template-search [class*='color-scheme-'] {
-  --color-background: 23, 19, 15 !important;
-  --color-foreground: 245, 239, 230 !important;
-}
-
-.aw-search-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--aw-space-3, 1.2rem);
+/* --- Typing overlay: positioned over the input, in the same slot as
+   Dawn's floating label, hidden by JS the moment the field is
+   focused or has a value. --- */
+.search .field {
   position: relative;
 }
 
-.aw-search-header-row .aw-dark-toggle {
+.aw-search-typing {
   position: absolute;
-  right: 0;
+  left: 2rem;
   top: 50%;
   transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--aw-color-muted);
+  font-family: var(--aw-font-body);
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-@media screen and (max-width: 749px) {
-  .aw-search-header-row {
-    flex-direction: column;
-  }
+.aw-search-typing:not(:empty)::after {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 1.1em;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: -0.15em;
+  animation: aw-search-caret-blink 900ms step-end infinite;
+}
 
-  .aw-search-header-row .aw-dark-toggle {
-    position: static;
-    transform: none;
-    margin-top: var(--aw-space-2, 0.8rem);
+@keyframes aw-search-caret-blink {
+  50% {
+    opacity: 0;
   }
+}
+
+.search__input:focus ~ .aw-search-typing,
+.search__input:not(:placeholder-shown) ~ .aw-search-typing {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-search-typing::after {
+    animation: none;
+  }
+}
+
+/* --- Search modal chrome --- */
+.search-modal .search__input {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-lg);
+}
+
+.search-modal .search__button svg,
+.search-modal .reset__button svg {
+  color: var(--aw-color-brand-accent);
+}
+
+/* --- Results page: align with the site's shared container/heading language --- */
+.template-search__header .h2 {
+  font-family: var(--aw-font-heading);
+}
+
+.template-search .product-grid {
+  gap: var(--aw-space-4) var(--aw-space-3);
+}
+
+@media screen and (min-width: 750px) {
+  .template-search .product-grid {
+    gap: var(--aw-space-5) var(--aw-space-4);
+  }
+}
+
+/* --- Predictive search dropdown --- */
+.predictive-search {
+  border-radius: var(--aw-radius-md);
+}
+
+.predictive-search__item-content .card__heading {
+  font-family: var(--aw-font-body);
 }

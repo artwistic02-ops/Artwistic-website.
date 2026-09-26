@@ -1,0 +1,45 @@
+{% comment %}
+  Notify Me — shown instead of Add to Bag when the selected variant is unavailable.
+  Uses Shopify's native customer-subscribe form (same mechanism Dawn's own
+  newsletter block uses) so no app/backend is required. The customer record
+  is tagged with the exact product + variant, so it can be filtered/exported
+  or picked up by a Shopify Flow later.
+
+  Accepts:
+  - product: {Object}
+  - variant: {Object} the unavailable variant to notify for
+  - section_id: {String}
+{% endcomment %}
+
+<div class="notify-me" id="NotifyMe-{{ section_id }}">
+  {%- liquid
+    assign notify_tag = 'notify:' | append: product.handle | append: ':' | append: variant.id
+    assign notify_form_id = 'NotifyMeForm-' | append: section_id
+  -%}
+  {%- form 'customer', id: notify_form_id, class: 'notify-me__form' -%}
+    <input type="hidden" name="contact[tags]" value="notify-me, {{ notify_tag }}">
+
+    {%- if form.posted_successfully? -%}
+      <p class="notify-me__success">You're on the list — we'll email you when this is back.</p>
+    {%- else -%}
+      <p class="notify-me__intro">
+        {{ variant.title }} is currently unavailable. Enter your email and we'll let you know when it's back.
+      </p>
+      <div class="notify-me__row">
+        <label class="visually-hidden" for="NotifyMeEmail-{{ section_id }}">Email</label>
+        <input
+          type="email"
+          name="contact[email]"
+          id="NotifyMeEmail-{{ section_id }}"
+          class="notify-me__input"
+          placeholder="Your email"
+          required
+        >
+        <button type="submit" class="notify-me__submit button button--secondary">Notify Me</button>
+      </div>
+      {%- if form.errors -%}
+        <p class="notify-me__error">Please enter a valid email address.</p>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endform -%}
+</div>

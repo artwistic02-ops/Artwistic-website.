@@ -2,15 +2,35 @@
  * ARTWISTIC PRODUCT GALLERY — visual refinement only, layered on top of
  * Dawn's stock media gallery (snippets/product-media-gallery.liquid,
  * assets/media-gallery.js). Dawn's gallery already provides swipe,
- * keyboard navigation, zoom, and a thumbnail rail — this file does not
- * reimplement any of that, it only restyles it to the ARTWISTIC editorial
- * aesthetic.
+ * keyboard navigation, zoom and a thumbnail rail — this file does not
+ * reimplement any of that, it only restyles it and (via
+ * artwistic-product-gallery.js) adds a decorative mobile progress bar.
  */
 
 .product__media-item img,
 .product__media-item model-viewer,
 .product__media-item video {
-  border-radius: var(--aw-radius-sm);
+  border-radius: var(--aw-radius-md);
+}
+
+/* --- No visible box outline around the image or thumbnails --- */
+/* Dawn draws every media box (main image and thumbnails alike) with a
+   theme-setting-driven border + drop shadow via .global-media-settings
+   (assets/base.css: --media-border-width / --media-shadow-*, applied
+   through a ::before overlay). Once the image box hugs the photo's own
+   aspect ratio instead of stretching edge-to-edge, that thin border
+   becomes a visible outline around the photo instead of blending into
+   its edge — zeroing the custom properties Dawn already reads removes
+   it (and the .media background tint) cleanly, without touching the
+   site-wide media_border_thickness setting other sections still use. */
+
+.product__media-wrapper {
+  --media-border-width: 0px;
+  --media-shadow-opacity: 0;
+}
+
+.product__media-wrapper .media {
+  background-color: transparent;
 }
 
 /* Dawn scrolls the main slider to the clicked thumbnail via a plain
@@ -26,8 +46,6 @@
   }
 }
 
-/* Slightly more generous, consistent gutter between thumbnails than
-   Dawn's default, and a refined active-state ring instead of a heavy border. */
 .thumbnail-list__item .thumbnail {
   border-radius: var(--aw-radius-sm);
   transition: box-shadow var(--aw-duration-fast) var(--aw-ease);
@@ -43,10 +61,10 @@
   }
 }
 
-/* --- Mobile swipe progress (stories-style segmented bar) --- */
-/* See assets/artwistic-product-gallery.js. Only injected on mobile where
-   thumbnails are hidden and swipe is the primary way to move through the
-   gallery — desktop keeps Dawn's own thumbnail rail as the position cue. */
+/* --- "Stories" progress bar, shown at every width --- */
+/* Injected by assets/artwistic-product-gallery.js, driven by the same
+   5s autoplay timer — a visual cue for the auto-advancing gallery,
+   matching the approved mockup. */
 
 .aw-gallery-progress-host {
   position: relative;
@@ -58,14 +76,8 @@
   left: var(--aw-space-2);
   right: var(--aw-space-2);
   z-index: 2;
-  display: none;
+  display: flex;
   gap: 0.5rem;
-}
-
-@media screen and (max-width: 749px) {
-  .aw-gallery-progress {
-    display: flex;
-  }
 }
 
 .aw-gallery-progress__seg {
@@ -93,5 +105,128 @@
 @media (prefers-reduced-motion: reduce) {
   .aw-gallery-progress__seg::after {
     transition: none;
+  }
+}
+
+/* --- Remove the visible zoom-hint icon badge. Clicking the image still
+   opens Dawn's real fullscreen modal (swipeable, same slider mechanism)
+   via the separate, always-present, invisible .product__media-toggle
+   button that already covers the whole image — this only removes the
+   decorative magnifying-glass/play icon overlay, not the click target. --- */
+
+.product__media-icon {
+  display: none;
+}
+
+/* --- Mobile: swipe only, no visible prev/next arrows or "1/5" counter
+   under the main image. --- */
+
+@media screen and (max-width: 749px) {
+  .product__media-wrapper .slider-buttons {
+    display: none;
+  }
+}
+
+/* --- The product's video lives only in the floating video bubble
+   (snippets/artwistic-video-bubble.liquid), never as a slide in the
+   swipeable image gallery, thumbnail rail, or fullscreen modal. Video
+   (and only video — never a 3D model) always renders inside a
+   <deferred-media> element in Dawn's own markup
+   (snippets/product-thumbnail.liquid, snippets/product-media.liquid),
+   so this targets it precisely without touching any Dawn file. --- */
+
+.product__media-list > .product__media-item:has(deferred-media),
+.thumbnail-list__item:has(deferred-media) {
+  display: none !important;
+}
+
+.product-media-modal__content > deferred-media {
+  display: none !important;
+}
+
+/* --- Main image: fully visible, never cropped, height kept sane --- */
+/* Dawn hardcodes object-fit: cover on every media image (assets/base.css)
+   regardless of the media_fit theme setting — the real switch that
+   avoids cropping is templates/product.json's own
+   constrain_to_viewport (true) + media_fit ("contain") combination,
+   which sizes the box itself to the image's real aspect ratio, capped
+   at a sane height (assets/section-main-product.css:
+   `.constrain-height.media-fit-contain`) — so the box and the image are
+   already the same shape and nothing gets cropped OR letterboxed. This
+   override is only a safety net for that tiny bit of built-in Dawn
+   rounding — the object-fit itself does no visible work once the box
+   already matches. Do NOT add a fixed height here: that forces a
+   landscape-shaped box around a portrait photo and produces the wide
+   empty bars this comment is warning against. */
+
+.product__media-wrapper .product-media-container .media > img,
+.product__media-wrapper .product-media-container .media > video {
+  object-fit: contain;
+}
+
+/* --- Thumbnails: same "fully visible, never cropped" treatment --- */
+/* Dawn separately hardcodes .thumbnail img { object-fit: cover; }
+   (assets/section-main-product.css) — the thumbnail rail is plain
+   markup, not the product-media-container used above, so it needs its
+   own override. */
+
+.product__media-wrapper .thumbnail img {
+  object-fit: contain;
+}
+
+/* --- Smaller thumbnail rail on desktop, matching the mockup --- */
+
+@media screen and (min-width: 750px) {
+  .product__media-wrapper .thumbnail-list.slider--tablet-up .thumbnail-list__item.slider__slide {
+    width: 6.4rem;
+  }
+}
+
+/* --- Even 50/50 media/info column split on desktop, matching the
+   mockup --- */
+/* Dawn's media_size setting only offers fixed 65/35, 55/45 or 45/55
+   splits (assets/section-main-product.css); none is an even split, and
+   the current "large" setting's 65/35 was crowding the info column. */
+
+@media screen and (min-width: 990px) {
+  .product__media-wrapper {
+    max-width: 50% !important;
+    width: calc(50% - var(--grid-desktop-horizontal-spacing) / 2) !important;
+  }
+
+  .product__info-wrapper {
+    max-width: 50% !important;
+    width: calc(50% - var(--grid-desktop-horizontal-spacing) / 2) !important;
+  }
+}
+
+/* --- Fullscreen modal: true fullscreen, not a cropped zoom --- */
+/* Dawn's own fullscreen modal (snippets/product-media-modal.liquid)
+   already renders images at their natural aspect ratio with no crop —
+   there's no object-fit: cover anywhere in its CSS. What made it feel
+   "zoomed in and cropped" rather than a clean fullscreen view is the
+   very large fixed side padding Dawn gives it (11rem on desktop) — this
+   shrinks the visible image a lot and pairs oddly with the "click to
+   view fullscreen" expectation. Trim that padding so the image actually
+   uses most of the screen, and add object-fit: contain as a safety net
+   for the same reason as the main gallery/thumbnails above. Applies at
+   every width, including mobile. */
+
+.product-media-modal__content > img,
+.product-media-modal__content .media > img,
+.product-media-modal__content .media > video {
+  object-fit: contain;
+  max-height: 90vh;
+}
+
+@media screen and (min-width: 750px) {
+  .product-media-modal__content {
+    padding: 2rem 3rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .product-media-modal__content {
+    padding: 2rem 4rem;
   }
 }

@@ -1,0 +1,24 @@
+{% comment %}
+  ARTWISTIC: diagnostic-only section — delete once its job is done.
+{% endcomment %}
+<div class="page-width" style="padding: 4rem 0; font-family: monospace; font-size: 1.4rem; line-height: 1.8;">
+  <h1>Account data diagnostic</h1>
+  {%- if customer -%}
+    <p style="color: green; font-weight: bold;">✓ customer object IS present on this page.</p>
+    <p>Name: {{ customer.name | default: '(blank)' }}</p>
+    <p>Order count: {{ customer.orders_count }}</p>
+    <p>Address count: {{ customer.addresses_count }}</p>
+    {%- for order in customer.orders limit: 5 -%}
+      <p>{{ order.name }} — {{ order.created_at | date: '%d %b %Y' }} — {{ order.total_price | money }}</p>
+    {%- endfor -%}
+    {%- for address in customer.addresses limit: 5 -%}
+      <p>{{ address.address1 }}, {{ address.city }}</p>
+    {%- endfor -%}
+  {%- else -%}
+    <p style="color: red; font-weight: bold;">✗ Not signed in / not reachable here.</p>
+    <p>Sign in: <a href="{{ routes.account_login_url }}">{{ routes.account_login_url }}</a></p>
+  {%- endif -%}
+</div>
+{% schema %}
+{ "name": "ARTWISTIC: Acct Test", "settings": [] }
+{% endschema %}

@@ -4,6 +4,8 @@
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
 {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+{{ 'artwistic-cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-cart.js' | asset_url }}" defer="defer"></script>
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -26,23 +28,33 @@
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
 
 <cart-items
-  class="aw-cart-page gradient color-{{ section.settings.color_scheme }} isolate{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}"
+  class="gradient color-{{ section.settings.color_scheme }} isolate aw-cart-page-bg{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}"
   view-event-payload="{{ cart | standard_event_data: 'view', context: 'page' | escape }}"
 >
   <div class="page-width">
-    <div class="title-wrapper-with-link">
-      <div class="aw-cart-page__titles">
-        <span class="aw-eyebrow">{{ 'sections.cart.eyebrow' | t }}</span>
-        <h1 class="title title--primary">
-          {{ 'sections.cart.title' | t }}
-          {%- if cart != empty -%}
-            <span class="aw-cart-page__count">{{ cart.item_count }}</span>
-          {%- endif -%}
-        </h1>
+    {%- if settings.aw_cart_banner_text != blank -%}
+      <div class="aw-cart-banner">
+        {{- 'icon-discount.svg' | inline_asset_content -}}
+        {{ settings.aw_cart_banner_text | escape }}
       </div>
-      <a href="{{ routes.all_products_collection_url }}" class="underlined-link">
-        {{- 'general.continue_shopping' | t -}}
+    {%- endif -%}
+
+    <div class="aw-cart-head">
+      <a class="aw-cart-head__back" aria-label="Continue shopping" href="{{ routes.all_products_collection_url }}">
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
       </a>
+      <div class="title-wrapper-with-link">
+        <div>
+          <span class="aw-eyebrow aw-cart-head__eyebrow">Shopping bag</span>
+          <h1 class="title title--primary">
+            {{ 'sections.cart.title' | t }}
+            {%- if cart != empty %} <span class="aw-cart-head__count" data-aw-cart-count>({{ cart.item_count }})</span>{% endif -%}
+          </h1>
+        </div>
+        <a href="{{ routes.all_products_collection_url }}" class="underlined-link">
+          {{- 'general.continue_shopping' | t -}}
+        </a>
+      </div>
     </div>
 
     <div class="cart__warnings">
@@ -63,41 +75,39 @@
       <div class="cart__items" id="main-cart-items" data-id="{{ section.id }}">
         <div class="js-contents">
           {%- if cart != empty -%}
-            <table class="cart-items">
-              <caption class="visually-hidden">
-                {{ 'sections.cart.title' | t }}
-              </caption>
-              <thead>
-                <tr>
-                  <th class="caption-with-letter-spacing" colspan="2" scope="col">
+            {%- render 'artwistic-cart-progress' -%}
+            <div class="cart-items" role="table" aria-label="{{ 'sections.cart.title' | t }}">
+              <div class="cart-items__head" role="rowgroup">
+                <div class="cart-items__head-row" role="row">
+                  <div class="caption-with-letter-spacing" role="columnheader">
                     {{ 'sections.cart.headings.product' | t }}
-                  </th>
-                  <th class="medium-hide large-up-hide right caption-with-letter-spacing" colspan="1" scope="col">
+                  </div>
+                  <div class="medium-hide large-up-hide right caption-with-letter-spacing" role="columnheader">
                     {{ 'sections.cart.headings.total' | t }}
-                  </th>
-                  <th
+                  </div>
+                  <div
                     class="cart-items__heading--wide cart-items__heading--quantity small-hide caption-with-letter-spacing"
-                    colspan="1"
-                    scope="col"
+                    role="columnheader"
                   >
                     {{ 'sections.cart.headings.quantity' | t }}
-                  </th>
-                  <th class="small-hide right caption-with-letter-spacing" colspan="1" scope="col">
+                  </div>
+                  <div class="small-hide right caption-with-letter-spacing" role="columnheader">
                     {{ 'sections.cart.headings.total' | t }}
-                  </th>
-                </tr>
-              </thead>
+                  </div>
+                </div>
+              </div>
 
-              <tbody>
+              <div class="cart-items__body" role="rowgroup">
                 {%- for item in cart.items -%}
-                  <tr
+                  <div
                     class="cart-item {% if item.parent_relationship.parent != null %}cart-item__nested-line{% endif %}"
                     id="CartItem-{{ item.index | plus: 1 }}"
+                    role="row"
                     {% if item.parent_relationship.parent != null %}
                       aria-label="{{- 'products.product.nested_label' | t: title: item.product.title, parent_title: item.parent_relationship.parent.title | escape -}}"
                     {% endif %}
                   >
-                    <td class="cart-item__media">
+                    <div class="cart-item__media" role="cell">
                       {% if item.image %}
                         {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
                         <a href="{{ item.url }}" class="cart-item__link" aria-hidden="true" tabindex="-1"> </a>
@@ -112,9 +122,9 @@
                           >
                         </div>
                       {% endif %}
-                    </td>
+                    </div>
 
-                    <td class="cart-item__details">
+                    <div class="cart-item__details" role="cell">
                       {%- if settings.show_vendor -%}
                         <p class="caption-with-letter-spacing">{{ item.product.vendor }}</p>
                       {%- endif -%}
@@ -144,7 +154,7 @@
                           </strong>
                         </div>
                       {%- else -%}
-                        <div class="product-option">
+                        <div class="product-option cart-item__unit-price">
                           {{ item.original_price | money }}
                         </div>
                       {%- endif -%}
@@ -193,9 +203,9 @@
                           </li>
                         {%- endfor -%}
                       </ul>
-                    </td>
+                    </div>
 
-                    <td class="cart-item__totals right medium-hide large-up-hide">
+                    <div class="cart-item__totals right medium-hide large-up-hide" role="cell">
                       {%- render 'loading-spinner' -%}
                       <div class="cart-item__price-wrapper">
                         {%- if item.original_line_price != item.final_line_price -%}
@@ -225,7 +235,7 @@
                           {% render 'unit-price', price: item.unit_price, measurement: item.unit_price_measurement %}
                         {%- endif -%}
                       </div>
-                    </td>
+                    </div>
                     {%- liquid
                       assign has_qty_rules = false
                       if item.variant.quantity_rule.increment > 1 or item.variant.quantity_rule.min > 1 or item.variant.quantity_rule.max != null
@@ -237,7 +247,7 @@
                         assign has_vol_pricing = true
                       endif
                     -%}
-                    <td class="cart-item__quantity{% if has_qty_rules or has_vol_pricing %} cart-item__quantity--info{% endif %}">
+                    <div class="cart-item__quantity{% if has_qty_rules or has_vol_pricing %} cart-item__quantity--info{% endif %}" role="cell">
                       <quantity-popover>
                         <div class="cart-item__quantity-wrapper quantity-popover-wrapper">
                           <label class="visually-hidden" for="Quantity-{{ item.index | plus: 1 }}">
@@ -320,12 +330,10 @@
                           >
                             <a
                               href="{{ item.url_to_remove }}"
-                              class="button button--tertiary"
+                              class="button button--tertiary cart-item__remove-link"
                               aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
                             >
-                              <span class="svg-wrapper">
-                                {{- 'icon-remove.svg' | inline_asset_content -}}
-                              </span>
+                              <span class="cart-item__remove-text">Remove</span>
                             </a>
                           </cart-remove-button>
                         </div>
@@ -421,9 +429,9 @@
                           </span>
                         </div>
                       </quantity-popover>
-                    </td>
+                    </div>
 
-                    <td class="cart-item__totals right small-hide">
+                    <div class="cart-item__totals right small-hide" role="cell">
                       {%- render 'loading-spinner' -%}
                       <div class="cart-item__price-wrapper">
                         {%- if item.original_line_price != item.final_line_price -%}
@@ -453,11 +461,11 @@
                           {% render 'unit-price', price: item.unit_price, measurement: item.unit_price_measurement %}
                         {%- endif -%}
                       </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 {%- endfor -%}
-              </tbody>
-            </table>
+              </div>
+            </div>
           {%- endif -%}
         </div>
       </div>
@@ -475,13 +483,43 @@
     </form>
 
     {%- if cart != empty -%}
-      {%- assign aw_last_item = cart.items | last -%}
-      <div
-        id="aw-cart-pair"
-        data-product-id="{{ aw_last_item.product_id }}"
-        data-limit="6"
-      ></div>
-      <script src="{{ 'artwistic-cart-recommendations.js' | asset_url }}" defer="defer"></script>
+      {%- assign aw_offer_blocks = section.blocks | where: 'type', 'cart_offer' -%}
+      <div class="aw-cart-coupon-block">
+        <form class="aw-cart-coupon" data-aw-coupon-form>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="7.5" cy="7.5" r="1.5"></circle>
+            <circle cx="16.5" cy="16.5" r="1.5"></circle>
+            <path d="M6 18L18 6"></path>
+            <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+          </svg>
+          <input type="text" data-aw-coupon-input placeholder="Enter coupon code" aria-label="Discount code">
+          <button type="submit">Apply</button>
+        </form>
+        {%- if aw_offer_blocks.size > 0 -%}
+          <button
+            type="button"
+            class="aw-cart-offers-toggle"
+            data-aw-offers-toggle
+            aria-expanded="false"
+            aria-controls="AwCartOffers-{{ section.id }}"
+          >
+            View offers
+            {{- 'icon-caret.svg' | inline_asset_content -}}
+          </button>
+          <div class="aw-cart-offers-drawer" id="AwCartOffers-{{ section.id }}">
+            {%- for aw_offer in aw_offer_blocks -%}
+              {%- if aw_offer.settings.label != blank and aw_offer.settings.code != blank -%}
+                <div class="aw-cart-offer-chip" {{ aw_offer.shopify_attributes }}>
+                  <span>{{ aw_offer.settings.label | escape }} — <code>{{ aw_offer.settings.code | escape }}</code></span>
+                  <button type="button" data-aw-offer-code="{{ aw_offer.settings.code | escape }}">Copy</button>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- render 'artwistic-cart-cross-sell' -%}
     {%- endif -%}
   </div>
 </cart-items>
@@ -519,6 +557,16 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "cart_offer",
+      "name": "ARTWISTIC: Offer code",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "info": "e.g. \"Extra 5% off above ₹2,000\"" },
+        { "type": "text", "id": "code", "label": "Real discount code" }
+      ]
     }
   ]
 }

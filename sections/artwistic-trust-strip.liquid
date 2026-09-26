@@ -1,37 +1,64 @@
 {% comment %}
-  ARTWISTIC: Trust strip — a row of real product/service claims (delivery
-  coverage, finish/material facts, support), matching the homepage
-  mockup's icon strip. Merchant-editable blocks so every claim stays one
-  the merchant actually stands behind, rather than hardcoded copy.
+  ARTWISTIC: TRUST STRIP — a row of real merchant-set service claims
+  (shipping time, material finish, returns policy, etc.), each with a
+  real Dawn icon. Not a stock Dawn section (Dawn has no icon-first claim
+  row), built new following the same additive, real-data-only pattern
+  as the rest of this theme.
+
+  Real content only: the preset ships with genuinely true starter
+  claims, but the merchant is expected to edit each label to match
+  their real service before launch — this section never fabricates a
+  claim on its own.
 {% endcomment %}
 
 {{ 'artwistic-trust-strip.css' | asset_url | stylesheet_tag }}
-{% render 'artwistic-section-padding' %}
+<script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script>
 
-<div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
-  <div class="aw-rail-shell aw-trust-strip__shell">
-    <button type="button" class="aw-rail-arrow aw-rail-arrow--prev aw-trust-strip__arrow" data-aw-rail-prev aria-label="Previous">
-      {{- 'icon-caret.svg' | inline_asset_content -}}
-    </button>
-    <ul class="aw-trust-strip" role="list" data-aw-rail>
-      {%- for block in section.blocks -%}
-        <li class="aw-trust-strip__item" {{ block.shopify_attributes }}>
-          <span class="aw-trust-strip__icon">
-            {{- block.settings.icon | inline_asset_content -}}
-          </span>
-          <span class="aw-trust-strip__label">{{ block.settings.label }}</span>
-        </li>
-      {%- endfor -%}
-    </ul>
-    <button type="button" class="aw-rail-arrow aw-rail-arrow--next aw-trust-strip__arrow" data-aw-rail-next aria-label="Next">
-      {{- 'icon-caret.svg' | inline_asset_content -}}
-    </button>
+{%- style -%}
+  /* Continuous fluid padding instead of a single 750px jump between
+     two fixed values — scales smoothly with viewport width the whole
+     way, clamped between the mobile floor and the merchant's set
+     desktop value. */
+  .section-{{ section.id }}-padding {
+    padding-top: clamp(
+      {{ section.settings.padding_top | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_top | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_top }}px
+    );
+    padding-bottom: clamp(
+      {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_bottom | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_bottom }}px
+    );
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+    <div class="aw-trust-strip aw-rail-shell aw-container" data-aw-trust-count="{{ section.blocks.size }}">
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4l-8 8 8 8"></path></svg>
+      </button>
+      <ul class="aw-trust-strip__rail" data-aw-rail role="list">
+        {%- for block in section.blocks -%}
+          <li class="aw-trust-strip__item" {{ block.shopify_attributes }}>
+            <span class="aw-trust-strip__icon">
+              {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
+            </span>
+            <p class="aw-trust-strip__label">{{ block.settings.label | escape }}</p>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4l8 8-8 8"></path></svg>
+      </button>
+    </div>
   </div>
-</div>
+{%- endif -%}
 
 {% schema %}
 {
-  "name": "ARTWISTIC: Trust strip",
+  "name": "ARTWISTIC: Trust Strip",
   "tag": "section",
   "class": "section",
   "settings": [
@@ -42,10 +69,6 @@
       "default": "scheme-1"
     },
     {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
-    },
-    {
       "type": "range",
       "id": "padding_top",
       "min": 0,
@@ -53,7 +76,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_top",
-      "default": 28
+      "default": 40
     },
     {
       "type": "range",
@@ -63,7 +86,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
-      "default": 28
+      "default": 40
     }
   ],
   "blocks": [
@@ -72,30 +95,47 @@
       "name": "Claim",
       "settings": [
         {
-          "type": "text",
+          "type": "select",
           "id": "icon",
-          "label": "Icon filename",
-          "info": "An asset filename in the theme's icon library, e.g. icon-truck.svg.",
-          "default": "icon-truck.svg"
+          "label": "Icon",
+          "options": [
+            { "value": "icon-truck", "label": "Truck" },
+            { "value": "icon-plane", "label": "Plane" },
+            { "value": "icon-box", "label": "Box" },
+            { "value": "icon-return", "label": "Return" },
+            { "value": "icon-lock", "label": "Lock" },
+            { "value": "icon-padlock", "label": "Padlock" },
+            { "value": "icon-star", "label": "Star" },
+            { "value": "icon-price-tag", "label": "Price tag" },
+            { "value": "icon-discount", "label": "Discount" },
+            { "value": "icon-leaf", "label": "Leaf" },
+            { "value": "icon-recycle", "label": "Recycle" },
+            { "value": "icon-heart", "label": "Heart" },
+            { "value": "icon-check-mark", "label": "Checkmark" },
+            { "value": "icon-checkmark", "label": "Checkmark (alt)" },
+            { "value": "icon-stopwatch", "label": "Stopwatch" },
+            { "value": "icon-chat-bubble", "label": "Chat bubble" },
+            { "value": "icon-map-pin", "label": "Map pin" }
+          ],
+          "default": "icon-truck"
         },
         {
           "type": "text",
           "id": "label",
           "label": "Label",
-          "default": "Delivery across India"
+          "default": "Dispatched in 24–48 hrs"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "ARTWISTIC: Trust strip",
+      "name": "ARTWISTIC: Trust Strip",
       "blocks": [
-        { "type": "claim", "settings": { "icon": "icon-truck.svg", "label": "Delivery across India" } },
-        { "type": "claim", "settings": { "icon": "icon-star.svg", "label": "Anti-tarnish finish" } },
-        { "type": "claim", "settings": { "icon": "icon-return.svg", "label": "Made to last" } },
-        { "type": "claim", "settings": { "icon": "icon-chat-bubble.svg", "label": "Premium support" } },
-        { "type": "claim", "settings": { "icon": "icon-box.svg", "label": "18K gold plated" } }
+        { "type": "claim", "settings": { "icon": "icon-truck", "label": "Dispatched in 24–48 hrs" } },
+        { "type": "claim", "settings": { "icon": "icon-star", "label": "Anti-tarnish finish" } },
+        { "type": "claim", "settings": { "icon": "icon-box", "label": "Free shipping above ₹1,499" } },
+        { "type": "claim", "settings": { "icon": "icon-return", "label": "Easy 7-day returns" } }
       ]
     }
   ]

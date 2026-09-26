@@ -1,8 +1,6 @@
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
-{%- comment -%} ARTWISTIC: collection/filter styling + breadcrumbs, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-{{ 'artwistic-collection.css' | asset_url | stylesheet_tag }}
 
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
@@ -10,8 +8,6 @@
 
 {%- unless section.settings.quick_add == 'none' -%}
   {{ 'quick-add.css' | asset_url | stylesheet_tag }}
-  {%- comment -%} ARTWISTIC: quick-add restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-  {{ 'artwistic-quick-add.css' | asset_url | stylesheet_tag }}
 {%- endunless -%}
 
 {%- if section.settings.quick_add == 'standard' -%}

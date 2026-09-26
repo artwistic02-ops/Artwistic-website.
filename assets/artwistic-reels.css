@@ -1,7 +1,17 @@
 /**
- * ARTWISTIC REELS — portrait video rail. See sections/artwistic-reels.liquid.
- * Rail scroll/arrow mechanics come from the shared .aw-rail-shell pattern
- * in artwistic-global.css.
+ * ARTWISTIC REELS — portrait video rail + full-screen story lightbox.
+ * See sections/artwistic-reels.liquid and assets/artwistic-reels.js.
+ *
+ * Rail scroll/arrow mechanics come from the shared .aw-rail-shell/.aw-rail-arrow
+ * pattern in artwistic-global.css, wired up by assets/artwistic-rail.js.
+ *
+ * The lightbox's two video .aw-reel-slot elements are driven by a
+ * hand-rolled spring simulation in artwistic-reels.js that writes a
+ * `transform` every animation frame — deliberately NO css `transition`
+ * on those two elements. A CSS transition racing a JS-driven transform
+ * write every frame is the single biggest cause of animation jitter;
+ * everything else in this file (the stage's open/close morph, the
+ * product pill's reveal, the sound button) is a normal CSS transition.
  */
 
 .aw-reels__head {
@@ -12,15 +22,27 @@
   margin-bottom: var(--aw-space-4);
 }
 
+/* The shared .aw-eyebrow rule (artwistic-global.css) colors itself off
+   the active color scheme's foreground at reduced opacity — on this
+   section's default dark scheme that reads as near-invisible against
+   the dark background, so it's pinned to the brass accent here
+   instead, already proven visible on both light and dark surfaces
+   elsewhere in this build (e.g. .aw-pull-note__stars). */
+.aw-reels__eyebrow {
+  color: var(--aw-color-brand-accent);
+}
+
 .aw-reels__heading {
   font-family: var(--aw-font-heading);
-  margin: 0;
+  font-size: var(--aw-text-lg);
+  font-weight: 600;
+  margin: 0.4rem 0 0;
 }
 
 .aw-reels__rail {
   position: relative;
   display: flex;
-  gap: var(--aw-space-4);
+  gap: 0;
   overflow-x: auto;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
@@ -31,8 +53,11 @@
   padding: var(--aw-space-4) var(--aw-container-pad) var(--aw-space-3);
 }
 
-/* Film-sprocket perforation strip along the top/bottom of the rail,
-   matching the finalized "Shop the Reels" filmstrip design. */
+.aw-reels__rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* Film-sprocket perforation strip along the top/bottom of the rail. */
 .aw-reels__rail::before,
 .aw-reels__rail::after {
   content: '';
@@ -54,15 +79,16 @@
   bottom: 0;
 }
 
-.aw-reels__rail::-webkit-scrollbar {
-  display: none;
-}
-
 .aw-reels__card {
   position: relative;
   flex: 0 0 auto;
   width: 17.4rem;
+  margin: 0 0.3rem;
   scroll-snap-align: start;
+}
+
+.aw-reels__card[data-aw-reel-card] {
+  cursor: pointer;
 }
 
 @media (max-width: 749px) {
@@ -74,9 +100,16 @@
 .aw-reels__media {
   position: relative;
   aspect-ratio: 9 / 16;
-  border-radius: var(--aw-radius-md);
+  border-radius: var(--aw-radius-sm);
   overflow: hidden;
   background: linear-gradient(160deg, #2a2420, #4a3f34 60%, #211d1a);
+  transition: transform var(--aw-duration-base) var(--aw-ease), box-shadow var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-reels__card[data-aw-reel-card]:hover .aw-reels__media,
+.aw-reels__card[data-aw-reel-card]:focus-visible .aw-reels__media {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
 }
 
 .aw-reels__media--empty {
@@ -85,83 +118,540 @@
   justify-content: center;
 }
 
-.aw-reels__media img,
-.aw-reels__media video,
-.aw-reels__media iframe {
+.aw-reels__video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.aw-reels__poster {
+/* A small, subtle play affordance — only shown on cards that actually
+   open the story lightbox (i.e. have a real linked product). */
+.aw-reels__play {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  padding: 0;
-  background: none;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.aw-reels__play {
-  width: 5rem;
-  height: 5rem;
-  border-radius: var(--aw-radius-full);
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--aw-duration-base) var(--aw-ease), background-color var(--aw-duration-base) var(--aw-ease);
-}
-
-.aw-reels__poster:hover .aw-reels__play {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.06);
+  color: var(--aw-color-paper);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35) 0%, transparent 45%);
+  opacity: 0;
+  transition: opacity var(--aw-duration-fast) var(--aw-ease);
 }
 
 .aw-reels__play svg {
-  width: 1.6rem;
-  height: 1.6rem;
-  fill: #fff;
-  margin-left: 0.2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
 }
 
-.aw-reels__cap {
-  position: absolute;
-  left: 1.2rem;
-  right: 1.2rem;
-  bottom: 1.2rem;
-  color: #fff;
-  font-size: var(--aw-text-sm);
+.aw-reels__card[data-aw-reel-card]:hover .aw-reels__play,
+.aw-reels__card[data-aw-reel-card]:focus-visible .aw-reels__play {
+  opacity: 1;
+}
+
+.aw-reels__caption {
+  margin: var(--aw-space-2) 0 0;
+  font-size: var(--aw-text-2xs);
+  font-family: var(--aw-font-mono);
+  color: var(--aw-color-muted);
+}
+
+.aw-reels__link {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-ink);
+  text-decoration: underline;
+}
+
+.aw-reels__follow {
+  text-align: center;
+  padding: var(--aw-space-6) var(--aw-container-pad) 0;
+}
+
+.aw-reels__follow-btn {
+  display: inline-block;
+  padding: var(--aw-space-3) var(--aw-space-6);
+  border-radius: var(--aw-radius-full);
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--aw-tracking-wider);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform var(--aw-duration-fast) var(--aw-ease), box-shadow var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-reels__follow-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* =====================================================================
+   Story lightbox
+   ===================================================================== */
+
+.aw-reel-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-reel-lightbox[hidden] {
+  display: none;
+}
+
+.aw-reel-lightbox.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.aw-reel-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.aw-reel-lightbox__close {
+  position: fixed;
+  top: var(--aw-space-4);
+  right: var(--aw-space-4);
+  z-index: 320;
+  width: 3.8rem;
+  height: 3.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--aw-color-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-reel-lightbox__close:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.aw-reel-lightbox__close svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.aw-reel-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 320;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.aw-reel-progress__fill {
+  height: 100%;
+  width: 0%;
+  background: var(--aw-color-brand-accent);
+}
+
+.aw-reel-counter {
+  position: fixed;
+  top: var(--aw-space-5);
+  left: var(--aw-space-4);
+  z-index: 320;
+  font-family: var(--aw-font-heading);
+  font-style: italic;
+  font-size: var(--aw-text-md);
+  font-weight: 300;
+  letter-spacing: var(--aw-tracking-wide);
+  color: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}
+
+.aw-reel-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 320;
+  width: 4.4rem;
+  height: 4.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--aw-color-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-reel-lightbox__nav:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.aw-reel-lightbox__nav--prev {
+  left: clamp(1rem, 4vw, 6rem);
+}
+
+.aw-reel-lightbox__nav--next {
+  right: clamp(1rem, 4vw, 6rem);
+}
+
+@media (max-width: 749px) {
+  .aw-reel-lightbox__nav {
+    display: none;
+  }
+}
+
+/* Stage: only element with an open/close morph transition. */
+.aw-reel-stage {
+  position: relative;
   z-index: 1;
+  height: 88dvh;
+  aspect-ratio: 9 / 16;
+  max-width: 92vw;
+  border-radius: var(--aw-radius-md);
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+  transform: scale(0.92) translateY(20px);
+  opacity: 0;
+  transition: transform var(--aw-duration-slow) var(--aw-ease), opacity var(--aw-duration-base) var(--aw-ease);
 }
 
-.aw-reels__cap .aw-wishlist-button {
-  position: static;
+.aw-reel-lightbox.is-open .aw-reel-stage {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+@media (max-width: 749px) {
+  .aw-reel-stage {
+    height: 84dvh;
+    max-width: 96vw;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .aw-reel-stage {
+    height: 96dvh;
+    aspect-ratio: unset;
+    width: 55vw;
+    max-width: unset;
+  }
+}
+
+/* Slots — no transition here. JS writes `transform` every rAF via the
+   spring simulation; see the file header note. */
+.aw-reel-slot {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.aw-reel-slot__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aw-reel-sound {
+  position: absolute;
+  top: var(--aw-space-3);
+  right: var(--aw-space-3);
+  z-index: 20;
+  width: 3.8rem;
+  height: 3.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--aw-color-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-reel-sound:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.aw-reel-sound svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+/* --- Product pill ---
+   The ENTIRE .aw-reel-pill element is the one expanding capsule: it
+   starts as just the round thumbnail, and expands (width/height/
+   border-radius/opacity together, one unified --aw-ease "ease-out-expo"
+   curve) into the full thumb+name+price+Add-to-cart pill once
+   artwistic-reels.js adds .is-visible — 2.5s after the reel opens, per
+   the merchant's request. One curve driving every property together
+   reads as noticeably smoother than the multi-stage staggered
+   transition list this was ported from. Clicking anywhere on the pill
+   goes to the product page; the Add to Cart button inside it stops
+   that click from bubbling (see artwistic-reels.js). */
+.aw-reel-pill {
+  position: absolute;
+  bottom: var(--aw-space-4);
+  left: var(--aw-space-3);
+  right: var(--aw-space-3);
+  z-index: 20;
+  display: none;
+  align-items: center;
+  margin-inline: auto;
+  width: 6.8rem;
+  height: 6.8rem;
+  border-radius: 2.2rem;
+  background: var(--aw-color-paper);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: width var(--aw-duration-slow) var(--aw-ease), height var(--aw-duration-slow) var(--aw-ease),
+    border-radius var(--aw-duration-slow) var(--aw-ease), opacity var(--aw-duration-base) var(--aw-ease),
+    transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-reel-pill.is-visible {
+  width: min(90vw, 34rem);
+  height: 8.4rem;
+  border-radius: var(--aw-radius-md);
+  opacity: 1;
+  transform: scale(1);
+}
+
+.aw-reel-pill__thumbwrap {
+  width: 6.8rem;
+  height: 6.8rem;
   flex-shrink: 0;
-  width: 2.4rem;
-  height: 2.4rem;
-  background: none;
-  color: #fff;
+  overflow: hidden;
 }
 
-.aw-reels__cap-link {
-  color: #fff;
-  text-decoration: none;
+.aw-reel-pill__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--aw-color-paper);
+  display: block;
+}
+
+.aw-reel-pill__body {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding-right: var(--aw-space-3);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity var(--aw-duration-base) var(--aw-ease) 260ms, transform var(--aw-duration-base) var(--aw-ease) 260ms;
+}
+
+.aw-reel-pill.is-visible .aw-reel-pill__body {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.aw-reel-pill__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--aw-space-3);
+  text-align: left;
+}
+
+.aw-reel-pill__name {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-sm);
+  line-height: 1.25;
+  color: var(--aw-color-ink);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.aw-reel-pill__price {
+  margin-top: 0.2rem;
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aw-reel-pill__cart {
+  flex-shrink: 0;
+  height: 3.6rem;
+  padding: 0 var(--aw-space-4);
+  border: none;
+  border-radius: var(--aw-radius-full);
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-reel-pill__cart:hover {
+  background: var(--aw-color-brand-accent);
+}
+
+.aw-reel-pill__cart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 380px) {
+  .aw-reel-pill__cart {
+    padding: 0 var(--aw-space-3);
+    font-size: 1rem;
+  }
+}
+
+/* =====================================================================
+   Size-picker sheet
+   ===================================================================== */
+
+.aw-reel-sizes {
+  position: fixed;
+  inset: 0;
+  z-index: 340;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-reel-sizes[hidden] {
+  display: none;
+}
+
+.aw-reel-sizes.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.aw-reel-sizes__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.aw-reel-sizes__sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 44rem;
+  background: var(--aw-color-paper);
+  border: 1.5px dashed var(--aw-color-border-strong);
+  border-bottom: none;
+  border-radius: var(--aw-radius-md) var(--aw-radius-md) 0 0;
+  padding: var(--aw-space-5) var(--aw-space-4) var(--aw-space-6);
+  transform: translateY(16px);
+  opacity: 0;
+  transition: transform var(--aw-duration-base) var(--aw-ease), opacity var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-reel-sizes.is-open .aw-reel-sizes__sheet {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.aw-reel-sizes__title {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-md);
+  margin: 0 0 var(--aw-space-4);
+  text-align: center;
+}
+
+.aw-reel-sizes__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  gap: var(--aw-space-2);
+  margin-bottom: var(--aw-space-4);
+}
+
+.aw-reel-sizes__option {
+  padding: var(--aw-space-3) var(--aw-space-2);
+  border: 1.5px solid var(--aw-color-ink);
+  border-radius: var(--aw-radius-sm);
+  background: transparent;
+  color: var(--aw-color-ink);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease), color var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-reel-sizes__option:hover:not(:disabled) {
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+}
+
+.aw-reel-sizes__option:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.aw-reel-sizes__cancel {
+  display: block;
+  width: 100%;
+  padding: var(--aw-space-3);
+  border: none;
+  background: transparent;
+  color: var(--aw-color-muted);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--aw-tracking-wide);
+  cursor: pointer;
+}
+
+body.aw-reel-lb-open {
+  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aw-reels__play {
+  .aw-reel-lightbox,
+  .aw-reel-lightbox__backdrop,
+  .aw-reel-stage,
+  .aw-reel-pill__link,
+  .aw-reel-pill__body,
+  .aw-reel-pill__cart,
+  .aw-reel-sizes,
+  .aw-reel-sizes__sheet,
+  .aw-reels__media {
     transition: none;
   }
 }

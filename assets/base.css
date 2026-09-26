@@ -601,8 +601,48 @@ details > * {
   --duration-extra-longer: 750ms;
   --duration-extended: 3s;
   --ease-out-slow: cubic-bezier(0, 0, 0.3, 1);
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
   --animation-slide-in: slideIn var(--duration-extra-long) var(--ease-out-slow) forwards;
   --animation-fade-in: fadeIn var(--duration-extra-long) var(--ease-out-slow);
+}
+
+/* --- Elegance/polish layer: applies everywhere, no per-section edits needed --- */
+
+.button,
+.card,
+.card__media,
+a {
+  transition-timing-function: var(--ease-premium);
+}
+
+.button:not([disabled]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(var(--color-foreground), 0.15);
+}
+
+.button {
+  transition: transform var(--duration-default) var(--ease-premium),
+    box-shadow var(--duration-default) var(--ease-premium);
+}
+
+[data-scroll-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-extra-long) var(--ease-premium),
+    transform var(--duration-extra-long) var(--ease-premium);
+}
+
+[data-scroll-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion) {
+  [data-scroll-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .underlined-link,
@@ -1414,7 +1454,7 @@ shopify-accelerated-checkout-cart {
 }
 
 details[open] > .share-button__fallback {
-  animation: animateMenuOpen var(--duration-default) ease;
+  animation: animateMenuOpen var(--duration-medium) var(--ease-premium);
 }
 
 .share-button__button:hover {
@@ -2215,7 +2255,7 @@ input[type='checkbox'] {
 }
 
 .localization-wrapper .localization-selector + .disclosure__list-wrapper {
-  animation: animateMenuOpen var(--duration-default) ease;
+  animation: animateMenuOpen var(--duration-medium) var(--ease-premium);
 }
 
 .utility-bar .localization-wrapper .disclosure .localization-form__select,
@@ -2680,7 +2720,7 @@ menu-drawer + .header__search {
 
 details[open] > .search-modal {
   opacity: 1;
-  animation: animateMenuOpen var(--duration-default) ease;
+  animation: animateMenuOpen var(--duration-medium) var(--ease-premium);
 }
 
 details[open] .modal-overlay {
@@ -2785,7 +2825,7 @@ details[open] > .header__icon--menu .icon-hamburger {
 }
 
 details[open] > .header__submenu {
-  animation: animateMenuOpen var(--duration-default) ease;
+  animation: animateMenuOpen var(--duration-medium) var(--ease-premium);
   animation-fill-mode: forwards;
   z-index: 1;
 }

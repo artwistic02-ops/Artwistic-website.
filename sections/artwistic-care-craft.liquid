@@ -1,0 +1,122 @@
+{% comment %}
+  ARTWISTIC: Care & Craft — a simple 3-up (desktop) / 1-col (mobile)
+  education grid, each tile ideally linking to a real blog article.
+  Not added to the homepage by default (see templates/index.json) —
+  per the homepage spec, an education section with no real content
+  yet is worse than no section. Add it via the Theme Editor once real
+  Care Guide articles exist.
+{% endcomment %}
+
+{{ 'artwistic-care-craft.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  /* Continuous fluid padding instead of a single 750px jump between
+     two fixed values — scales smoothly with viewport width the whole
+     way, clamped between the mobile floor and the merchant's set
+     desktop value. */
+  .section-{{ section.id }}-padding {
+    padding-top: clamp(
+      {{ section.settings.padding_top | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_top | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_top }}px
+    );
+    padding-bottom: clamp(
+      {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_bottom | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_bottom }}px
+    );
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+    <div class="aw-container">
+      <div class="aw-section-head">
+        <h2 class="aw-section-head__title">{{ section.settings.heading | escape }}</h2>
+      </div>
+      <div class="aw-care-grid">
+        {%- for block in section.blocks -%}
+          <a href="{{ block.settings.link | default: '#' }}" class="aw-care-card" {{ block.shopify_attributes }}>
+            <span class="aw-care-card__frame">
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 900
+                  | image_tag: loading: 'lazy', widths: '400, 600, 800, 900', class: 'aw-care-card__img'
+                }}
+              {%- endif -%}
+            </span>
+            {%- if block.settings.eyebrow != blank -%}
+              <span class="aw-eyebrow aw-care-card__eyebrow">{{ block.settings.eyebrow | escape }}</span>
+            {%- endif -%}
+            <h3 class="aw-care-card__title">{{ block.settings.title | escape }}</h3>
+            {%- if block.settings.description != blank -%}
+              <p class="aw-care-card__desc">{{ block.settings.description | escape }}</p>
+            {%- endif -%}
+            <span class="aw-care-card__more">Read more</span>
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Care & Craft",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Care & Craft"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "guide",
+      "name": "Guide",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Care Guide" },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "description", "label": "Description" },
+        { "type": "url", "id": "link", "label": "Link", "info": "Ideally a real blog article." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Care & Craft"
+    }
+  ]
+}
+{% endschema %}

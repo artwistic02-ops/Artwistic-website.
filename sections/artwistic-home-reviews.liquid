@@ -1,0 +1,310 @@
+{% comment %}
+  ARTWISTIC: Homepage Reviews — same visual language + FLIP
+  click-to-expand as the product page's Judge.me-backed reviews
+  (assets/artwistic-reviews.css classes reused verbatim: .aw-jdgm-card,
+  .aw-avatar, tape strip, .aw-review-lightbox*), but the data source
+  here is a merchant-curated `review` metaobject so the merchant picks
+  exactly which reviews appear, in the Theme Editor, no code.
+
+  REQUIRES a `review` metaobject definition to already exist in Admin
+  (Settings > Custom data > Metaobjects) with fields: reviewer_name
+  (single line text), rating (integer, 1-5), review_text (multi-line
+  text), photo (file, optional), verified_purchase (boolean, optional),
+  city (single line text, optional), linked_product (product
+  reference, optional). This same metaobject type is meant to also
+  back a richer per-product review list on the product page later —
+  a merchant enters a review once, it can appear in both places.
+{% endcomment %}
+
+{{ 'artwistic-reviews.css' | asset_url | stylesheet_tag }}
+{{ 'artwistic-home-reviews.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-home-reviews.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  /* Continuous fluid padding instead of a single 750px jump between
+     two fixed values — scales smoothly with viewport width the whole
+     way, clamped between the mobile floor and the merchant's set
+     desktop value. */
+  .section-{{ section.id }}-padding {
+    padding-top: clamp(
+      {{ section.settings.padding_top | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_top | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_top }}px
+    );
+    padding-bottom: clamp(
+      {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px,
+      {{ section.settings.padding_bottom | divided_by: 12.8 }}vw,
+      {{ section.settings.padding_bottom }}px
+    );
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign aw_reviews = section.blocks | where: 'type', 'review'
+  assign aw_populated = ''
+  for block in aw_reviews
+    if block.settings.review != blank
+      assign aw_populated = aw_populated | append: block.id | append: ','
+    endif
+  endfor
+-%}
+
+{%- if aw_populated != '' -%}
+  <div class="aw-home-reviews color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+    <div class="aw-container">
+      <div class="aw-section-head">
+        <h2 class="aw-section-head__title">{{ section.settings.heading | escape }}</h2>
+      </div>
+
+      {%- comment -%} Hero: the first populated review, pulled out of the rail below so it isn't shown twice. {%- endcomment -%}
+      {%- for block in aw_reviews -%}
+        {%- if block.settings.review != blank -%}
+          {%- liquid
+            assign aw_hero_review = block.settings.review
+            assign aw_hero_name = aw_hero_review.reviewer_name.value
+            assign aw_hero_words = aw_hero_name | split: ' '
+            if aw_hero_words.size > 1
+              assign aw_hero_initial_1 = aw_hero_words.first | slice: 0, 1
+              assign aw_hero_initial_2 = aw_hero_words.last | slice: 0, 1
+              assign aw_hero_initials = aw_hero_initial_1 | append: aw_hero_initial_2
+            else
+              assign aw_hero_initials = aw_hero_name | slice: 0, 2
+            endif
+          -%}
+          <button type="button" class="aw-reviews__hero" data-aw-review-open data-aw-review-index="0">
+            <div class="aw-pull-note">
+              <p class="aw-pull-note__mark">&ldquo;</p>
+              <p class="aw-pull-note__text">{{ aw_hero_review.review_text.value }}</p>
+              <div class="aw-pull-note__meta">
+                <span class="aw-pull-note__stars" aria-hidden="true">
+                  {%- for i in (1..5) -%}{% if i <= aw_hero_review.rating.value %}&#9733;{% else %}&#9734;{% endif %}{%- endfor -%}
+                </span>
+                <span class="aw-pull-note__who">
+                  <span class="aw-avatar">
+                    {%- if aw_hero_review.photo.value != blank -%}
+                      {{ aw_hero_review.photo.value | image_url: width: 100 | image_tag: width: 100, height: 100, alt: '', loading: 'lazy' }}
+                    {%- else -%}
+                      {{- aw_hero_initials -}}
+                    {%- endif -%}
+                  </span>
+                  <span class="aw-meta-line">
+                    <span class="aw-meta-line__name">{{ aw_hero_name }}</span>
+                    {%- if aw_hero_review.city.value != blank -%}
+                      <span class="aw-meta-line__city">{{ aw_hero_review.city.value }}</span>
+                    {%- endif -%}
+                  </span>
+                </span>
+              </div>
+            </div>
+          </button>
+        {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="aw-reviews-rail aw-rail-shell">
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 4l-8 8 8 8"></path></svg>
+      </button>
+      <ul class="aw-reviews-rail__track" data-aw-rail role="list">
+        {%- assign aw_skip_first = true -%}
+        {%- assign aw_pop_index = 0 -%}
+        {%- for block in aw_reviews -%}
+          {%- if block.settings.review != blank -%}
+            {%- assign aw_pop_index = aw_pop_index | plus: 1 -%}
+            {%- if aw_skip_first -%}
+              {%- assign aw_skip_first = false -%}
+              {%- continue -%}
+            {%- endif -%}
+            {%- comment -%} aw_pop_index is this review's 0-based position in the JSON data array below (the hero is 0; the loop above already incremented once for it before reaching here). {%- endcomment -%}
+            {%- liquid
+              assign aw_review = block.settings.review
+              assign aw_name = aw_review.reviewer_name.value
+              assign aw_words = aw_name | split: ' '
+              if aw_words.size > 1
+                assign aw_initial_1 = aw_words.first | slice: 0, 1
+                assign aw_initial_2 = aw_words.last | slice: 0, 1
+                assign aw_initials = aw_initial_1 | append: aw_initial_2
+              else
+                assign aw_initials = aw_name | slice: 0, 2
+              endif
+            -%}
+            <li>
+              <button
+                type="button"
+                class="aw-jdgm-card"
+                data-aw-review-open
+                data-aw-review-index="{{ aw_pop_index | minus: 1 }}"
+              >
+                {%- if aw_review.photo.value != blank -%}
+                  {{ aw_review.photo.value | image_url: width: 400 | image_tag: width: 400, height: 500, alt: '', loading: 'lazy' }}
+                {%- endif -%}
+                <div class="aw-jdgm-card__who">
+                  <span class="aw-avatar">
+                    {%- if aw_review.photo.value != blank -%}
+                      {{ aw_review.photo.value | image_url: width: 100 | image_tag: width: 100, height: 100, alt: '', loading: 'lazy' }}
+                    {%- else -%}
+                      {{- aw_initials -}}
+                    {%- endif -%}
+                  </span>
+                  <span class="aw-meta-line">
+                    <span class="aw-meta-line__name">{{ aw_name }}</span>
+                    {%- if aw_review.city.value != blank -%}
+                      <span class="aw-meta-line__city">{{ aw_review.city.value }}</span>
+                    {%- endif -%}
+                  </span>
+                  {%- if aw_review.verified_purchase.value -%}
+                    <span class="jm-verified-buyer-badge"><span class="jm-verified-buyer-badge__text">Verified</span></span>
+                  {%- endif -%}
+                </div>
+                <p class="jdgm-review-content__body-content">{{ aw_review.review_text.value | truncate: 160 }}</p>
+              </button>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4l8 8-8 8"></path></svg>
+      </button>
+    </div>
+
+    {%- comment -%} Full data for every populated review, read by artwistic-home-reviews.js to drive the shared FLIP lightbox — kept out of the visible cards above so card text can stay truncated. {%- endcomment -%}
+    <script type="application/json" data-aw-reviews-data>
+      [
+        {%- assign aw_first = true -%}
+        {%- for block in aw_reviews -%}
+          {%- if block.settings.review != blank -%}
+            {%- unless aw_first -%},{%- endunless -%}
+            {%- assign aw_first = false -%}
+            {%- liquid
+              assign aw_review = block.settings.review
+              assign aw_name = aw_review.reviewer_name.value
+              assign aw_words = aw_name | split: ' '
+              if aw_words.size > 1
+                assign aw_initial_1 = aw_words.first | slice: 0, 1
+                assign aw_initial_2 = aw_words.last | slice: 0, 1
+                assign aw_initials = aw_initial_1 | append: aw_initial_2
+              else
+                assign aw_initials = aw_name | slice: 0, 2
+              endif
+              assign aw_photo_url = ''
+              if aw_review.photo.value != blank
+                assign aw_photo_url = aw_review.photo.value | image_url: width: 1200
+              endif
+            -%}
+            {
+              "name": {{ aw_name | json }},
+              "city": {{ aw_review.city.value | json }},
+              "rating": {{ aw_review.rating.value | default: 0 }},
+              "text": {{ aw_review.review_text.value | json }},
+              "photo": {{ aw_photo_url | json }},
+              "initials": {{ aw_initials | json }}
+            }
+          {%- endif -%}
+        {%- endfor -%}
+      ]
+    </script>
+  </div>
+{%- endif -%}
+
+{%- comment -%} Shared lightbox markup — same structure/classes as the product page's, driven here by artwistic-home-reviews.js instead of Judge.me DOM scraping. {%- endcomment -%}
+<div class="aw-review-lightbox" hidden data-aw-review-lightbox>
+  <div class="aw-review-lightbox__backdrop" data-aw-review-close></div>
+  <div class="aw-review-lightbox__dialog" data-aw-review-dialog>
+    <button type="button" class="aw-review-lightbox__close" data-aw-review-close aria-label="Close">
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </button>
+    <div class="aw-review-lightbox__avatar">
+      <span class="aw-avatar" data-aw-review-avatar></span>
+    </div>
+    <div class="aw-review-lightbox__media" data-aw-review-media hidden>
+      {%- comment -%}theme-check-disable RemoteAsset{%- endcomment -%}
+      {%- comment -%} src is intentionally empty — set at runtime by artwistic-home-reviews.js from the clicked review's real photo. {%- endcomment -%}
+      <img src="" alt="" width="800" height="800" data-aw-review-media-img>
+      {%- comment -%}theme-check-enable RemoteAsset{%- endcomment -%}
+    </div>
+    <div class="aw-review-lightbox__body">
+      <p class="aw-review-lightbox__stars" data-aw-review-stars aria-hidden="true"></p>
+      <p class="aw-review-lightbox__text" data-aw-review-text></p>
+      <p class="aw-review-lightbox__author">
+        <span data-aw-review-name></span>
+        <span class="aw-review-lightbox__city" data-aw-review-city></span>
+      </p>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "ARTWISTIC: Reviews",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Loved, in their words"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "metaobject",
+          "id": "review",
+          "metaobject_type": "review",
+          "label": "Review",
+          "info": "Pick a review entry created under Content > Reviews (metaobjects) in Admin. Leave blank to skip this slot."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ARTWISTIC: Reviews",
+      "blocks": [
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" }
+      ]
+    }
+  ]
+}
+{% endschema %}

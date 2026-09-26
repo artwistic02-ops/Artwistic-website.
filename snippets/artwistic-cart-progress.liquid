@@ -1,0 +1,79 @@
+{% comment %}
+  ARTWISTIC: cart milestone progress bar — real, merchant-configured
+  thresholds (settings.aw_free_shipping_threshold /
+  aw_free_gift_threshold, in config/settings_schema.json), real
+  cart.total_price. Renders nothing if the merchant hasn't set at
+  least one threshold, or has disabled it. A celebration effect fires
+  once per threshold crossing via assets/artwistic-cart.js, driven by
+  data attributes here (no hardcoded milestone list in JS).
+  Usage: {% render 'artwistic-cart-progress' %}
+{% endcomment %}
+{%- liquid
+  assign aw_milestones = ''
+  if settings.aw_cart_milestones_enable and settings.aw_free_shipping_threshold > 0
+    assign aw_milestones = aw_milestones | append: settings.aw_free_shipping_threshold | append: ':shipping:Free shipping|'
+  endif
+  if settings.aw_cart_milestones_enable and settings.aw_free_gift_threshold > 0
+    assign aw_milestones = aw_milestones | append: settings.aw_free_gift_threshold | append: ':gift:' | append: settings.aw_free_gift_label | append: '|'
+  endif
+-%}
+{%- if aw_milestones != '' -%}
+  {%- assign aw_max_threshold = settings.aw_free_gift_threshold | at_least: settings.aw_free_shipping_threshold -%}
+  {%- assign aw_cart_total = cart.total_price | divided_by: 100.0 -%}
+  {%- assign aw_progress_pct = aw_cart_total | times: 100 | divided_by: aw_max_threshold | at_most: 100 -%}
+  <div
+    class="aw-cart-progress"
+    data-aw-cart-progress
+    data-cart-total="{{ aw_cart_total }}"
+    data-milestones="{{ aw_milestones | escape }}"
+    data-money-format="{{ shop.money_format | escape }}"
+  >
+    <p class="aw-cart-progress__message" data-aw-cart-progress-message aria-live="polite"></p>
+
+    <div class="aw-cart-progress__track-row">
+      <div class="aw-cart-progress__track">
+        <div class="aw-cart-progress__fill" style="width: {{ aw_progress_pct }}%;" data-aw-cart-progress-fill></div>
+      </div>
+
+      {%- comment -%}
+        "You are here" marker: a real, moving indicator at the exact
+        current cart-value position on the track (not a static start
+        icon) — this is the visual cue of where the cart's real value
+        sits relative to the milestones, distinct from the fixed
+        start/milestone nodes below.
+      {%- endcomment -%}
+      <div class="aw-cart-progress__marker" style="left: {{ aw_progress_pct }}%;" data-aw-cart-progress-marker></div>
+
+      <div class="aw-cart-progress__node aw-cart-progress__node--start is-reached" style="left: 0%;" data-aw-cart-progress-node="start">
+        {{- 'icon-cart-empty.svg' | inline_asset_content -}}
+      </div>
+
+      {%- liquid
+        assign aw_milestone_list = aw_milestones | split: '|'
+        assign aw_node_icons = 'icon-truck.svg|icon-box.svg' | split: '|'
+      -%}
+      {%- for aw_m in aw_milestone_list -%}
+        {%- assign aw_m_parts = aw_m | split: ':' -%}
+        {%- assign aw_m_amount = aw_m_parts[0] -%}
+        {%- assign aw_m_key = aw_m_parts[1] -%}
+        {%- assign aw_m_pct = aw_m_amount | times: 100 | divided_by: aw_max_threshold | at_most: 100 -%}
+        {%- assign aw_m_icon = aw_node_icons[forloop.index0] | default: 'icon-star.svg' -%}
+        <div
+          class="aw-cart-progress__node"
+          style="left: {{ aw_m_pct }}%;"
+          data-aw-cart-progress-node="{{ aw_m_key }}"
+        >
+          {{- aw_m_icon | inline_asset_content -}}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="aw-cart-progress__labels">
+      <span>Start</span>
+      {%- for aw_m in aw_milestone_list -%}
+        {%- assign aw_m_parts = aw_m | split: ':' -%}
+        <span>{{ aw_m_parts[2] }}<br><b>{{ aw_m_parts[0] | times: 100 | money }}</b></span>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

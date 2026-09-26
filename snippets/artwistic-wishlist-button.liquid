@@ -1,0 +1,16 @@
+{% comment %}
+  ARTWISTIC: compatibility wrapper — kept so existing call sites
+  (snippets/buy-buttons.liquid, sections/artwistic-reels.liquid) don't
+  need touching. Delegates to the real, shared heart-toggle implementation
+  in snippets/artwistic-card-actions.liquid / assets/artwistic-product-card.js
+  (window.awWishlist), so every wishlist button on the site — cards,
+  product page, here — shares one working implementation instead of two
+  divergent ones.
+
+  Usage:
+    {% render 'artwistic-wishlist-button', product: card_product %}
+    {% render 'artwistic-wishlist-button', product: product, size: 'large' %}
+    {% render 'artwistic-wishlist-button', product: product, size: 'large', style: 'inline' %}
+{% endcomment %}
+
+{%- render 'artwistic-card-actions', card_product: product, heart_only: true, size: size -%}

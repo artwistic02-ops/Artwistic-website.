@@ -1,0 +1,61 @@
+{% comment %}
+  ARTWISTIC: cart cross-sell rail — "Pair it with", a real merchant-
+  picked collection (settings.aw_cart_cross_sell_collection). Renders
+  nothing if unset or empty. Reuses the shared .aw-rail-shell +
+  artwistic-rail.js pattern already used by Reels/Reviews/Trust Strip
+  — no new rail mechanism. Add-to-cart uses the same real
+  fetchConfig + routes.cart_add_url + publish(cartUpdate) +
+  cart.renderContents() pattern as assets/artwistic-product-card.js.
+  Usage: {% render 'artwistic-cart-cross-sell' %}
+{% endcomment %}
+{%- assign aw_cs_collection = settings.aw_cart_cross_sell_collection -%}
+{%- if aw_cs_collection != blank and aw_cs_collection.products.size > 0 -%}
+  <script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script>
+  <div class="aw-cart-cross-sell">
+    <div class="aw-cart-cross-sell__head">
+      <p class="aw-eyebrow">Frequently paired</p>
+      <h2>Pair it with</h2>
+    </div>
+    <div class="aw-rail-shell">
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+      <div class="aw-cart-cross-sell__track" data-aw-rail style="display: flex; gap: 1.6rem; overflow-x: auto; padding: 0 0.2rem 0.4rem; scroll-snap-type: x proximity;">
+        {%- for cs_product in aw_cs_collection.products limit: 12 -%}
+          {%- assign aw_cs_variant_id = cs_product.selected_or_first_available_variant.id -%}
+          {%- assign aw_cs_already_in_cart = false -%}
+          {%- for aw_line in cart.items -%}
+            {%- if aw_line.variant_id == aw_cs_variant_id -%}
+              {%- assign aw_cs_already_in_cart = true -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          <div class="aw-cart-cross-sell-card">
+            <a href="{{ cs_product.url }}" class="aw-cart-cross-sell-card__img">
+              {%- if cs_product.featured_image != blank -%}
+                {{ cs_product.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 300, 400' }}
+              {%- endif -%}
+            </a>
+            <a href="{{ cs_product.url }}" class="aw-cart-cross-sell-card__name">{{ cs_product.title | escape }}</a>
+            <p class="aw-cart-cross-sell-card__price">{{ cs_product.price | money }}</p>
+            <button
+              type="button"
+              class="aw-cart-cross-sell-card__add{% if aw_cs_already_in_cart %} is-added{% endif %}"
+              data-aw-cross-sell-add
+              data-variant-id="{{ aw_cs_variant_id }}"
+              {% if cs_product.selected_or_first_available_variant.available == false %}
+                disabled
+              {% endif %}
+            >
+              {{- 'icon-plus.svg' | inline_asset_content -}}
+              <span data-aw-cross-sell-label>{% if aw_cs_already_in_cart %}Added{% else %}Add{% endif %}</span>
+            </button>
+          </div>
+        {%- endfor -%}
+      </div>
+      <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+    </div>
+  </div>
+{%- endif -%}

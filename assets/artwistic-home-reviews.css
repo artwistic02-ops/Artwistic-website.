@@ -1,0 +1,58 @@
+/**
+ * ARTWISTIC HOMEPAGE REVIEWS — reuses the product page's real review
+ * card visuals verbatim (assets/artwistic-reviews.css: .aw-jdgm-card,
+ * .aw-avatar, the tape-strip ::before, .aw-review-lightbox*). This
+ * file only adds the rail layout (homepage shows reviews as a
+ * horizontal swipeable row instead of the product page's fixed grid)
+ * and the hero button's own reset styles.
+ */
+
+.aw-reviews__hero {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: var(--aw-space-5);
+  font: inherit;
+  text-align: inherit;
+  color: inherit;
+}
+
+.aw-reviews-rail {
+  padding: var(--aw-space-2) 0;
+}
+
+.aw-reviews-rail__track {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  gap: var(--aw-space-5);
+  margin: 0;
+  padding: var(--aw-space-4) var(--aw-container-pad, var(--aw-space-4));
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.aw-reviews-rail__track::-webkit-scrollbar {
+  display: none;
+}
+
+.aw-reviews-rail__track > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  /* Continuous fluid width instead of a 750px snap between two fixed
+     sizes. */
+  width: clamp(27rem, 45vw, 34rem);
+  max-width: 88vw;
+}
+
+.aw-reviews-rail__track .aw-jdgm-card {
+  width: 100%;
+  border: none;
+  font: inherit;
+  text-align: left;
+  display: block;
+}
+

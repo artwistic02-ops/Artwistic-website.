@@ -2,6 +2,8 @@
 {{ 'component-totals.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+{{ 'artwistic-cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'artwistic-cart.js' | asset_url }}" defer="defer"></script>
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -18,7 +20,7 @@
 {%- endstyle -%}
 
 <div
-  class="aw-cart-page gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %}"
+  class="gradient color-{{ section.settings.color_scheme }} aw-cart-summary{% if cart == empty %} is-empty{% endif %}"
   id="main-cart-footer"
   data-id="{{ section.id }}"
 >
@@ -44,11 +46,6 @@
               {% render block %}
             {%- when 'subtotal' -%}
               <div class="js-contents" {{ block.shopify_attributes }}>
-                {%- comment -%} ARTWISTIC: free-shipping progress, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-                {%- if cart != empty -%}
-                  {%- render 'artwistic-shipping-progress' -%}
-                {%- endif -%}
-
                 <div>
                   {%- if cart.cart_level_discount_applications.size > 0 -%}
                     <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
@@ -108,7 +105,7 @@
                   {%- endif -%}
                 </small>
               </div>
-            {%- else -%}
+            {%- when 'buttons' -%}
               <div class="cart__ctas" {{ block.shopify_attributes }}>
                 <button
                   type="submit"
@@ -120,12 +117,8 @@
                   {% endif %}
                   form="cart"
                 >
-                  {{ 'sections.cart.checkout' | t }}
+                  <span class="cart__checkout-button-label">{{ 'sections.cart.checkout' | t }}</span>
                 </button>
-                {%- comment -%} ARTWISTIC: real enabled payment-method icons next to checkout, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-                {%- if cart != empty -%}
-                  {%- render 'artwistic-payment-icons' -%}
-                {%- endif -%}
               </div>
 
               {%- if additional_checkout_buttons -%}

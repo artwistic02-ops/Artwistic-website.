@@ -2,10 +2,6 @@
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'component-search.css' | asset_url | stylesheet_tag }}
-{%- comment -%} ARTWISTIC: filter drawer + card restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-{{ 'artwistic-collection.css' | asset_url | stylesheet_tag }}
-{% render 'artwistic-dark-mode-init' %}
-<script src="{{ 'artwistic-dark-mode.js' | asset_url }}" defer="defer"></script>
 
 {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
   {{ 'component-facets.css' | asset_url | stylesheet_tag }}
@@ -70,16 +66,13 @@
 {% paginate search.results by 24 %}
   <div class="template-search{% unless search.performed and search.results_count > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding">
     <div class="template-search__header page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-      <div class="aw-search-header-row">
-        <h1 class="h2 center">
-          {%- if search.performed -%}
-            {{- 'templates.search.title' | t -}}
-          {%- else -%}
-            {{- 'general.search.search' | t -}}
-          {%- endif -%}
-        </h1>
-        {% render 'artwistic-dark-mode-toggle' %}
-      </div>
+      <h1 class="h2 center">
+        {%- if search.performed -%}
+          {{- 'templates.search.title' | t -}}
+        {%- else -%}
+          {{- 'general.search.search' | t -}}
+        {%- endif -%}
+      </h1>
       <div class="template-search__search">
         {%- if settings.predictive_search_enabled -%}
           <predictive-search data-loading-text="{{ 'accessibility.loading' | t }}">

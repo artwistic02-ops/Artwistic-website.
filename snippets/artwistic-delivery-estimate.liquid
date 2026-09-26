@@ -1,17 +1,16 @@
 {% comment %}
   ARTWISTIC: manual, no-API delivery estimate calculator. The shopper
-  picks their state; JS computes an estimated delivery date range
-  client-side using merchant-configured business-day rules — no courier
-  API, no live data. See ARTWISTIC_CHANGELOG.md and
-  docs/SHOPIFY_ADMIN_SETUP.md for the exact rules and how to keep the
-  holiday list current.
+  enters their pincode; JS maps its prefix to a region (Gujarat/Mumbai =
+  faster transit, everywhere else = slower) and computes an estimated
+  delivery date range client-side using merchant-configured business-day
+  rules (block settings below) — no courier API, no live pincode
+  serviceability check.
 
-  Visual: a 3-tier "Order now / Dispatches / Delivered" stepper,
-  matching the approved product-page mockup. The state dropdown (real,
-  reliable) is kept as the input mechanism rather than the mockup's
-  pincode-prefix guess — same underlying calculation, just restyled.
-  The tier row is decorative/aria-hidden; the visually-hidden status
-  paragraph carries the real live-announced result for screen readers.
+  Visual: a 3-tier "Order now / Dispatches / Delivered" stepper, matching
+  the approved product-page mockup, with a left-to-right reveal animation
+  once a valid pincode is checked. The tier row is decorative/
+  aria-hidden; the visually-hidden status paragraph carries the real
+  live-announced result for screen readers.
 
   Usage:
     {% render 'artwistic-delivery-estimate', block: block %}
@@ -25,83 +24,53 @@
   data-aw-delivery-estimate
   data-dispatch-min="{{ block.settings.dispatch_days_min | default: 1 }}"
   data-dispatch-max="{{ block.settings.dispatch_days_max | default: 2 }}"
-  data-transit-fast-min="{{ block.settings.transit_fast_min | default: 2 }}"
-  data-transit-fast-max="{{ block.settings.transit_fast_max | default: 3 }}"
-  data-transit-other-min="{{ block.settings.transit_other_min | default: 3 }}"
-  data-transit-other-max="{{ block.settings.transit_other_max | default: 5 }}"
+  data-transit-fast-min="{{ block.settings.transit_fast_min | default: 1 }}"
+  data-transit-fast-max="{{ block.settings.transit_fast_max | default: 2 }}"
+  data-transit-other-min="{{ block.settings.transit_other_min | default: 4 }}"
+  data-transit-other-max="{{ block.settings.transit_other_max | default: 6 }}"
   data-holidays="{{ block.settings.holiday_dates | strip_newlines | escape }}"
   {{ block.shopify_attributes }}
 >
-  <label class="aw-delivery-estimate__label" for="AwDeliveryState-{{ block.id }}">
-    {{- 'icon-map-pin.svg' | inline_asset_content -}}
-    <span>Check estimated delivery</span>
-  </label>
   <div class="aw-delivery-estimate__row">
-    <select id="AwDeliveryState-{{ block.id }}" class="aw-delivery-estimate__select" data-aw-delivery-state>
-      <option value="">Select your state</option>
-      <optgroup label="Faster transit">
-        <option value="fast">Gujarat</option>
-        <option value="fast">Maharashtra</option>
-      </optgroup>
-      <optgroup label="All other states &amp; union territories">
-        <option value="other">Andhra Pradesh</option>
-        <option value="other">Arunachal Pradesh</option>
-        <option value="other">Assam</option>
-        <option value="other">Bihar</option>
-        <option value="other">Chhattisgarh</option>
-        <option value="other">Goa</option>
-        <option value="other">Haryana</option>
-        <option value="other">Himachal Pradesh</option>
-        <option value="other">Jharkhand</option>
-        <option value="other">Karnataka</option>
-        <option value="other">Kerala</option>
-        <option value="other">Madhya Pradesh</option>
-        <option value="other">Manipur</option>
-        <option value="other">Meghalaya</option>
-        <option value="other">Mizoram</option>
-        <option value="other">Nagaland</option>
-        <option value="other">Odisha</option>
-        <option value="other">Punjab</option>
-        <option value="other">Rajasthan</option>
-        <option value="other">Sikkim</option>
-        <option value="other">Tamil Nadu</option>
-        <option value="other">Telangana</option>
-        <option value="other">Tripura</option>
-        <option value="other">Uttar Pradesh</option>
-        <option value="other">Uttarakhand</option>
-        <option value="other">West Bengal</option>
-        <option value="other">Andaman and Nicobar Islands</option>
-        <option value="other">Chandigarh</option>
-        <option value="other">Dadra and Nagar Haveli and Daman and Diu</option>
-        <option value="other">Delhi</option>
-        <option value="other">Jammu and Kashmir</option>
-        <option value="other">Ladakh</option>
-        <option value="other">Lakshadweep</option>
-        <option value="other">Puducherry</option>
-      </optgroup>
-    </select>
+    <input
+      type="tel"
+      inputmode="numeric"
+      autocomplete="postal-code"
+      pattern="[0-9]*"
+      maxlength="6"
+      id="AwDeliveryPincode-{{ block.id }}"
+      class="aw-delivery-estimate__input"
+      aria-label="{{ block.settings.label | default: 'Check estimated delivery' }}"
+      data-aw-delivery-pincode
+      data-aw-typing-hint="{{ block.settings.hint_text | default: 'Enter pincode to check delivery' }}"
+    >
+    <button type="button" class="aw-delivery-estimate__check" data-aw-delivery-check>Check</button>
   </div>
+  <p class="aw-delivery-estimate__error" data-aw-delivery-error hidden>Enter a valid 6-digit pincode.</p>
   <div class="aw-tier-row" data-aw-tier-row data-aw-motion hidden aria-hidden="true">
     <div class="aw-tier-track">
       <div class="aw-tier-track__fill" data-aw-tier-fill></div>
     </div>
-    <div class="aw-tier is-active" data-tier="1">
+    <div class="aw-tier" data-tier="1" data-aw-tier-order>
       <span class="aw-tier__icon aw-tier__icon--order">
-        {{- 'icon-check-mark.svg' | inline_asset_content -}}
+        {{- 'icon-padlock.svg' | inline_asset_content -}}
       </span>
       <span class="aw-tier__label">Order now</span>
       <span class="aw-tier__date">Today</span>
     </div>
     <div class="aw-tier" data-tier="2" data-aw-tier-dispatch>
       <span class="aw-tier__icon aw-tier__icon--dispatch">
-        {{- 'icon-box.svg' | inline_asset_content -}}
+        {{- 'icon-truck.svg' | inline_asset_content -}}
       </span>
       <span class="aw-tier__label">Dispatches</span>
       <span class="aw-tier__date" data-aw-tier-dispatch-date>&mdash;</span>
     </div>
     <div class="aw-tier" data-tier="3" data-aw-tier-delivered>
       <span class="aw-tier__icon aw-tier__icon--delivered">
-        {{- 'icon-truck.svg' | inline_asset_content -}}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11.5 12 4l9 7.5"></path>
+          <path d="M5.5 10v9a1 1 0 0 0 1 1H10v-5.5h4V20h3.5a1 1 0 0 0 1-1v-9"></path>
+        </svg>
       </span>
       <span class="aw-tier__label">Delivered</span>
       <span class="aw-tier__date" data-aw-tier-delivered-date>&mdash;</span>

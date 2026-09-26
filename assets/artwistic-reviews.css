@@ -1,366 +1,115 @@
 /**
- * ARTWISTIC REVIEWS — star rating component, homepage curated carousel,
- * product-page rating summary + full review list, and the photo
- * lightbox. See sections/artwistic-reviews.liquid,
- * snippets/artwistic-star-rating.liquid, artwistic-rating-summary.liquid,
- * artwistic-product-reviews.liquid, and assets/artwistic-reviews.js.
+ * ARTWISTIC REVIEWS — real reviews via Judge.me, restyled to match the
+ * approved mockup. See snippets/artwistic-reviews.liquid and
+ * assets/artwistic-reviews.js.
+ *
+ * NOTE: the .jdgm-* selectors below are Judge.me's own documented,
+ * long-stable class names. If your live install renders different
+ * markup, adjust these to match what actually appears in the browser.
  */
 
-/* --- Star rating --- */
-
-.aw-star-rating {
-  position: relative;
-  display: inline-flex;
-  width: 7rem;
-  height: 1.4rem;
-  flex-shrink: 0;
+.aw-reviews {
+  margin-top: var(--aw-space-6);
+  padding-top: var(--aw-space-5);
+  border-top: 1.5px dashed var(--aw-color-border-strong);
 }
-
-.aw-star-rating--large {
-  width: 9rem;
-  height: 1.8rem;
-}
-
-.aw-star-rating__track,
-.aw-star-rating__fill {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.aw-star-rating__track svg {
-  color: var(--aw-color-border-strong);
-}
-
-.aw-star-rating__fill svg {
-  color: var(--aw-color-accent);
-}
-
-.aw-star-rating__track svg,
-.aw-star-rating__fill svg {
-  width: 1.4rem;
-  height: 1.4rem;
-  flex-shrink: 0;
-}
-
-.aw-star-rating--large .aw-star-rating__track svg,
-.aw-star-rating--large .aw-star-rating__fill svg {
-  width: 1.8rem;
-  height: 1.8rem;
-}
-
-/* --- Rating summary chip (product page, near title) --- */
-
-.aw-rating-summary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--aw-space-2);
-  margin-top: var(--aw-space-2);
-  text-decoration: none;
-  color: var(--aw-color-ink);
-}
-
-.aw-rating-summary__text {
-  font-size: var(--aw-text-xs);
-  color: var(--aw-color-muted);
-}
-
-/* --- Homepage curated reviews --- */
 
 .aw-reviews__header {
-  margin-bottom: var(--aw-space-5);
-  max-width: 56rem;
-}
-
-.aw-reviews__heading {
-  margin: 0;
-}
-
-.aw-reviews__subheading {
-  margin: var(--aw-space-2) 0 0;
-  color: var(--aw-color-muted);
-}
-
-.aw-reviews__rail-wrapper {
-  position: relative;
-}
-
-.aw-reviews__rail {
   display: flex;
-  gap: var(--aw-space-4);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  list-style: none;
-  margin: 0;
-  padding: 0 0 var(--aw-space-2);
-  scrollbar-width: none;
-}
-
-.aw-reviews__rail::-webkit-scrollbar {
-  display: none;
-}
-
-/* Sticky-note treatment, matching the finalized design: a torn strip
-   of "tape" at the top of each card and a gentle alternating tilt
-   instead of a plain bordered box. */
-.aw-review-card {
-  position: relative;
-  flex: 0 0 min(30rem, 82vw);
-  scroll-snap-align: start;
-  padding: var(--aw-space-5);
-  border: none;
-  border-radius: 2px;
-  background: rgb(var(--color-background));
-  box-shadow: var(--aw-shadow-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--aw-space-2);
-  transform: rotate(var(--aw-review-rot, 0deg));
-}
-
-.aw-review-card:nth-child(3n+1) {
-  --aw-review-rot: -1.1deg;
-}
-
-.aw-review-card:nth-child(3n+2) {
-  --aw-review-rot: 0.8deg;
-}
-
-.aw-review-card:nth-child(3n+3) {
-  --aw-review-rot: -0.4deg;
-}
-
-.aw-review-card::before {
-  content: '';
-  position: absolute;
-  top: -1rem;
-  left: 50%;
-  width: 4.4rem;
-  height: 1.8rem;
-  margin-left: -2.2rem;
-  background: repeating-linear-gradient(
-    -45deg,
-    rgba(169, 124, 79, 0.5),
-    rgba(169, 124, 79, 0.5) 4px,
-    rgba(169, 124, 79, 0.32) 4px,
-    rgba(169, 124, 79, 0.32) 8px
-  );
-  transform: rotate(-4deg);
-}
-
-.aw-review-card__verified,
-.aw-review__verified {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: var(--aw-text-2xs);
-  letter-spacing: var(--aw-tracking-wide);
-  text-transform: uppercase;
-  color: var(--aw-color-success);
-}
-
-.aw-review-card__verified svg,
-.aw-review__verified svg {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.aw-review-card__text,
-.aw-review__text {
-  font-size: var(--aw-text-sm);
-  line-height: 1.65;
-  color: var(--aw-color-ink);
-}
-
-.aw-review-card__photos,
-.aw-review__photos {
-  display: flex;
-  gap: var(--aw-space-2);
-}
-
-.aw-review-card__photo,
-.aw-review__photo {
-  width: 5.6rem;
-  height: 5.6rem;
-  border-radius: var(--aw-radius-sm);
-  overflow: hidden;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background: rgba(var(--color-foreground), 0.04);
-  transition: transform var(--aw-duration-fast) var(--aw-ease);
-}
-
-.aw-review-card__photo:hover,
-.aw-review__photo:hover {
-  transform: scale(1.04);
-}
-
-.aw-review-card__photo img,
-.aw-review__photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.aw-review-card__meta {
-  margin-top: auto;
-  padding-top: var(--aw-space-2);
-  display: flex;
-  align-items: baseline;
-  gap: var(--aw-space-2);
-  font-size: var(--aw-text-xs);
-}
-
-.aw-review-card__name {
-  font-weight: 600;
-}
-
-.aw-review-card__product {
-  color: var(--aw-color-muted);
-  text-decoration: none;
-  border-bottom: 1px solid var(--aw-color-border-strong);
-}
-
-.aw-reviews__nav {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--aw-space-2);
-  margin-top: var(--aw-space-3);
-}
-
-.aw-reviews__nav-btn {
-  width: 3.6rem;
-  height: 3.6rem;
-  border-radius: 50%;
-  border: 1px solid var(--aw-color-border);
-  background: var(--aw-color-paper);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: border-color var(--aw-duration-fast) var(--aw-ease);
-}
-
-.aw-reviews__nav-btn:hover {
-  border-color: var(--aw-color-border-strong);
-}
-
-.aw-reviews__nav-btn svg {
-  width: 1rem;
-  height: 1rem;
-  transform: rotate(90deg);
-}
-
-.aw-reviews__nav-btn--next svg {
-  transform: rotate(-90deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .aw-reviews__rail {
-    scroll-behavior: auto;
-  }
-}
-
-/* --- Product page: full review list --- */
-
-.aw-reviews-section {
-  margin-top: var(--aw-space-7);
-  scroll-margin-top: var(--aw-space-5);
-}
-
-.aw-reviews-section__header {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--aw-space-3);
-  padding-bottom: var(--aw-space-4);
-  border-bottom: 1px solid var(--aw-color-border);
+  flex-wrap: wrap;
+  margin-bottom: var(--aw-space-5);
 }
 
-.aw-reviews-section__heading {
+.aw-reviews__heading {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-2xl);
   margin: 0;
 }
 
-/* --- Ratings breakdown: big score + per-star percentage bars, computed
-   live from this product's real review data (see
-   snippets/artwistic-product-reviews.liquid). --- */
+/* --- "Write a Review" button: no drop shadow — a chic ink-fill swap
+   on hover instead. --- */
 
-.aw-ratings-summary {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--aw-space-6);
-  align-items: center;
-  padding: var(--aw-space-5) 0;
+.aw-reviews__write-btn {
+  padding: var(--aw-space-2) var(--aw-space-5);
+  border: 1.5px solid var(--aw-color-ink);
+  border-radius: var(--aw-radius-full);
+  background: transparent;
+  color: var(--aw-color-ink);
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--aw-duration-fast) var(--aw-ease), color var(--aw-duration-fast) var(--aw-ease),
+    transform var(--aw-duration-fast) var(--aw-ease);
 }
 
-@media screen and (max-width: 749px) {
-  .aw-ratings-summary {
-    grid-template-columns: 1fr;
-    gap: var(--aw-space-4);
-    text-align: center;
+.aw-reviews__write-btn:hover {
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-reviews__write-btn {
+    transition: none;
+  }
+
+  .aw-reviews__write-btn:hover {
+    transform: none;
   }
 }
 
-.aw-ratings-summary__score-col {
-  text-align: center;
+/* --- Judge.me's own native header chrome — hidden entirely, since it
+   duplicates what our own header above it already provides:
+   - the "Customer Reviews" heading (redundant with our own heading)
+   - the "5.0 · 1 review" average-rating summary (hidden per the
+     merchant's request — per-review ratings inside each .jm-review-item
+     card are untouched, this is only the aggregate)
+   - their native "Write a review" button + sort/filter icons (redundant
+     with our own "Write a Review" button, which proxies a click to
+     their real button — see [data-testid="write-review-button"] in
+     assets/artwistic-reviews.js) --- */
+
+.jm-review-widget-minimal-header__title,
+.jm-average-rating-display--minimal-header,
+.jm-review-widget-minimal-header__filter-container {
+  display: none !important;
 }
 
-.aw-ratings-summary__score {
-  font-family: var(--aw-font-heading);
-  font-size: var(--aw-text-3xl);
-  font-weight: 700;
-  line-height: 1;
-}
-
-.aw-ratings-summary__count {
-  margin: var(--aw-space-2) 0 0;
-  font-size: var(--aw-text-sm);
-  color: var(--aw-color-muted);
-}
-
-.aw-ratings-summary__bars {
-  display: flex;
-  flex-direction: column;
-  gap: var(--aw-space-2);
-}
-
-.aw-ratings-bar {
-  display: grid;
-  grid-template-columns: 5rem 1fr 4rem;
-  align-items: center;
-  gap: var(--aw-space-3);
-  font-size: var(--aw-text-xs);
-  color: var(--aw-color-muted);
-}
-
-.aw-ratings-bar__track {
-  height: 0.8rem;
-  border-radius: var(--aw-radius-full);
-  background: rgba(var(--color-foreground), 0.06);
-  border: 1px solid var(--aw-color-border);
-  overflow: hidden;
-}
-
-.aw-ratings-bar__fill {
-  height: 100%;
-  background: var(--aw-color-brand-accent);
-}
-
-/* --- Pull-note: one real review, featured large --- */
+/* --- Featured "pull quote" hero, built by artwistic-reviews.js from
+   Judge.me's own first real review. --- */
 
 .aw-pull-note {
+  background: rgb(42, 36, 32);
+  color: rgb(245, 239, 230);
+  padding: var(--aw-space-6) var(--aw-space-5);
+  margin-bottom: var(--aw-space-5);
   position: relative;
-  background: var(--aw-color-espresso, #2a2420);
-  color: #f5efe6;
-  padding: var(--aw-space-6);
-  margin: var(--aw-space-5) 0;
-  box-shadow: var(--aw-shadow-md);
+  border-radius: var(--aw-radius-sm);
+  transform: rotate(-0.6deg);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+}
+
+.aw-pull-note::before {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: var(--aw-space-6);
+  width: 5.6rem;
+  height: 2.2rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(169, 124, 79, 0.6),
+    rgba(169, 124, 79, 0.6) 4px,
+    rgba(169, 124, 79, 0.42) 4px,
+    rgba(169, 124, 79, 0.42) 8px
+  );
+  transform: rotate(3deg);
 }
 
 .aw-pull-note__mark {
@@ -375,7 +124,7 @@
 .aw-pull-note__text {
   font-family: var(--aw-font-heading);
   font-style: italic;
-  font-size: var(--aw-text-lg);
+  font-size: var(--aw-text-md);
   font-weight: 500;
   line-height: 1.35;
   margin: 0 0 var(--aw-space-4);
@@ -387,107 +136,459 @@
   align-items: center;
   gap: var(--aw-space-3);
   font-size: var(--aw-text-sm);
+  font-family: var(--aw-font-mono);
 }
 
-.aw-pull-note__meta .aw-star-rating {
+.aw-pull-note__stars {
   color: var(--aw-color-brand-accent);
+  letter-spacing: 0.1em;
 }
 
-/* --- Review rail: reuses the .aw-review-card sticky-note styling
-   already defined above, laid out in the shared .aw-rail-shell pattern
-   (artwistic-global.css) instead of the homepage's bespoke rail. --- */
-
-.aw-review-rail {
+.aw-pull-note__who {
   display: flex;
-  gap: var(--aw-space-4);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  list-style: none;
-  margin: 0;
-  padding: var(--aw-space-2) var(--aw-container-pad) var(--aw-space-2);
+  align-items: center;
+  gap: var(--aw-space-2);
 }
 
-.aw-review-rail::-webkit-scrollbar {
-  display: none;
+@media screen and (max-width: 749px) {
+  .aw-pull-note {
+    padding: var(--aw-space-5) var(--aw-space-4);
+  }
+
+  .aw-pull-note__text {
+    font-size: var(--aw-text-base);
+  }
 }
 
-.aw-review-rail .aw-review-card {
-  flex: 0 0 min(30rem, 82vw);
-  scroll-snap-align: start;
+/* --- Subtle clickable cue on the hero — not an obvious "click me"
+   badge, just a slight lift + shadow deepen on hover/focus, matching
+   the same restrained language used on the grid cards below. --- */
+
+.aw-reviews__hero {
+  cursor: pointer;
 }
 
-.aw-review-card__video {
-  width: 100%;
-  max-width: 24rem;
+.aw-reviews__hero .aw-pull-note {
+  transition: transform var(--aw-duration-base) var(--aw-ease), box-shadow var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-reviews__hero:hover .aw-pull-note,
+.aw-reviews__hero:focus-visible .aw-pull-note {
+  transform: rotate(-0.6deg) translateY(-3px);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.32);
+}
+
+.aw-reviews__hero:focus-visible {
+  outline: none;
+}
+
+/* --- Empty state (no real reviews yet) — replaces Judge.me's raw
+   native "Be the first to write a review" block with our own styled
+   version, matching the paper/ink/brass aesthetic used everywhere
+   else. artwistic-reviews.js toggles [hidden] once it knows whether
+   any real .jm-review-item exists. --- */
+
+.aw-reviews__empty {
+  text-align: center;
+  padding: var(--aw-space-6) var(--aw-space-4);
+  border: 1.5px dashed var(--aw-color-border-strong);
   border-radius: var(--aw-radius-sm);
-  background: rgba(var(--color-foreground), 0.04);
 }
 
-.aw-review-card__date {
+.aw-reviews__empty-text {
+  font-family: var(--aw-font-heading);
+  font-style: italic;
+  font-size: var(--aw-text-md);
+  margin: 0 0 var(--aw-space-4);
+}
+
+/* Judge.me's own native empty-state chrome (its "Be the first..."
+   copy, teal button, and "No items found" placeholder) has no
+   confirmed, stable class name to target here — artwistic-reviews.js
+   hides the entire #judgeme_product_reviews widget host via its
+   [hidden] attribute whenever there are zero real reviews, which is
+   the reliable way to guarantee it never shows a second, unstyled
+   entry point next to our own custom empty-state message + header
+   "Write a Review" button. */
+
+/* --- Judge.me's real review list, turned into a 3-up card grid --- */
+/* .aw-jdgm-reviews-grid is added by artwistic-reviews.js to the real,
+   confirmed .jdgm-review-list container (also targeted directly here
+   as a belt-and-suspenders match). */
+
+.jdgm-review-list.aw-jdgm-reviews-grid,
+.aw-jdgm-reviews-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--aw-space-5);
+}
+
+@media screen and (max-width: 749px) {
+  .aw-jdgm-reviews-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The review used to build the hero above is never shown a second time
+   in the grid — artwistic-reviews.js flags it with this class. */
+.aw-jdgm-card--is-hero-source {
+  display: none !important;
+}
+
+.aw-jdgm-card {
+  background: var(--aw-color-paper);
+  padding: var(--aw-space-4);
+  position: relative;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  border-radius: var(--aw-radius-sm);
+  cursor: pointer;
+  transition: transform var(--aw-duration-base) var(--aw-ease), box-shadow var(--aw-duration-base) var(--aw-ease);
+}
+
+/* Subtle, restrained clickable cue — a slight lift + shadow deepen,
+   not an obvious "click me" badge/icon. */
+.aw-jdgm-card:hover,
+.aw-jdgm-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+}
+
+.aw-jdgm-card:focus-visible {
+  outline: none;
+}
+
+.aw-jdgm-card::before {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  margin-left: -2.2rem;
+  width: 4.4rem;
+  height: 1.8rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(169, 124, 79, 0.5),
+    rgba(169, 124, 79, 0.5) 4px,
+    rgba(169, 124, 79, 0.35) 4px,
+    rgba(169, 124, 79, 0.35) 8px
+  );
+  transform: rotate(-4deg);
+}
+
+.aw-jdgm-card:nth-of-type(2n)::before {
+  transform: rotate(4deg);
+}
+
+.aw-jdgm-card .jdgm-review-content__body-content,
+.aw-jdgm-card .jm-review-content__body {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-sm);
+  line-height: 1.5;
+}
+
+.aw-jdgm-card .jm-reviewer-info__name {
+  font-family: var(--aw-font-body);
+  font-weight: 700;
+}
+
+/* Judge.me's verified-buyer badge stays exactly where it renders —
+   restyled in place, never rebuilt. */
+.aw-jdgm-card .jm-verified-buyer-badge {
+  font-family: var(--aw-font-mono);
+}
+
+.aw-jdgm-card .jm-verified-buyer-badge__text {
+  color: var(--aw-color-success);
+  font-size: var(--aw-text-2xs);
+}
+
+/* A real attached review photo — the avatar is a text initial, never
+   an <img>, so any <img> inside a card is a genuine review photo.
+   Same polaroid + tape treatment as the featured hero. */
+.aw-jdgm-card img {
+  display: block;
+  width: 8.5rem;
+  height: 10rem;
+  object-fit: cover;
+  margin: 0 auto var(--aw-space-3);
+  padding: 0.5rem 0.5rem 1.4rem;
+  background-color: #fdfdfb;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  transform: rotate(-2.5deg);
+  position: relative;
+}
+
+.aw-jdgm-card:nth-of-type(2n) img {
+  transform: rotate(2deg);
+}
+
+/* --- Circular reviewer avatar (real photo, or two-letter initials) —
+   built by artwistic-reviews.js for both the hero and every grid card,
+   replacing Judge.me's own single-letter avatar in this slot. --- */
+
+.aw-jdgm-card__who {
+  display: flex;
+  align-items: center;
+  gap: var(--aw-space-2);
+  margin-bottom: var(--aw-space-2);
+}
+
+.aw-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--aw-color-brand-accent);
+  color: var(--aw-color-paper);
+  font-family: var(--aw-font-mono);
   font-size: var(--aw-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.aw-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  box-shadow: none;
+  transform: none;
+  background: none;
+}
+
+.aw-meta-line {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.aw-meta-line__name {
+  font-family: var(--aw-font-body);
+  font-weight: 700;
+  font-size: var(--aw-text-sm);
+}
+
+.aw-meta-line__city {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-2xs);
   color: var(--aw-color-muted);
 }
 
-/* --- Photo lightbox --- */
+.aw-pull-note .aw-avatar {
+  width: 3.8rem;
+  height: 3.8rem;
+  border: 2px solid var(--aw-color-brand-accent);
+}
+
+.aw-pull-note .aw-meta-line__name {
+  color: inherit;
+}
+
+.aw-pull-note .aw-meta-line__city {
+  color: rgba(245, 239, 230, 0.68);
+}
+
+/* --- Click-to-expand review lightbox ---
+   FLIP expand-in-place: artwistic-reviews.js measures the clicked
+   avatar's on-screen rect, pins the dialog there via inline
+   position/left/top/width/height/border-radius (a small circle, in
+   place), forces a reflow, then this file's transitions carry it to
+   the large centered rect. The exact technique already proven in
+   assets/artwistic-video-bubble.js. Text content inside the dialog
+   fades/slides in afterwards, once JS adds .is-settled. */
 
 .aw-review-lightbox {
   position: fixed;
   inset: 0;
-  z-index: var(--aw-z-modal);
+  z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--aw-space-5);
-  background: rgba(0, 0, 0, 0.75);
-  opacity: 0;
+  padding: var(--aw-space-4);
   pointer-events: none;
-  transition: opacity var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-review-lightbox[hidden] {
+  display: none;
 }
 
 .aw-review-lightbox.is-open {
+  pointer-events: all;
+}
+
+.aw-review-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-review-lightbox.is-open .aw-review-lightbox__backdrop {
   opacity: 1;
-  pointer-events: auto;
 }
 
-.aw-review-lightbox img {
-  max-width: min(64rem, 90vw);
+.aw-review-lightbox__dialog {
+  position: relative;
+  z-index: 1;
+  background: var(--aw-color-paper);
+  width: min(52rem, 100%);
   max-height: 85vh;
+  overflow: auto;
   border-radius: var(--aw-radius-md);
-  transform: scale(0.97);
-  transition: transform var(--aw-duration-base) var(--aw-ease);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  transform: scale(0.94) translateY(12px);
+  opacity: 0;
+  transition: transform var(--aw-duration-slow) var(--aw-ease), opacity var(--aw-duration-base) var(--aw-ease),
+    left var(--aw-duration-slow) var(--aw-ease), top var(--aw-duration-slow) var(--aw-ease),
+    width var(--aw-duration-slow) var(--aw-ease), height var(--aw-duration-slow) var(--aw-ease),
+    border-radius var(--aw-duration-slow) var(--aw-ease);
 }
 
-.aw-review-lightbox.is-open img {
-  transform: scale(1);
+.aw-review-lightbox.is-open .aw-review-lightbox__dialog {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* While JS is driving the dialog's rect directly (position: fixed,
+   inline left/top/width/height), the fallback transform/opacity above
+   must not fight it. */
+.aw-review-lightbox__dialog[style*='position: fixed'] {
+  transform: none;
+  opacity: 1;
+}
+
+/* Content stays hidden until the shape has mostly settled into its
+   target rect — reads as "the circle grows, then the details appear
+   below it." Media (image) can show immediately; only the text block
+   is held back. */
+.aw-review-lightbox__avatar,
+.aw-review-lightbox__body {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--aw-duration-base) var(--aw-ease), transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-review-lightbox__dialog.is-settled .aw-review-lightbox__avatar,
+.aw-review-lightbox__dialog.is-settled .aw-review-lightbox__body {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.aw-review-lightbox__avatar {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--aw-space-6);
+}
+
+.aw-review-lightbox__avatar .aw-avatar {
+  width: 5.6rem;
+  height: 5.6rem;
+  font-size: var(--aw-text-sm);
+  border: 2px solid var(--aw-color-brand-accent);
 }
 
 .aw-review-lightbox__close {
   position: absolute;
-  top: var(--aw-space-4);
-  right: var(--aw-space-4);
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
+  top: var(--aw-space-3);
+  right: var(--aw-space-3);
+  width: 3.6rem;
+  height: 3.6rem;
   border: none;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  z-index: 1;
 }
 
 .aw-review-lightbox__close svg {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.aw-review-lightbox__body {
+  padding: var(--aw-space-6);
+}
+
+.aw-review-lightbox--text-only .aw-review-lightbox__body {
+  padding: var(--aw-space-7) var(--aw-space-6);
+}
+
+.aw-review-lightbox--text-only .aw-review-lightbox__text {
+  font-size: var(--aw-text-lg);
+}
+
+.aw-review-lightbox__stars {
+  color: var(--aw-color-brand-accent);
+  font-family: var(--aw-font-mono);
+  letter-spacing: 0.1em;
+  margin-bottom: var(--aw-space-3);
+}
+
+.aw-review-lightbox__text {
+  font-family: var(--aw-font-heading);
+  font-style: italic;
+  font-size: var(--aw-text-md);
+  line-height: 1.4;
+  margin: 0 0 var(--aw-space-3);
+}
+
+.aw-review-lightbox__author {
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-xs);
+  color: var(--aw-color-muted);
+  margin: 0;
+  display: flex;
+  gap: var(--aw-space-2);
+  align-items: baseline;
+}
+
+.aw-review-lightbox__author span:first-child {
+  font-weight: 700;
+  color: var(--aw-color-ink);
+}
+
+.aw-review-lightbox__city:empty {
+  display: none;
+}
+
+/* The photo sits below the text, at the bottom of the dialog. */
+.aw-review-lightbox__media {
+  width: 100%;
+  max-height: 45vh;
+  overflow: hidden;
+}
+
+.aw-review-lightbox__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .aw-review-lightbox,
-  .aw-review-lightbox img {
+  .aw-review-lightbox__backdrop,
+  .aw-review-lightbox__dialog,
+  .aw-review-lightbox__avatar,
+  .aw-review-lightbox__body,
+  .aw-reviews__hero .aw-pull-note,
+  .aw-jdgm-card {
     transition: none;
   }
+}
+
+body.aw-review-lb-open {
+  overflow: hidden;
 }

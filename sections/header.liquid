@@ -10,18 +10,12 @@
 
 {%- if settings.predictive_search_enabled -%}
   <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
-  {%- comment -%} ARTWISTIC: predictive search restyle, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-  <link rel="stylesheet" href="{{ 'artwistic-search.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
 {%- if section.settings.menu_type_desktop == 'mega' -%}
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-  {%- comment -%} ARTWISTIC: mega menu promo tile + hover-intent, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-  <link rel="stylesheet" href="{{ 'artwistic-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-  <script src="{{ 'artwistic-mega-menu.js' | asset_url }}" defer="defer"></script>
+  <link rel="stylesheet" href="{{ 'mega-menu-featured.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
-{%- comment -%} ARTWISTIC: header chrome refinements, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-<link rel="stylesheet" href="{{ 'artwistic-header.css' | asset_url }}" media="print" onload="this.media='all'">
 
 <style>
   header-drawer {
@@ -212,7 +206,12 @@
             }}
           </div>
         {%- else -%}
-          <span class="h2">{{ shop.name }}</span>
+          <span class="aw-brand-wordmark">
+  <span class="aw-brand-wordmark__word">{{ shop.name }}</span>
+  {%- if section.settings.brand_subtitle != blank -%}
+    <span class="aw-brand-wordmark__subtitle">{{ section.settings.brand_subtitle }}</span>
+  {%- endif -%}
+</span>
         {%- endif -%}
       </a>
       {%- if request.page_type == 'index' -%}
@@ -255,7 +254,12 @@
             }}
           </div>
         {%- else -%}
-          <span class="h2">{{ shop.name }}</span>
+          <span class="aw-brand-wordmark">
+  <span class="aw-brand-wordmark__word">{{ shop.name }}</span>
+  {%- if section.settings.brand_subtitle != blank -%}
+    <span class="aw-brand-wordmark__subtitle">{{ section.settings.brand_subtitle }}</span>
+  {%- endif -%}
+</span>
         {%- endif -%}
       </a>
       {%- if request.page_type == 'index' -%}
@@ -299,27 +303,19 @@
         </shopify-account>
       {%- endif -%}
 
+            <a href="/pages/wishlist" class="header__icon link focus-inset aw-wishlist-header-link" style="position: relative;" data-aw-wishlist-header-link>
+        <span class="svg-wrapper">{{- 'icon-heart.svg' | inline_asset_content -}}</span>
+        <span class="visually-hidden">Wishlist</span>
+        <div class="cart-count-bubble" data-aw-wishlist-count hidden><span aria-hidden="true">0</span></div>
+      </a>
+      <script src="{{ 'artwistic-wishlist-header-count.js' | asset_url }}" defer="defer"></script>
+
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when '@app' -%}
             {% render block %}
         {%- endcase -%}
       {%- endfor -%}
-
-      {%- comment -%} ARTWISTIC: wishlist entry point, see ARTWISTIC_CHANGELOG.md {%- endcomment -%}
-      {%- if section.settings.artwistic_wishlist_url != blank -%}
-        <a
-          href="{{ section.settings.artwistic_wishlist_url }}"
-          class="header__icon header__icon--wishlist link focus-inset aw-wishlist-link"
-          data-aw-wishlist-count-target
-        >
-          <span class="svg-wrapper">{{ 'icon-heart.svg' | inline_asset_content }}</span>
-          <span class="visually-hidden">Wishlist</span>
-          <span class="aw-wishlist-count-bubble" data-aw-wishlist-count hidden>0</span>
-        </a>
-        <link rel="stylesheet" href="{{ 'artwistic-wishlist.css' | asset_url }}" media="print" onload="this.media='all'">
-        <script src="{{ 'artwistic-wishlist.js' | asset_url }}" defer="defer"></script>
-      {%- endif -%}
 
       <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
         {% if cart == empty %}
@@ -524,16 +520,16 @@
 {
   "name": "t:sections.header.name",
   "class": "section-header",
-  "max_blocks": 3,
+  "max_blocks": 10,
   "settings": [
     {
-      "type": "url",
-      "id": "artwistic_wishlist_url",
-      "label": "ARTWISTIC: Wishlist page URL",
-      "info": "Leave blank to hide the wishlist icon. Point this at a page using the \"Wishlist\" template. See docs/SHOPIFY_ADMIN_SETUP.md.",
-      "default": "/pages/wishlist"
+  "type": "text",
+  "id": "brand_subtitle",
+  "label": "Subtitle under logo",
+  "info": "Optional — shown in small caps under the wordmark. Leave blank to hide."
     },
-    {
+    { 
+      
       "type": "select",
       "id": "logo_position",
       "options": [
@@ -710,6 +706,49 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "mega_menu_feature",
+      "name": "Mega menu — Featured tile",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Shows an image tile inside a mega menu dropdown, plus an optional \"Trending now\" row of real products below it. Set 'Menu item handle' to match the exact top-level menu label it belongs to (e.g. jewelry for a 'Jewelry' menu item)."
+        },
+        {
+          "type": "text",
+          "id": "menu_handle",
+          "label": "Menu item handle to attach to",
+          "info": "Must match the top-level menu item's handle exactly (lowercase, hyphenated). Example: 'jewelry', 'collections'."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "New In"
+        },
+        {
+          "type": "text",
+          "id": "subtext",
+          "label": "Subtext (optional)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "collection",
+          "id": "trending_collection",
+          "label": "Trending collection",
+          "info": "Optional. Shows the first 5 available products from this collection as a \"Trending now\" strip below this menu's columns. Leave blank to skip it."
+        }
+      ]
     }
   ]
 }

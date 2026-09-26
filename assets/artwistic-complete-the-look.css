@@ -1,0 +1,229 @@
+/**
+ * ARTWISTIC COMPLETE THE LOOK — merchant-curated companion products,
+ * picked per-product via the custom.complete_the_look metafield. See
+ * sections/artwistic-complete-the-look.liquid and .js.
+ */
+
+.aw-look__head {
+  margin-bottom: var(--aw-space-5);
+}
+
+.aw-look__heading {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-2xl);
+  margin: 0.4rem 0 0;
+}
+
+.aw-look__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: var(--aw-space-6) var(--aw-space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.aw-look__card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Polaroid frame: white border via padding, drop shadow, slight
+   alternating rotation — same treatment already established for
+   review photos and the reels' own real attached-photo cards. */
+.aw-look__polaroid {
+  position: relative;
+  background: #fdfdfb;
+  padding: var(--aw-space-2) var(--aw-space-2) var(--aw-space-5);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.16);
+  transform: rotate(-1.4deg);
+  margin-bottom: var(--aw-space-3);
+}
+
+.aw-look__card:nth-of-type(2n) .aw-look__polaroid {
+  transform: rotate(1.2deg);
+}
+
+.aw-look__card:nth-of-type(3n) .aw-look__polaroid {
+  transform: rotate(-0.6deg);
+}
+
+.aw-look__photo-link {
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: linear-gradient(160deg, #e7ddcf, #cdbca4);
+}
+
+.aw-look__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- The "+" quick-add / remove toggle ---
+   Sits over the bottom-right corner of the polaroid. One continuous
+   morph, not three separate jump-cuts: shape (width/border-radius),
+   color, and the icon crossfade all animate on the SAME transition
+   list/duration/easing, so they read as one gesture instead of a snap
+   followed by an ease. States:
+     idle       → small ink circle, "+" active
+     is-loading → same small circle, spinner active (spins for the
+                  real add *and* real remove round trip — a small
+                  enforced minimum keeps it from ever reading as a
+                  flicker on a fast connection)
+     is-added   → expands into a green pill, check active, "Added"
+                  label fades in once the pill has mostly finished
+                  expanding. Clicking it again reverses the whole
+                  thing AND removes the item from the real cart. */
+.aw-look__add {
+  position: absolute;
+  right: var(--aw-space-3);
+  bottom: calc(var(--aw-space-5) + var(--aw-space-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 3.6rem;
+  height: 3.6rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--aw-color-ink);
+  color: var(--aw-color-paper);
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transition: width var(--aw-duration-slow) var(--aw-ease), border-radius var(--aw-duration-slow) var(--aw-ease),
+    padding var(--aw-duration-slow) var(--aw-ease), background-color var(--aw-duration-slow) var(--aw-ease),
+    transform var(--aw-duration-fast) var(--aw-ease);
+}
+
+.aw-look__add:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+.aw-look__add:disabled {
+  cursor: default;
+}
+
+.aw-look__add:disabled:not(.is-loading):not(.is-added) {
+  opacity: 0.5;
+}
+
+.aw-look__add.is-added {
+  width: auto;
+  min-width: 3.6rem;
+  height: 3.6rem;
+  padding: 0 var(--aw-space-4) 0 var(--aw-space-3);
+  border-radius: var(--aw-radius-full);
+  background: var(--aw-color-success);
+  cursor: pointer;
+}
+
+/* Once it's a real toggle, "Added" reads as removable — a slight
+   press-down affordance instead of the idle button's lift. */
+.aw-look__add.is-added:hover:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* --- Icon crossfade ---
+   All three icons stack in the same spot (absolute inside a fixed-
+   size relative slot) so swapping which one is visible is a fade+
+   scale crossfade, never an instant display swap. */
+.aw-look__add-icons {
+  display: inline-block;
+  position: relative;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex-shrink: 0;
+}
+
+.aw-look__add-icon {
+  position: absolute;
+  inset: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity var(--aw-duration-base) var(--aw-ease), transform var(--aw-duration-base) var(--aw-ease);
+}
+
+.aw-look__add-icon.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.aw-look__add-icon-spinner.is-active {
+  animation: aw-look-spin 0.7s linear infinite;
+}
+
+@keyframes aw-look-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- "Added" label ---
+   Collapsed (zero width, no opacity) until the pill has had time to
+   mostly finish expanding, then fades/slides in — "expand, then the
+   text appears," not both at once. */
+.aw-look__add-label {
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--aw-tracking-wide);
+  text-transform: uppercase;
+  transition: max-width var(--aw-duration-base) var(--aw-ease) 160ms, opacity var(--aw-duration-fast) var(--aw-ease) 200ms,
+    margin-left var(--aw-duration-base) var(--aw-ease) 160ms;
+}
+
+.aw-look__add.is-added .aw-look__add-label {
+  max-width: 8rem;
+  opacity: 1;
+  margin-left: var(--aw-space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-look__add,
+  .aw-look__add-icon,
+  .aw-look__add-label {
+    transition: none;
+  }
+
+  .aw-look__add-icon-spinner.is-active {
+    animation: none;
+  }
+}
+
+.aw-look__name {
+  font-family: var(--aw-font-heading);
+  font-size: var(--aw-text-base);
+  color: var(--aw-color-ink);
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.aw-look__name:hover {
+  text-decoration: underline;
+}
+
+.aw-look__price {
+  margin: var(--aw-space-1) 0 0;
+  font-family: var(--aw-font-mono);
+  font-size: var(--aw-text-sm);
+  color: var(--aw-color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-look__add,
+  .aw-look__polaroid {
+    transition: none;
+  }
+}

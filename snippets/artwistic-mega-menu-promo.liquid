@@ -1,28 +1,42 @@
 {% comment %}
-  Renders an editorial promo tile inside a mega menu column, from an
-  already-resolved `artwistic_menu_promo` metaobject entry.
+  ARTWISTIC — restyled drop-in replacement for snippets/mega-menu-featured.liquid.
+
+  Uses the exact same real, already-working mechanism: a `mega_menu_feature`
+  block (added in Theme Editor → Header section → Blocks) whose
+  "Menu item handle to attach to" setting matches a top-level nav item's
+  handle exactly. No metaobjects, no extra Admin setup beyond the block
+  itself — this only restyles the tile and adds one more real setting
+  (`trending_collection`) to the same block for the "Trending now" strip.
 
   Usage:
-    {% render 'artwistic-mega-menu-promo', promo: aw_promo %}
+    {% render 'artwistic-mega-menu-promo', block: block %}
 
-  The caller (snippets/header-mega-menu.liquid) is responsible for finding
-  the matching entry by `menu_handle` — see docs/METAOBJECTS.md.
+  block.settings used: menu_handle (matching, handled by the caller),
+  image, heading, subtext, link, trending_collection (a real Shopify
+  collection — see sections/header.liquid's block schema).
 {% endcomment %}
 
-{%- if promo -%}
-  <a href="{{ promo.link.value }}" class="aw-mega-menu-promo aw-focusable">
-    <span class="aw-mega-menu-promo__media">
-      {%- if promo.image.value != blank -%}
+<li class="mega-menu__featured aw-mega-menu-promo" {{ block.shopify_attributes }}>
+  <a href="{{ block.settings.link | default: '#' }}" class="mega-menu__featured-link aw-mega-menu-promo__link">
+    {%- if block.settings.image != blank -%}
+      <div class="mega-menu__featured-image-wrapper aw-mega-menu-promo__media">
         {{
-          promo.image.value
-          | image_url: width: 480
-          | image_tag: loading: 'lazy', sizes: '(min-width: 1280px) 20rem, 18rem', widths: '240, 480, 720'
+          block.settings.image
+          | image_url: width: 600
+          | image_tag:
+            class: 'mega-menu__featured-image aw-mega-menu-promo__image',
+            widths: '300, 450, 600',
+            sizes: '300px',
+            loading: 'lazy',
+            alt: block.settings.image.alt | default: block.settings.heading
         }}
-      {%- endif -%}
-    </span>
-    <span class="aw-mega-menu-promo__title">{{ promo.title.value | escape }}</span>
-    {%- if promo.subtitle.value != blank -%}
-      <span class="aw-mega-menu-promo__subtitle">{{ promo.subtitle.value | escape }}</span>
+      </div>
+    {%- endif -%}
+    {%- if block.settings.heading != blank -%}
+      <p class="mega-menu__featured-heading aw-mega-menu-promo__heading">{{ block.settings.heading | escape }}</p>
+    {%- endif -%}
+    {%- if block.settings.subtext != blank -%}
+      <p class="mega-menu__featured-subtext aw-mega-menu-promo__subtext">{{ block.settings.subtext | escape }}</p>
     {%- endif -%}
   </a>
-{%- endif -%}
+</li>
