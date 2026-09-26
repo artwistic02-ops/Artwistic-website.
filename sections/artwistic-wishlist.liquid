@@ -58,16 +58,82 @@
     </a>
   </div>
 
-  <ul class="aw-wishlist-grid grid grid--2-col-tablet-down grid--4-col-desktop" data-aw-wishlist-grid hidden role="list"></ul>
+  <ul class="aw-wishlist-items" data-aw-wishlist-grid hidden role="list"></ul>
 
   <div class="aw-wishlist-loading" data-aw-wishlist-loading>
     {%- render 'loading-spinner' -%}
   </div>
+
+  <div class="aw-wishlist-summary" data-aw-wishlist-summary hidden>
+    <div class="aw-wishlist-summary__row">
+      <span class="aw-wishlist-summary__label">{{ 'general.wishlist.value_label' | t }}</span>
+      <span class="aw-wishlist-summary__total" data-aw-wishlist-summary-total>—</span>
+    </div>
+    <p class="aw-wishlist-summary__note">{{ 'general.wishlist.move_all_note' | t }}</p>
+    <button type="button" class="aw-wishlist-summary__move-all" data-aw-wishlist-move-all>
+      {{- 'icon-cart.svg' | inline_asset_content -}}
+      {{ 'general.wishlist.move_all_to_bag' | t }}
+    </button>
+  </div>
+
+  {%- if section.settings.cross_sell_collection != blank and section.settings.cross_sell_collection.products.size > 0 -%}
+    <script src="{{ 'artwistic-rail.js' | asset_url }}" defer="defer"></script>
+    <div class="aw-wishlist-cross-sell">
+      <div class="aw-wishlist-cross-sell__head">
+        <span class="aw-eyebrow">You might also like</span>
+        <h2>{{ section.settings.cross_sell_collection.title }}</h2>
+      </div>
+      <div class="aw-rail-shell">
+        <button type="button" class="aw-rail-arrow aw-rail-arrow--prev" data-aw-rail-prev aria-label="Previous">
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </button>
+        <div class="aw-wishlist-cross-sell__track" data-aw-rail>
+          {%- for cs_product in section.settings.cross_sell_collection.products limit: 12 -%}
+            {%- assign cs_variant = cs_product.selected_or_first_available_variant -%}
+            <div class="aw-wishlist-cross-sell-card">
+              <a href="{{ cs_product.url }}" class="aw-wishlist-cross-sell-card__media">
+                {%- if cs_product.featured_image != blank -%}
+                  {{ cs_product.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 300, 400' }}
+                {%- endif -%}
+              </a>
+              <p class="aw-wishlist-cross-sell-card__name">
+                <a href="{{ cs_product.url }}" class="full-unstyled-link">{{ cs_product.title | escape }}</a>
+              </p>
+              <p class="aw-wishlist-cross-sell-card__price">{{ cs_variant.price | money }}</p>
+              <button
+                type="button"
+                class="aw-card-action aw-card-action--cart aw-card-action--large"
+                data-aw-quick-add
+                data-variant-id="{{ cs_variant.id }}"
+                data-product-id="{{ cs_product.id }}"
+                data-product-url="{{ cs_product.url }}"
+                data-multi-variant="{% if cs_product.variants.size > 1 %}true{% else %}false{% endif %}"
+                aria-label="Add {{ cs_product.title | escape }} to cart"
+                {% if cs_variant.available == false %}disabled{% endif %}
+              >
+                <span class="aw-card-action-icon aw-card-action-icon--plus">
+                  {{- 'icon-plus.svg' | inline_asset_content -}}
+                </span>
+                <span class="aw-card-action-icon aw-card-action-icon--check">
+                  {{- 'icon-check-mark.svg' | inline_asset_content -}}
+                </span>
+              </button>
+            </div>
+          {%- endfor -%}
+        </div>
+        <button type="button" class="aw-rail-arrow aw-rail-arrow--next" data-aw-rail-next aria-label="Next">
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
 </div>
 
 <template id="aw-wishlist-icon-heart">{{- 'icon-heart.svg' | inline_asset_content -}}</template>
 <template id="aw-wishlist-icon-plus">{{- 'icon-plus.svg' | inline_asset_content -}}</template>
 <template id="aw-wishlist-icon-check">{{- 'icon-check-mark.svg' | inline_asset_content -}}</template>
+<template id="aw-wishlist-icon-remove">{{- 'icon-close.svg' | inline_asset_content -}}</template>
+<template id="aw-wishlist-icon-cart">{{- 'icon-cart.svg' | inline_asset_content -}}</template>
 
 {% schema %}
 {
@@ -98,6 +164,16 @@
       "id": "empty_button_label",
       "label": "Empty state button label",
       "default": "Continue shopping"
+    },
+    {
+      "type": "header",
+      "content": "Cross-sell"
+    },
+    {
+      "type": "collection",
+      "id": "cross_sell_collection",
+      "label": "\"You might also like\" collection",
+      "info": "Leave blank to hide this row."
     },
     {
       "type": "color_scheme",
